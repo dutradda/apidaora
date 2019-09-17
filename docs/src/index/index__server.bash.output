@@ -1,0 +1,4 @@
+INFO: Started server process [16220]
+INFO: Waiting for application startup.
+INFO: ASGI 'lifespan' protocol appears unsupported.
+INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)

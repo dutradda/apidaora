@@ -1,0 +1,79 @@
+[build-system]
+requires = ['flit']
+build-backend = 'flit.buildapi'
+
+[tool.flit.metadata]
+module = 'dataclassesapi'
+author = 'Diogo Dutra'
+author-email = 'diogodutradamata@gmail.com'
+home-page = 'https://github.com/dutradda/dataclassesapi'
+classifiers = [
+    'License :: OSI Approved :: MIT License',
+    'Development Status :: 1 - Planning',
+    'Intended Audience :: Developers',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Topic :: Software Development :: Libraries',
+]
+requires = [
+    'dataclassesjson[orjson]'
+]
+description-file = 'README.md'
+requires-python = '>=3.7'
+
+[tool.flit.metadata.urls]
+Documentation = 'https://dutradda.github.io/dataclassesapi/'
+
+[tool.flit.metadata.requires-extra]
+test = [
+    'asgi-testclient',
+    'bumpversion',
+    'black',
+    'flake8',
+    'isort',
+    'ipython',
+    'mypy',
+    'pytest-asyncio',
+    'pytest-cov',
+    'pytest-mock',
+    'pytest>=5.1.1',
+    'tox',
+    'towncrier',
+    'uvicorn'
+]
+doc = [
+    'mkdocs',
+    'mkdocs-material',
+    'markdown-include'
+]
+
+[tool.isort]
+case_sensitive= '1'
+use_parentheses = '1'
+line_length = '79'
+order_by_type = '1'
+multi_line_output = '3'
+include_trailing_comma = '1'
+lines_after_imports = '2'
+atomic = '1'
+
+[tool.black]
+exclude = '''
+    \.pyi
+'''
+target-version = ['py37']
+line-length = '79'
+skip-string-normalization = '1'
+
+[tool.towncrier]
+    package = 'dataclassesapi'
+    package_dir = ''
+    filename = 'docs/changelog.md'
+    title_format =  '{version} ({project_date})'
+    directory = 'changelog.d'
+    template = 'towncrier_template.rst'
+
+    [[tool.towncrier.type]]
+        directory = "change"
+        name = "Changes"
+        showcontent = true

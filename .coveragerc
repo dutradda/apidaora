@@ -1,0 +1,10 @@
+[run]
+omit = 
+    */.local/*
+    /usr/*
+    **__init__.py
+    **_pb2*
+    */test_*
+
+[report]
+show_missing = True

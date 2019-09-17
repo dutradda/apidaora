@@ -1,0 +1,39 @@
+site_name: dataclassesapi
+site_description: Asgi App using typing annotation
+
+theme:
+    name: 'material'
+    palette:
+      primary: 'pinky'
+      accent: 'grey'
+    logo: 'dataclassesapi-white.svg'
+    favicon: 'favicon.png'
+
+repo_name: dutradda/dataclassesapi
+repo_url: https://github.com/dutradda/dataclassesapi
+edit_uri: ''
+google_analytics:
+    - ''
+    - 'auto'
+
+nav:
+    - dataclassesapi: index.md
+    - Features: features.md
+    - Python dataclass intro: python-dataclass.md
+    - Http intro: http.md
+    - Tutorial - User Guide:
+        - Introduciton: tutorial/intro.md
+    - Alternatives, Inspiration and Comparisons: alternatives.md
+    - Benchmarks: benchmarks.md
+    - Help dataclassesapi - Get Help: help.md
+    - Development - Contributing: contributing.md
+    - Changelog: changelog.md
+
+markdown_extensions:
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown_include.include:
+      base_path: docs
+  - admonition
+  - codehilite
+  - extra
