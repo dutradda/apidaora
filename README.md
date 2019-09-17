@@ -1,2 +1,2 @@
 # dataclassesapi
-ASGI App using @dataclass for request/response
+ASGI App using dataclasses module for request/response objects
