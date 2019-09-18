@@ -572,7 +572,7 @@
 
 <span class="kn">from</span> <span class="nn">dataclassesjson</span> <span class="kn">import</span> <span class="n">dataclassjson</span>
 
-<span class="kn">from</span> <span class="nn">dataclassesapi</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Route</span>
+<span class="kn">from</span> <span class="nn">dataclassesapi</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
 <span class="kn">from</span> <span class="nn">dataclassesapi.request</span> <span class="kn">import</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">dataclassesapi.response</span> <span class="kn">import</span> <span class="n">Body</span> <span class="k">as</span> <span class="n">ResponseBody</span>
 <span class="kn">from</span> <span class="nn">dataclassesapi.response</span> <span class="kn">import</span> <span class="n">Response</span>
@@ -605,11 +605,7 @@
     <span class="k">return</span> <span class="n">MyResponse</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">MyApp</span><span class="p">(</span><span class="n">App</span><span class="p">):</span>
-    <span class="n">_routes</span> <span class="o">=</span> <span class="p">(</span><span class="n">Route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">MethodType</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">hello_controller</span><span class="p">),)</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">MyApp</span><span class="p">()</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">asgi_app</span><span class="p">([</span><span class="n">Route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">MethodType</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">hello_controller</span><span class="p">)])</span>
 </pre></div>
 
 
