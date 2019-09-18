@@ -2,7 +2,7 @@
 
 <p align="center" style="margin: 3em">
   <a href="https://github.com/dutradda/dataclassesapi">
-    <img src="dataclassesapi.svg" alt="dataclassesapi" width="300"/>
+    <img src="https://dutradda.github.io/dataclassesapi/dataclassesapi.svg" alt="dataclassesapi" width="300"/>
   </a>
 </p>
 
