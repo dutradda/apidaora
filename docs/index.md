@@ -35,7 +35,7 @@
 ## Requirements
 
  - Python 3.7+
- - [dataclassesjson](https://github.com/ijl/orjson) for json validation/parsing
+ - [dataclassesjson](https://github.com/dutradda/dataclassesjson) for json validation/parsing
  - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
 
 
