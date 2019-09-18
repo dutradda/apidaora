@@ -22,7 +22,11 @@ nav:
     - Python dataclass intro: python-dataclass.md
     - Http intro: http.md
     - Tutorial - User Guide:
-        - Introduciton: tutorial/intro.md
+        - Introduction: tutorial/00-intro.md
+        - Complete Request/Response: tutorial/01-complete-request-response.md
+        - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
+        - Validating fields: tutorial/03-validating-fields.md
+        - Complex nested structures: tutorial/04-complex-nested-structures.md
     - Alternatives, Inspiration and Comparisons: alternatives.md
     - Benchmarks: benchmarks.md
     - Help dataclassesapi - Get Help: help.md

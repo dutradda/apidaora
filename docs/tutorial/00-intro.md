@@ -1,11 +1,11 @@
-# Tutorial - User Guide - Intro
+# Tutorial - Introduction
 
 ## Getting Started
 
 ### Installs
 
 ```
-$ pip install dataclassesapi[orjson]
+$ pip install dataclassesapi
 ```
 
 ### Starts coding

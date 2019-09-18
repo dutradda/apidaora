@@ -1,14 +1,6 @@
-# Tutorial - User Guide - Intro
+# Tutorial - Complete Request/Response
 
-## Getting Started
-
-### Installs
-
-```
-$ pip install dataclassesapi[orjson]
-```
-
-### Starts coding
+## Example
 
 ```python
 {!./src/index/index_01_complete.py!}
