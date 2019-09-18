@@ -2,7 +2,7 @@
 ASGI App using dataclasses module for request/response objects
 """
 
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 
 from dataclassesapi.app import asgi_app
 from dataclassesapi.method import MethodType
