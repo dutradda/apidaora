@@ -38,7 +38,7 @@
     
     
       
-        <title>Tutorial - User Guide - Intro - dataclassesapi</title>
+        <title>Complete Request/Response - dataclassesapi</title>
       
     
     
@@ -112,7 +112,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#tutorial-user-guide-intro" tabindex="1" class="md-skip">
+      <a href="#tutorial-complete-requestresponse" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -138,7 +138,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Tutorial - User Guide - Intro
+                Complete Request/Response
               
             </span>
           
@@ -295,10 +295,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
     
     <label class="md-nav__link" for="nav-5">
       Tutorial - User Guide
@@ -316,8 +318,94 @@
 
 
   <li class="md-nav__item">
-    <a href="../intro.md" title="Introduciton" class="md-nav__link">
-      Introduciton
+    <a href="../00-intro/" title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Complete Request/Response
+      </label>
+    
+    <a href="./" title="Complete Request/Response" class="md-nav__link md-nav__link--active">
+      Complete Request/Response
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../02-deserializations-bad-requests.md" title="Deserializations bad requests" class="md-nav__link">
+      Deserializations bad requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../03-validating-fields.md" title="Validating fields" class="md-nav__link">
+      Validating fields
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../04-complex-nested-structures.md" title="Complex nested structures" class="md-nav__link">
+      Complex nested structures
     </a>
   </li>
 
@@ -408,29 +496,9 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    Getting Started
+  <a href="#example" class="md-nav__link">
+    Example
   </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installs" class="md-nav__link">
-    Installs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starts-coding" class="md-nav__link">
-    Starts coding
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -451,14 +519,8 @@
               
                 
                 
-                <h1 id="tutorial-user-guide-intro">Tutorial - User Guide - Intro</h1>
-<h2 id="getting-started">Getting Started</h2>
-<h3 id="installs">Installs</h3>
-<div class="codehilite"><pre><span></span>$ pip install dataclassesapi[orjson]
-</pre></div>
-
-
-<h3 id="starts-coding">Starts coding</h3>
+                <h1 id="tutorial-complete-requestresponse">Tutorial - Complete Request/Response</h1>
+<h2 id="example">Example</h2>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 
@@ -590,6 +652,41 @@ content-length: 123
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../00-intro/" title="Introduction" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Introduction
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../changelog/" title="Changelog" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Changelog
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
