@@ -7,7 +7,7 @@ import pytest
 from asgi_testclient import TestClient
 from dataclassesjson import dataclassjson, integer, string
 
-from dataclassesapi import App, MethodType, Route
+from dataclassesapi import MethodType, Route, asgi_app
 from dataclassesapi.request import Body, Headers, PathArgs, Query, Request
 from dataclassesapi.response import Body as ResponseBody
 from dataclassesapi.response import Response
@@ -72,7 +72,7 @@ def fake_controller(req: FakeRequest) -> FakeResponse:
 
 @pytest.fixture
 def fake_app():
-    return App([Route('/api/{id}', MethodType.GET, fake_controller)])
+    return asgi_app([Route('/api/{id}', MethodType.GET, fake_controller)])
 
 
 @pytest.fixture

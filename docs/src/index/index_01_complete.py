@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from dataclassesjson import dataclassjson, integer, string
 
-from dataclassesapi import App, MethodType, Route
+from dataclassesapi import MethodType, Route, asgi_app
 from dataclassesapi.request import Body, Headers, PathArgs, Query, Request
 from dataclassesapi.response import Body as ResponseBody
 from dataclassesapi.response import Response
@@ -77,8 +77,4 @@ def hello_message(name: str, location: str) -> str:
     return f'Hello {name}! Welcome to {location}!'
 
 
-class MyApp(App):
-    _routes = (Route('/hello/{name}', MethodType.PUT, hello_controller),)
-
-
-app = MyApp()
+app = asgi_app([Route('/hello/{name}', MethodType.PUT, hello_controller)])

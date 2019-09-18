@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from dataclassesjson import dataclassjson
 
-from dataclassesapi import App, MethodType, Route
+from dataclassesapi import MethodType, Route, asgi_app
 from dataclassesapi.request import Query, Request
 from dataclassesapi.response import Body as ResponseBody
 from dataclassesapi.response import Response
@@ -36,8 +36,4 @@ def hello_controller(req: MyRequest) -> MyResponse:
     return MyResponse(HTTPStatus.OK, body=body)
 
 
-class MyApp(App):
-    _routes = (Route('/hello', MethodType.GET, hello_controller),)
-
-
-app = MyApp()
+app = asgi_app([Route('/hello', MethodType.GET, hello_controller)])
