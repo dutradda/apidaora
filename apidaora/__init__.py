@@ -2,7 +2,7 @@
 ASGI App using dataclasses module for request/response objects
 """
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 from apidaora.app import asgi_app
 from apidaora.method import MethodType
