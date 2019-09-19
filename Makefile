@@ -1,5 +1,5 @@
 export PYTHONPATH = .
-export PROJECT_NAME = 'dataclassesapi'
+export PROJECT_NAME = 'apidaora'
 export VIRTUALENV = $(shell pwd)/venv
 
 help:  ## This help

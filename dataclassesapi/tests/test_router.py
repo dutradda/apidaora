@@ -2,10 +2,10 @@
 
 import pytest
 
-from dataclassesapi.exceptions import MethodNotFoundError, PathNotFoundError
-from dataclassesapi.method import MethodType
-from dataclassesapi.router import Route, route
-from dataclassesapi.router import router as http_router
+from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
+from apidaora.method import MethodType
+from apidaora.router import Route, route
+from apidaora.router import router as http_router
 
 
 class TestRouter:
@@ -72,9 +72,9 @@ class TestRouter:
         assert resolved.path_args == {'id': '012'}
 
     def test_should_route_path_with_regex_and_slash(self, method, controller):
-        path_pattern = r'/{id:\d{3}}/dataclassesapi'
+        path_pattern = r'/{id:\d{3}}/apidaora'
         router = http_router([Route(path_pattern, method, controller)])
-        path = '/012/dataclassesapi'
+        path = '/012/apidaora'
 
         resolved = route(router, path, method.value)
 
@@ -91,7 +91,7 @@ class TestRouter:
         assert exc_info.value.args == (path,)
 
     def test_should_not_route_path_with_slash(self, method, controller):
-        path_pattern = '/api/dataclassesapi'
+        path_pattern = '/api/apidaora'
         router = http_router([Route(path_pattern, method, controller)])
         path = '/api/invalid'
 

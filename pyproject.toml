@@ -3,10 +3,10 @@ requires = ['flit']
 build-backend = 'flit.buildapi'
 
 [tool.flit.metadata]
-module = 'dataclassesapi'
+module = 'apidaora'
 author = 'Diogo Dutra'
 author-email = 'diogodutradamata@gmail.com'
-home-page = 'https://github.com/dutradda/dataclassesapi'
+home-page = 'https://github.com/dutradda/apidaora'
 classifiers = [
     'License :: OSI Approved :: MIT License',
     'Development Status :: 1 - Planning',
@@ -22,7 +22,7 @@ description-file = 'README.md'
 requires-python = '>=3.7'
 
 [tool.flit.metadata.urls]
-Documentation = 'https://dutradda.github.io/dataclassesapi/'
+Documentation = 'https://dutradda.github.io/apidaora/'
 
 [tool.flit.metadata.requires-extra]
 test = [
@@ -66,7 +66,7 @@ line-length = '79'
 skip-string-normalization = '1'
 
 [tool.towncrier]
-    package = 'dataclassesapi'
+    package = 'apidaora'
     package_dir = ''
     filename = 'docs/changelog.md'
     title_format =  '{version} ({project_date})'

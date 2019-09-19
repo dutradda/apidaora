@@ -3,10 +3,10 @@ from http import HTTPStatus
 
 from dataclassesjson import dataclassjson, integer, string
 
-from dataclassesapi import MethodType, Route, asgi_app
-from dataclassesapi.request import Body, Headers, PathArgs, Query, Request
-from dataclassesapi.response import Body as ResponseBody
-from dataclassesapi.response import Response
+from apidaora import MethodType, Route, asgi_app
+from apidaora.request import Body, Headers, PathArgs, Query, Request
+from apidaora.response import Body as ResponseBody
+from apidaora.response import Response
 
 
 @dataclass

@@ -4,7 +4,7 @@ from typing import Optional
 
 from dataclassesjson import asjson
 
-from dataclassesapi.request import AsgiHeaders
+from apidaora.request import AsgiHeaders
 
 
 @dataclass

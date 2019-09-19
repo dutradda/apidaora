@@ -1,5 +1,5 @@
-## dataclassesapi features
+## apidaora features
 
-**dataclassesapi** gives you the following:
+**apidaora** gives you the following:
 
 ### Same interface as dataclasses module, plus extensions 

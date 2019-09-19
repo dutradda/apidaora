@@ -1,8 +1,8 @@
-# dataclassesapi
+# apidaora
 
 <p align="center" style="margin: 3em">
-  <a href="https://github.com/dutradda/dataclassesapi">
-    <img src="https://dutradda.github.io/dataclassesapi/dataclassesapi.svg" alt="dataclassesapi" width="300"/>
+  <a href="https://github.com/dutradda/apidaora">
+    <img src="https://dutradda.github.io/apidaora/apidaora.svg" alt="apidaora" width="300"/>
   </a>
 </p>
 
@@ -12,9 +12,9 @@
 
 ---
 
-**Documentation**: <a href="https://dutradda.github.io/dataclassesapi" target="_blank">https://dutradda.github.io/dataclassesapi</a>
+**Documentation**: <a href="https://dutradda.github.io/apidaora" target="_blank">https://dutradda.github.io/apidaora</a>
 
-**Source Code**: <a href="https://github.com/dutradda/dataclassesapi" target="_blank">https://github.com/dutradda/dataclassesapi</a>
+**Source Code**: <a href="https://github.com/dutradda/apidaora" target="_blank">https://github.com/dutradda/apidaora</a>
 
 ---
 
@@ -41,7 +41,7 @@
 
 ## Instalation
 ```
-$ pip install dataclassesapi
+$ pip install apidaora
 ```
 
 
@@ -53,10 +53,10 @@ from http import HTTPStatus
 
 from dataclassesjson import dataclassjson
 
-from dataclassesapi import MethodType, Route, asgi_app
-from dataclassesapi.request import Query, Request
-from dataclassesapi.response import Body as ResponseBody
-from dataclassesapi.response import Response
+from apidaora import MethodType, Route, asgi_app
+from apidaora.request import Query, Request
+from apidaora.response import Body as ResponseBody
+from apidaora.response import Response
 
 
 @dataclass
@@ -132,10 +132,10 @@ from http import HTTPStatus
 
 from dataclassesjson import dataclassjson, integer, string
 
-from dataclassesapi import MethodType, Route, asgi_app
-from dataclassesapi.request import Body, Headers, PathArgs, Query, Request
-from dataclassesapi.response import Body as ResponseBody
-from dataclassesapi.response import Response
+from apidaora import MethodType, Route, asgi_app
+from apidaora.request import Body, Headers, PathArgs, Query, Request
+from apidaora.response import Body as ResponseBody
+from apidaora.response import Response
 
 
 @dataclass

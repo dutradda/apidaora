@@ -7,10 +7,10 @@ import pytest
 from asgi_testclient import TestClient
 from dataclassesjson import dataclassjson, integer, string
 
-from dataclassesapi import MethodType, Route, asgi_app
-from dataclassesapi.request import Body, Headers, PathArgs, Query, Request
-from dataclassesapi.response import Body as ResponseBody
-from dataclassesapi.response import Response
+from apidaora import MethodType, Route, asgi_app
+from apidaora.request import Body, Headers, PathArgs, Query, Request
+from apidaora.response import Body as ResponseBody
+from apidaora.response import Response
 
 
 @dataclass
@@ -162,11 +162,11 @@ async def test_should_return_ok(test_client):
         '/api/1',
         params={'query': '1'},
         headers={'x-header': '0.1'},
-        json={'integer': '1', 'string': 'dataclassesapi'},
+        json={'integer': '1', 'string': 'apidaora'},
     )
     assert response.status_code == HTTPStatus.OK.value
     assert response.json() == {
-        'faked': {'string': 'dataclassesapi', 'integer': 1}
+        'faked': {'string': 'apidaora', 'integer': 1}
     }
     assert dict(response.headers) == {
         'x-header': '0.1',

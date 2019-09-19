@@ -6,12 +6,12 @@ from urllib import parse
 import orjson
 from dataclassesjson.exceptions import DeserializationError
 
-from dataclassesapi.exceptions import MethodNotFoundError, PathNotFoundError
-from dataclassesapi.request import as_request
-from dataclassesapi.response import AsgiResponse, Response
-from dataclassesapi.response import as_asgi as as_asgi_response
-from dataclassesapi.router import Route, route
-from dataclassesapi.router import router as http_router
+from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
+from apidaora.request import as_request
+from apidaora.response import AsgiResponse, Response
+from apidaora.response import as_asgi as as_asgi_response
+from apidaora.router import Route, route
+from apidaora.router import router as http_router
 
 
 logger = getLogger(__name__)

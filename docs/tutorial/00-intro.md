@@ -5,7 +5,7 @@
 ### Installs
 
 ```
-$ pip install dataclassesapi
+$ pip install apidaora
 ```
 
 ### Starts coding
