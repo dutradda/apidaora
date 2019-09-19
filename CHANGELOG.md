@@ -1,3 +1,9 @@
+0.3.0 (2019-09-19)
+==================
+- Add TypedDict support
+- Rename project
+
+
 0.2.0 (2019-09-18)
 ==================
 - Refactor app and router modules
