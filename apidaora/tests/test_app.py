@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 import pytest
 from asgi_testclient import TestClient
-from dataclassesjson import dataclassjson, integer, string
+from typingjson import integer, string, typingjson
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Body, Headers, PathArgs, Query, Request
@@ -13,28 +13,28 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@dataclass
+@typingjson
 class FakePathArgs(PathArgs):
     id: int
 
 
-@dataclass
+@typingjson
 class FakeQuery(Query):
     query: int
 
 
-@dataclass
+@typingjson
 class FakeHeaders(Headers):
     x_header: float
 
 
-@dataclass
+@typingjson
 class FakeBody(Body):
     string: str
     integer: int
 
 
-@dataclass
+@typingjson
 class FakeRequest(Request):
     path_args: FakePathArgs
     query: FakeQuery
@@ -42,18 +42,18 @@ class FakeRequest(Request):
     body: FakeBody
 
 
-@dataclass
+@typingjson
 class Faked:
     string: string(max_length=100)
     integer: integer(minimum=18)
 
 
-@dataclass
+@typingjson
 class FakeResponseBody(ResponseBody):
     faked: Faked
 
 
-@dataclassjson
+@typingjson
 @dataclass
 class FakeResponse(Response):
     body: FakeResponseBody
@@ -64,9 +64,9 @@ def fake_controller(req: FakeRequest) -> FakeResponse:
     return FakeResponse(
         HTTPStatus.OK,
         body=FakeResponseBody(
-            faked=Faked(string=req.body.string, integer=req.body.integer)
+            faked=Faked(string=req.body['string'], integer=req.body['integer'])
         ),
-        headers=FakeHeaders(x_header=req.headers.x_header),
+        headers=FakeHeaders(x_header=req.headers['x_header']),
     )
 
 
@@ -165,11 +165,9 @@ async def test_should_return_ok(test_client):
         json={'integer': '1', 'string': 'apidaora'},
     )
     assert response.status_code == HTTPStatus.OK.value
-    assert response.json() == {
-        'faked': {'string': 'apidaora', 'integer': 1}
-    }
+    assert response.json() == {'faked': {'string': 'apidaora', 'integer': 1}}
     assert dict(response.headers) == {
         'x-header': '0.1',
         'content-type': 'application/json',
-        'content-length': '49',
+        'content-length': '43',
     }

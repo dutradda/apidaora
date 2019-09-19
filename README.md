@@ -2,7 +2,7 @@
 
 <p align="center" style="margin: 3em">
   <a href="https://github.com/dutradda/apidaora">
-    <img src="https://dutradda.github.io/apidaora/apidaora.svg" alt="apidaora" width="300"/>
+    <img src="apidaora.svg" alt="apidaora" width="300"/>
   </a>
 </p>
 
@@ -35,7 +35,7 @@
 ## Requirements
 
  - Python 3.7+
- - [dataclassesjson](https://github.com/dutradda/dataclassesjson) for json validation/parsing
+ - [typingjson](https://github.com/dutradda/typingjson) for json validation/parsing
  - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
 
 
@@ -48,10 +48,9 @@ $ pip install apidaora
 ## Basic example
 
 ```python
-from dataclasses import dataclass
 from http import HTTPStatus
 
-from dataclassesjson import dataclassjson
+from typingjson import typingjson
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Query, Request
@@ -59,29 +58,28 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@dataclass
+@typingjson
 class MyQuery(Query):
     name: str
 
 
-@dataclass
+@typingjson
 class MyRequest(Request):
     query: MyQuery
 
 
-@dataclass
+@typingjson
 class MyResponseBody(ResponseBody):
     message: str
 
 
-@dataclassjson
-@dataclass
+@typingjson
 class MyResponse(Response):
     body: MyResponseBody
 
 
 def hello_controller(req: MyRequest) -> MyResponse:
-    name = req.query.name
+    name = req.query['name']
     body = MyResponseBody(message=f'Hello {name}!')
     return MyResponse(HTTPStatus.OK, body=body)
 
@@ -127,10 +125,9 @@ content-length: 26
 ## Example for complete request/response
 
 ```python
-from dataclasses import dataclass
 from http import HTTPStatus
 
-from dataclassesjson import dataclassjson, integer, string
+from typingjson import integer, string, typingjson
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Body, Headers, PathArgs, Query, Request
@@ -138,28 +135,28 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@dataclass
+@typingjson
 class MyPathArgs(PathArgs):
     name: str
 
 
-@dataclass
+@typingjson
 class MyQuery(Query):
     location: str
 
 
-@dataclass
+@typingjson
 class MyHeaders(Headers):
     x_req_id: str
 
 
-@dataclass
+@typingjson
 class MyBody(Body):
     last_name: str
     age: int
 
 
-@dataclass
+@typingjson
 class MyRequest(Request):
     path_args: MyPathArgs
     query: MyQuery
@@ -167,7 +164,7 @@ class MyRequest(Request):
     body: MyBody
 
 
-@dataclass
+@typingjson
 class You:
     name: str
     last_name: str
@@ -175,14 +172,13 @@ class You:
     age: integer(minimum=18)
 
 
-@dataclass
+@typingjson
 class MyResponseBody(ResponseBody):
     hello_message: str
     about_you: You
 
 
-@dataclassjson
-@dataclass
+@typingjson
 class MyResponse(Response):
     body: MyResponseBody
     headers: MyHeaders
@@ -190,15 +186,17 @@ class MyResponse(Response):
 
 def hello_controller(req: MyRequest) -> MyResponse:
     body = MyResponseBody(
-        hello_message=hello_message(req.path_args.name, req.query.location),
+        hello_message=hello_message(
+            req.path_args['name'], req.query['location']
+        ),
         about_you=You(
-            name=req.path_args.name,
-            last_name=req.body.last_name,
-            location=req.query.location,
-            age=req.body.age,
+            name=req.path_args['name'],
+            last_name=req.body['last_name'],
+            location=req.query['location'],
+            age=req.body['age'],
         ),
     )
-    headers = MyHeaders(x_req_id=req.headers.x_req_id)
+    headers = MyHeaders(x_req_id=req.headers['x_req_id'])
     return MyResponse(HTTPStatus.OK, body=body, headers=headers)
 
 

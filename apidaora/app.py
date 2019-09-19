@@ -4,7 +4,7 @@ from typing import Any, Awaitable, Callable, Coroutine, Dict, Iterable
 from urllib import parse
 
 import orjson
-from dataclassesjson.exceptions import DeserializationError
+from typingjson.exceptions import DeserializationError
 
 from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
 from apidaora.request import as_request
@@ -30,14 +30,18 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
         headers = scope['headers']
 
         try:
+            logger.error(router, scope['path'], scope['method'])
             resolved = route(router, scope['path'], scope['method'])
 
         except PathNotFoundError:
-            await _send_asgi_response(send, AsgiResponse(HTTPStatus.NOT_FOUND))
+            await _send_asgi_response(
+                send, AsgiResponse(HTTPStatus.NOT_FOUND)  # type: ignore
+            )
 
         except MethodNotFoundError:
             await _send_asgi_response(
-                send, AsgiResponse(HTTPStatus.METHOD_NOT_ALLOWED)
+                send,
+                AsgiResponse(HTTPStatus.METHOD_NOT_ALLOWED),  # type: ignore
             )
 
         else:
@@ -58,7 +62,7 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
 
             except DeserializationError as error:
                 logger.warning(f"DeserializationError {error.message}")
-                asgi_response = AsgiResponse(
+                asgi_response = AsgiResponse(  # type: ignore
                     status_code=HTTPStatus.BAD_REQUEST,
                     body=orjson.dumps(error.dict),
                     headers=headers,

@@ -2,7 +2,7 @@
 
 <p align="center" style="margin: 3em">
   <a href="https://github.com/dutradda/apidaora">
-    <img src="https://dutradda.github.io/apidaora/apidaora.svg" alt="apidaora" width="300"/>
+    <img src="apidaora.svg" alt="apidaora" width="300"/>
   </a>
 </p>
 
@@ -35,7 +35,7 @@
 ## Requirements
 
  - Python 3.7+
- - [dataclassesjson](https://github.com/dutradda/dataclassesjson) for json validation/parsing
+ - [typingjson](https://github.com/dutradda/typingjson) for json validation/parsing
  - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
 
 

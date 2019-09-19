@@ -1,28 +1,30 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Type
+from typing import Any, Dict, Optional, Type, TypedDict
 
 import orjson
-from dataclassesjson import asdataclass
+from typingjson import as_typed_dict, asdataclass, typingjson
+
+from .headers import AsgiHeaders, AsgiPathArgs, AsgiQueryDict
 
 
-@dataclass
-class PathArgs:
+@typingjson
+class PathArgs(TypedDict):
     ...
 
 
-@dataclass
-class Query:
+@typingjson
+class Query(TypedDict):
     ...
 
 
-@dataclass
-class Headers:
+@typingjson
+class Headers(TypedDict):
     ...
 
 
-@dataclass
-class Body:
+@typingjson
+class Body(TypedDict):
     ...
 
 
@@ -32,11 +34,6 @@ class Request:
     query: Optional[Query] = None
     headers: Optional[Headers] = None
     body: Optional[Body] = None
-
-
-AsgiPathArgs = Dict[str, Any]
-AsgiQueryDict = Dict[str, List[str]]
-AsgiHeaders = List[Tuple[bytes, bytes]]
 
 
 def as_request(
@@ -52,11 +49,14 @@ def as_request(
     headers_cls = annotations.get('headers', Headers)
     body_cls = annotations.get('body', Body)
 
-    return request_cls(
-        path_args=asdataclass(path_args, path_args_cls),
-        query=get_query(query_cls, query_dict),
-        headers=get_headers(headers_cls, headers),
-        body=asdataclass(orjson.loads(body) if body else {}, body_cls),
+    return asdataclass(  # type: ignore
+        dict(
+            path_args=as_typed_dict(path_args, path_args_cls),
+            query=get_query(query_cls, query_dict),
+            headers=get_headers(headers_cls, headers),
+            body=as_typed_dict(orjson.loads(body) if body else {}, body_cls),
+        ),
+        request_cls,
     )
 
 
@@ -74,7 +74,7 @@ def get_query(cls: Type[Query], query_dict: AsgiQueryDict) -> Query:
         else:
             jsondict[key] = values
 
-    return asdataclass(jsondict, cls)  # type: ignore
+    return as_typed_dict(jsondict, cls)  # type: ignore
 
 
 def get_headers(cls: Type[Headers], headers: AsgiHeaders) -> Headers:
@@ -90,4 +90,4 @@ def get_headers(cls: Type[Headers], headers: AsgiHeaders) -> Headers:
 
         jsondict[key] = value.decode()
 
-    return asdataclass(jsondict, cls)  # type: ignore
+    return as_typed_dict(jsondict, cls)  # type: ignore

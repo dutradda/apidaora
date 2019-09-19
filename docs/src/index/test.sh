@@ -21,7 +21,6 @@ for filename in ${test_files}; do
     uvicorn_output_file=/tmp/uvicorn-${filename}.output
 
     uvicorn ${filename}:app >${uvicorn_output_file} 2>&1 &
-
     sleep 1
 
     bash ${curl_file} 2>/dev/null | \
