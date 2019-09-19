@@ -2,7 +2,7 @@
 
 <p align="center" style="margin: 3em">
   <a href="https://github.com/dutradda/apidaora">
-    <img src="apidaora.svg" alt="apidaora" width="300"/>
+    <img src="https://dutradda.github.io/apidaora/apidaora.svg" alt="apidaora" width="300"/>
   </a>
 </p>
 
