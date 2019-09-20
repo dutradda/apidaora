@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 import pytest
 from asgi_testclient import TestClient
-from typingjson import integer, string, typingjson
+from jsondaora import integer, jsondaora, string
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Body, Headers, PathArgs, Query, Request
@@ -13,28 +13,28 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@typingjson
+@jsondaora
 class FakePathArgs(PathArgs):
     id: int
 
 
-@typingjson
+@jsondaora
 class FakeQuery(Query):
     query: int
 
 
-@typingjson
+@jsondaora
 class FakeHeaders(Headers):
     x_header: float
 
 
-@typingjson
+@jsondaora
 class FakeBody(Body):
     string: str
     integer: int
 
 
-@typingjson
+@jsondaora
 class FakeRequest(Request):
     path_args: FakePathArgs
     query: FakeQuery
@@ -42,18 +42,18 @@ class FakeRequest(Request):
     body: FakeBody
 
 
-@typingjson
+@jsondaora
 class Faked:
     string: string(max_length=100)
     integer: integer(minimum=18)
 
 
-@typingjson
+@jsondaora
 class FakeResponseBody(ResponseBody):
     faked: Faked
 
 
-@typingjson
+@jsondaora
 @dataclass
 class FakeResponse(Response):
     body: FakeResponseBody

@@ -4,7 +4,7 @@ from typing import Any, Awaitable, Callable, Coroutine, Dict, Iterable
 from urllib import parse
 
 import orjson
-from typingjson.exceptions import DeserializationError
+from jsondaora.exceptions import DeserializationError
 
 from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
 from apidaora.request import as_request

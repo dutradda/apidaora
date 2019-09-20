@@ -35,7 +35,7 @@
 ## Requirements
 
  - Python 3.7+
- - [typingjson](https://github.com/dutradda/typingjson) for json validation/parsing
+ - [jsondaora](https://github.com/dutradda/jsondaora) for json validation/parsing
  - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
 
 
@@ -50,7 +50,7 @@ $ pip install apidaora
 ```python
 from http import HTTPStatus
 
-from typingjson import typingjson
+from jsondaora import jsondaora
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Query, Request
@@ -58,22 +58,22 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@typingjson
+@jsondaora
 class MyQuery(Query):
     name: str
 
 
-@typingjson
+@jsondaora
 class MyRequest(Request):
     query: MyQuery
 
 
-@typingjson
+@jsondaora
 class MyResponseBody(ResponseBody):
     message: str
 
 
-@typingjson
+@jsondaora
 class MyResponse(Response):
     body: MyResponseBody
 
@@ -127,7 +127,7 @@ content-length: 26
 ```python
 from http import HTTPStatus
 
-from typingjson import integer, string, typingjson
+from jsondaora import integer, jsondaora, string
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Body, Headers, PathArgs, Query, Request
@@ -135,28 +135,28 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@typingjson
+@jsondaora
 class MyPathArgs(PathArgs):
     name: str
 
 
-@typingjson
+@jsondaora
 class MyQuery(Query):
     location: str
 
 
-@typingjson
+@jsondaora
 class MyHeaders(Headers):
     x_req_id: str
 
 
-@typingjson
+@jsondaora
 class MyBody(Body):
     last_name: str
     age: int
 
 
-@typingjson
+@jsondaora
 class MyRequest(Request):
     path_args: MyPathArgs
     query: MyQuery
@@ -164,7 +164,7 @@ class MyRequest(Request):
     body: MyBody
 
 
-@typingjson
+@jsondaora
 class You:
     name: str
     last_name: str
@@ -172,13 +172,13 @@ class You:
     age: integer(minimum=18)
 
 
-@typingjson
+@jsondaora
 class MyResponseBody(ResponseBody):
     hello_message: str
     about_you: You
 
 
-@typingjson
+@jsondaora
 class MyResponse(Response):
     body: MyResponseBody
     headers: MyHeaders

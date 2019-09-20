@@ -3,7 +3,7 @@ from http import HTTPStatus
 from logging import getLogger
 from typing import Optional, TypedDict, _TypedDictMeta  # type: ignore
 
-from typingjson import dataclass_asjson, typingjson
+from jsondaora import dataclass_asjson, jsondaora
 
 from apidaora.headers import AsgiHeaders
 
@@ -11,24 +11,24 @@ from apidaora.headers import AsgiHeaders
 logger = getLogger(__name__)
 
 
-@typingjson
+@jsondaora
 class Headers(TypedDict):
     ...
 
 
-@typingjson
+@jsondaora
 class Body(TypedDict):
     ...
 
 
-@typingjson
+@jsondaora
 class Response:
     status_code: HTTPStatus
     headers: Headers = field(default_factory=Headers)  # type: ignore
     body: Optional[Body] = None
 
 
-@typingjson
+@jsondaora
 class AsgiResponse:
     status_code: HTTPStatus
     headers: AsgiHeaders = field(default_factory=list)

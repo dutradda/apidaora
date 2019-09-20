@@ -3,27 +3,27 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Type, TypedDict
 
 import orjson
-from typingjson import as_typed_dict, asdataclass, typingjson
+from jsondaora import as_typed_dict, asdataclass, jsondaora
 
 from .headers import AsgiHeaders, AsgiPathArgs, AsgiQueryDict
 
 
-@typingjson
+@jsondaora
 class PathArgs(TypedDict):
     ...
 
 
-@typingjson
+@jsondaora
 class Query(TypedDict):
     ...
 
 
-@typingjson
+@jsondaora
 class Headers(TypedDict):
     ...
 
 
-@typingjson
+@jsondaora
 class Body(TypedDict):
     ...
 

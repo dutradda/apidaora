@@ -35,7 +35,7 @@
 ## Requirements
 
  - Python 3.7+
- - [typingjson](https://github.com/dutradda/typingjson) for json validation/parsing
+ - [jsondaora](https://github.com/dutradda/jsondaora) for json validation/parsing
  - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
 
 
