@@ -1,3 +1,8 @@
+0.4.1 (2019-09-19)
+==================
+- Improve docs
+
+
 0.4.0 (2019-09-19)
 ==================
 - Rename typingjson project do jsondaora
