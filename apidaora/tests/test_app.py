@@ -1,6 +1,5 @@
 # mypy: ignore-errors
 
-from dataclasses import dataclass
 from http import HTTPStatus
 
 import pytest
@@ -10,7 +9,7 @@ from jsondaora import integer, jsondaora, string
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Body, Headers, PathArgs, Query, Request
 from apidaora.response import Body as ResponseBody
-from apidaora.response import Response
+from apidaora.response import JSONResponse
 
 
 @jsondaora
@@ -54,8 +53,7 @@ class FakeResponseBody(ResponseBody):
 
 
 @jsondaora
-@dataclass
-class FakeResponse(Response):
+class FakeResponse(JSONResponse):
     body: FakeResponseBody
     headers: FakeHeaders
 
@@ -168,6 +166,6 @@ async def test_should_return_ok(test_client):
     assert response.json() == {'faked': {'string': 'apidaora', 'integer': 1}}
     assert dict(response.headers) == {
         'x-header': '0.1',
-        'content-type': 'application/json',
-        'content-length': '43',
+        'Content-Type': 'application/json',
+        'Content-Length': '43',
     }

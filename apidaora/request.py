@@ -1,11 +1,20 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Type, TypedDict
+from logging import getLogger
+from typing import Any, Dict, Type, TypedDict
 
 import orjson
-from jsondaora import as_typed_dict, asdataclass, jsondaora
+from jsondaora import (
+    as_typed_dict,
+    as_typed_dict_field,
+    asdataclass,
+    jsondaora,
+)
 
 from .headers import AsgiHeaders, AsgiPathArgs, AsgiQueryDict
+
+
+logger = getLogger(__name__)
 
 
 @jsondaora
@@ -30,10 +39,10 @@ class Body(TypedDict):
 
 @dataclass
 class Request:
-    path_args: Optional[PathArgs] = None
-    query: Optional[Query] = None
-    headers: Optional[Headers] = None
-    body: Optional[Body] = None
+    path_args: PathArgs
+    query: Query
+    headers: Headers
+    body: Body
 
 
 def as_request(
@@ -48,13 +57,14 @@ def as_request(
     query_cls = annotations.get('query', Query)
     headers_cls = annotations.get('headers', Headers)
     body_cls = annotations.get('body', Body)
+    body_json = orjson.loads(body) if body else {}
 
     return asdataclass(  # type: ignore
         dict(
             path_args=as_typed_dict(path_args, path_args_cls),
             query=get_query(query_cls, query_dict),
             headers=get_headers(headers_cls, headers),
-            body=as_typed_dict(orjson.loads(body) if body else {}, body_cls),
+            body=as_typed_dict_field(body_json, 'body', body_cls),
         ),
         request_cls,
     )

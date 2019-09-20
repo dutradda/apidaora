@@ -1,3 +1,4 @@
+import asyncio
 from http import HTTPStatus
 from logging import getLogger
 from typing import Any, Awaitable, Callable, Coroutine, Dict, Iterable
@@ -30,7 +31,6 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
         headers = scope['headers']
 
         try:
-            logger.error(router, scope['path'], scope['method'])
             resolved = route(router, scope['path'], scope['method'])
 
         except PathNotFoundError:
@@ -96,6 +96,9 @@ async def _read_body(receive: Callable[[], Awaitable[Dict[str, Any]]]) -> Any:
 async def _send_response(
     send: Callable[[Dict[str, Any]], Awaitable[None]], response: Response
 ) -> None:
+    if asyncio.iscoroutine(response):
+        response = await response  # type: ignore
+
     asgi_response = as_asgi_response(response)
     await _send_asgi_response(send, asgi_response)
 

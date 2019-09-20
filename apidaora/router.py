@@ -48,7 +48,7 @@ def router(routes: Iterable[Route]) -> RoutesTree:
     path_regex = re.compile(r'\{(?P<name>[^/:]+)(:(?P<pattern>[^/:]+))?\}')
 
     for route in routes:
-        path_pattern_parts = _split_path(route.path_pattern)
+        path_pattern_parts = _split_path(route.path_pattern.rstrip('/ '))
         routes_tree_tmp = routes_tree
 
         for path_pattern_part in path_pattern_parts:
@@ -76,7 +76,7 @@ def router(routes: Iterable[Route]) -> RoutesTree:
 
 
 def route(routes_tree: RoutesTree, path: str, method: str) -> ResolvedRoute:
-    path_parts = _split_path(path)
+    path_parts = _split_path(path.rstrip('/ '))
     path_args = {}
 
     for path_part in path_parts:

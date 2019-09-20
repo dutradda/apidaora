@@ -93,3 +93,6 @@ update-version-patch:
 
 push-version:
 	@git push && git push --tags
+
+build:
+	@flit build

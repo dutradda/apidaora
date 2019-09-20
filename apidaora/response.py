@@ -21,11 +21,30 @@ class Body(TypedDict):
     ...
 
 
+class BaseResponse:
+    __content_type__: Optional[str] = None
+
+
 @jsondaora
-class Response:
+class Response(BaseResponse):
     status_code: HTTPStatus
+    body: Body
     headers: Headers = field(default_factory=Headers)  # type: ignore
-    body: Optional[Body] = None
+
+
+@jsondaora
+class JSONResponse(Response):
+    __content_type__ = 'application/json'
+
+
+@jsondaora
+class HTMLResponse(Response):
+    __content_type__ = 'text/html; charset=utf-8'
+
+
+@jsondaora
+class PlainResponse(Response):
+    __content_type__ = 'text/plain'
 
 
 @jsondaora
@@ -45,12 +64,21 @@ def as_asgi(response: Response) -> AsgiResponse:
         if response.headers
         else []
     )
+    body: bytes = b''
 
-    body = dataclass_asjson(response.body) if response.body else b''
+    if response.body:
+        if type(response).__content_type__ == JSONResponse.__content_type__:
+            body = dataclass_asjson(response.body)
 
-    if body:
-        headers.append((b'content-type', b'application/json'))
-        headers.append((b'content-length', str(len(body)).encode()))
+        elif not isinstance(response.body, bytes):
+            body = str(response.body).encode()
+
+        if body:
+            if type(response).__content_type__ is not None:
+                headers.append(
+                    (b'Content-Type', type(response).__content_type__.encode())
+                )
+            headers.append((b'Content-Length', str(len(body)).encode()))
 
     return AsgiResponse(  # type: ignore
         status_code=response.status_code, headers=headers, body=body
