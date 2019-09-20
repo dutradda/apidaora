@@ -568,17 +568,15 @@
 
 <h3 id="starts-coding">Starts coding</h3>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypedDict</span>
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
-<span class="kn">from</span> <span class="nn">apidaora.request</span> <span class="kn">import</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">apidaora.response</span> <span class="kn">import</span> <span class="n">Body</span> <span class="k">as</span> <span class="n">ResponseBody</span>
-<span class="kn">from</span> <span class="nn">apidaora.response</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">Query</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
@@ -588,7 +586,7 @@
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">ResponseBody</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
 
 

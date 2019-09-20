@@ -1,30 +1,28 @@
 from http import HTTPStatus
+from typing import TypedDict
 
 from jsondaora import integer, jsondaora, string
 
-from apidaora import MethodType, Route, asgi_app
-from apidaora.request import Body, Headers, PathArgs, Query, Request
-from apidaora.response import Body as ResponseBody
-from apidaora.response import Response
+from apidaora import MethodType, Request, Response, Route, asgi_app
 
 
 @jsondaora
-class MyPathArgs(PathArgs):
+class MyPathArgs(TypedDict):
     name: str
 
 
 @jsondaora
-class MyQuery(Query):
+class MyQuery(TypedDict):
     location: str
 
 
 @jsondaora
-class MyHeaders(Headers):
+class MyHeaders(TypedDict):
     x_req_id: str
 
 
 @jsondaora
-class MyBody(Body):
+class MyBody(TypedDict):
     last_name: str
     age: int
 
@@ -37,6 +35,8 @@ class MyRequest(Request):
     body: MyBody
 
 
+# if the class is not a TypedDict, jsondaora
+# will create a dataclass from it
 @jsondaora
 class You:
     name: str
@@ -46,7 +46,7 @@ class You:
 
 
 @jsondaora
-class MyResponseBody(ResponseBody):
+class MyResponseBody(TypedDict):
     hello_message: str
     about_you: You
 
