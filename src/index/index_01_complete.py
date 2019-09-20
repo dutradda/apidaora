@@ -3,7 +3,7 @@ from typing import TypedDict
 
 from jsondaora import integer, jsondaora, string
 
-from apidaora import MethodType, Request, Response, Route, asgi_app
+from apidaora import JSONResponse, MethodType, Request, Route, asgi_app
 
 
 @jsondaora
@@ -52,7 +52,7 @@ class MyResponseBody(TypedDict):
 
 
 @jsondaora
-class MyResponse(Response):
+class MyResponse(JSONResponse):
     body: MyResponseBody
     headers: MyHeaders
 

@@ -617,7 +617,7 @@
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">JSONResponse</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
 
 
 <span class="nd">@jsondaora</span>
@@ -636,7 +636,7 @@
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
 
 
@@ -683,7 +683,7 @@ content-length: 26
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">integer</span><span class="p">,</span> <span class="n">jsondaora</span><span class="p">,</span> <span class="n">string</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">JSONResponse</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
 
 
 <span class="nd">@jsondaora</span>
@@ -732,7 +732,7 @@ content-length: 26
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>
 
