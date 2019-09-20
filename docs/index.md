@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <em>Asgi App using typing annotation</b></em>
+    <em>HTTP/REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
 </p>
 
 ---
@@ -21,13 +21,13 @@
 
 ## Key Features
 
-- Declare request object as @dataclass:
+- Declare request objects as @jsondaora (can be TypedDict or @dataclass):
     + `PathArgs` for values on path
     + `Query` for values on query string
     + `Headers` for values on headers
     + `Body` for values on body
 
-- Declare response object as @dataclass:
+- Declare response objects as @jsondaora (can be TypedDict or @dataclass):
     + `Headers` for values on headers
     + `Body` for values on body
 
@@ -36,7 +36,7 @@
 
  - Python 3.7+
  - [jsondaora](https://github.com/dutradda/jsondaora) for json validation/parsing
- - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
+ - [orjson](https://github.com/ijl/orjson) for json/bytes serialization (jsondaora dependency)
 
 
 ## Instalation

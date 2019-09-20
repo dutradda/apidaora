@@ -6,7 +6,15 @@ __version__ = '0.4.0'
 
 from apidaora.app import asgi_app
 from apidaora.method import MethodType
+from apidaora.request import Request
+from apidaora.response import Response
 from apidaora.router import Route
 
 
-__all__ = [asgi_app.__name__, MethodType.__name__, Route.__name__]
+__all__ = [
+    asgi_app.__name__,
+    MethodType.__name__,
+    Route.__name__,
+    Request.__name__,
+    Response.__name__,
+]

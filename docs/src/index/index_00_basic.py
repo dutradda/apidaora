@@ -1,15 +1,13 @@
 from http import HTTPStatus
+from typing import TypedDict
 
 from jsondaora import jsondaora
 
-from apidaora import MethodType, Route, asgi_app
-from apidaora.request import Query, Request
-from apidaora.response import Body as ResponseBody
-from apidaora.response import Response
+from apidaora import MethodType, Request, Response, Route, asgi_app
 
 
 @jsondaora
-class MyQuery(Query):
+class MyQuery(TypedDict):
     name: str
 
 
@@ -19,7 +17,7 @@ class MyRequest(Request):
 
 
 @jsondaora
-class MyResponseBody(ResponseBody):
+class MyResponseBody(TypedDict):
     message: str
 
 

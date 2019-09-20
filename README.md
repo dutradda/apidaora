@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <em>Asgi App using typing annotation</b></em>
+    <em>HTTP/REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
 </p>
 
 ---
@@ -21,13 +21,13 @@
 
 ## Key Features
 
-- Declare request object as @dataclass:
+- Declare request objects as @jsondaora (can be TypedDict or @dataclass):
     + `PathArgs` for values on path
     + `Query` for values on query string
     + `Headers` for values on headers
     + `Body` for values on body
 
-- Declare response object as @dataclass:
+- Declare response objects as @jsondaora (can be TypedDict or @dataclass):
     + `Headers` for values on headers
     + `Body` for values on body
 
@@ -36,7 +36,7 @@
 
  - Python 3.7+
  - [jsondaora](https://github.com/dutradda/jsondaora) for json validation/parsing
- - [orjson](https://github.com/ijl/orjson) for json/bytes serialization
+ - [orjson](https://github.com/ijl/orjson) for json/bytes serialization (jsondaora dependency)
 
 
 ## Instalation
@@ -49,17 +49,15 @@ $ pip install apidaora
 
 ```python
 from http import HTTPStatus
+from typing import TypedDict
 
 from jsondaora import jsondaora
 
-from apidaora import MethodType, Route, asgi_app
-from apidaora.request import Query, Request
-from apidaora.response import Body as ResponseBody
-from apidaora.response import Response
+from apidaora import MethodType, Request, Response, Route, asgi_app
 
 
 @jsondaora
-class MyQuery(Query):
+class MyQuery(TypedDict):
     name: str
 
 
@@ -69,7 +67,7 @@ class MyRequest(Request):
 
 
 @jsondaora
-class MyResponseBody(ResponseBody):
+class MyResponseBody(TypedDict):
     message: str
 
 
@@ -126,32 +124,30 @@ content-length: 26
 
 ```python
 from http import HTTPStatus
+from typing import TypedDict
 
 from jsondaora import integer, jsondaora, string
 
-from apidaora import MethodType, Route, asgi_app
-from apidaora.request import Body, Headers, PathArgs, Query, Request
-from apidaora.response import Body as ResponseBody
-from apidaora.response import Response
+from apidaora import MethodType, Request, Response, Route, asgi_app
 
 
 @jsondaora
-class MyPathArgs(PathArgs):
+class MyPathArgs(TypedDict):
     name: str
 
 
 @jsondaora
-class MyQuery(Query):
+class MyQuery(TypedDict):
     location: str
 
 
 @jsondaora
-class MyHeaders(Headers):
+class MyHeaders(TypedDict):
     x_req_id: str
 
 
 @jsondaora
-class MyBody(Body):
+class MyBody(TypedDict):
     last_name: str
     age: int
 
@@ -164,6 +160,8 @@ class MyRequest(Request):
     body: MyBody
 
 
+# if the class is not a TypedDict, jsondaora
+# will create a dataclass from it
 @jsondaora
 class You:
     name: str
@@ -173,7 +171,7 @@ class You:
 
 
 @jsondaora
-class MyResponseBody(ResponseBody):
+class MyResponseBody(TypedDict):
     hello_message: str
     about_you: You
 
