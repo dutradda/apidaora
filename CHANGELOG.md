@@ -1,3 +1,8 @@
+0.4.0 (2019-09-19)
+==================
+- Rename typingjson project do jsondaora
+
+
 0.3.0 (2019-09-19)
 ==================
 - Add TypedDict support
