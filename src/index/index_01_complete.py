@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from typingjson import integer, string, typingjson
+from jsondaora import integer, jsondaora, string
 
 from apidaora import MethodType, Route, asgi_app
 from apidaora.request import Body, Headers, PathArgs, Query, Request
@@ -8,28 +8,28 @@ from apidaora.response import Body as ResponseBody
 from apidaora.response import Response
 
 
-@typingjson
+@jsondaora
 class MyPathArgs(PathArgs):
     name: str
 
 
-@typingjson
+@jsondaora
 class MyQuery(Query):
     location: str
 
 
-@typingjson
+@jsondaora
 class MyHeaders(Headers):
     x_req_id: str
 
 
-@typingjson
+@jsondaora
 class MyBody(Body):
     last_name: str
     age: int
 
 
-@typingjson
+@jsondaora
 class MyRequest(Request):
     path_args: MyPathArgs
     query: MyQuery
@@ -37,7 +37,7 @@ class MyRequest(Request):
     body: MyBody
 
 
-@typingjson
+@jsondaora
 class You:
     name: str
     last_name: str
@@ -45,13 +45,13 @@ class You:
     age: integer(minimum=18)
 
 
-@typingjson
+@jsondaora
 class MyResponseBody(ResponseBody):
     hello_message: str
     about_you: You
 
 
-@typingjson
+@jsondaora
 class MyResponse(Response):
     body: MyResponseBody
     headers: MyHeaders

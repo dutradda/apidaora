@@ -603,7 +603,7 @@
 <h2 id="requirements">Requirements</h2>
 <ul>
 <li>Python 3.7+</li>
-<li><a href="https://github.com/dutradda/typingjson">typingjson</a> for json validation/parsing</li>
+<li><a href="https://github.com/dutradda/jsondaora">jsondaora</a> for json validation/parsing</li>
 <li><a href="https://github.com/ijl/orjson">orjson</a> for json/bytes serialization</li>
 </ul>
 <h2 id="instalation">Instalation</h2>
@@ -614,7 +614,7 @@
 <h2 id="basic-example">Basic example</h2>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 
-<span class="kn">from</span> <span class="nn">typingjson</span> <span class="kn">import</span> <span class="n">typingjson</span>
+<span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
 
 <span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
 <span class="kn">from</span> <span class="nn">apidaora.request</span> <span class="kn">import</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Request</span>
@@ -622,22 +622,22 @@
 <span class="kn">from</span> <span class="nn">apidaora.response</span> <span class="kn">import</span> <span class="n">Response</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">Query</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">ResponseBody</span><span class="p">):</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
 
@@ -682,7 +682,7 @@ content-length: 26
 <h2 id="example-for-complete-requestresponse">Example for complete request/response</h2>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 
-<span class="kn">from</span> <span class="nn">typingjson</span> <span class="kn">import</span> <span class="n">integer</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">typingjson</span>
+<span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">integer</span><span class="p">,</span> <span class="n">jsondaora</span><span class="p">,</span> <span class="n">string</span>
 
 <span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">Route</span><span class="p">,</span> <span class="n">asgi_app</span>
 <span class="kn">from</span> <span class="nn">apidaora.request</span> <span class="kn">import</span> <span class="n">Body</span><span class="p">,</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">PathArgs</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Request</span>
@@ -690,28 +690,28 @@ content-length: 26
 <span class="kn">from</span> <span class="nn">apidaora.response</span> <span class="kn">import</span> <span class="n">Response</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyPathArgs</span><span class="p">(</span><span class="n">PathArgs</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">Query</span><span class="p">):</span>
     <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyHeaders</span><span class="p">(</span><span class="n">Headers</span><span class="p">):</span>
     <span class="n">x_req_id</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyBody</span><span class="p">(</span><span class="n">Body</span><span class="p">):</span>
     <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
     <span class="n">path_args</span><span class="p">:</span> <span class="n">MyPathArgs</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
@@ -719,7 +719,7 @@ content-length: 26
     <span class="n">body</span><span class="p">:</span> <span class="n">MyBody</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">You</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
@@ -727,13 +727,13 @@ content-length: 26
     <span class="n">age</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">ResponseBody</span><span class="p">):</span>
     <span class="n">hello_message</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">about_you</span><span class="p">:</span> <span class="n">You</span>
 
 
-<span class="nd">@typingjson</span>
+<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>
