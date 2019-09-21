@@ -621,28 +621,24 @@
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
 
 
 <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">MyRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyResponse</span><span class="p">:</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponseBody</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponse</span><span class="o">.</span><span class="n">MyResponseBody</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">MyResponse</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
 
 
@@ -687,62 +683,50 @@ content-length: 26
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyPathArgs</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyHeaders</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
     <span class="n">x_req_id</span><span class="p">:</span> <span class="nb">str</span>
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-
-
-<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">MyPathArgs</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">class</span> <span class="nc">MyBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
     <span class="n">path_args</span><span class="p">:</span> <span class="n">MyPathArgs</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">MyBody</span>
 
 
-<span class="c1"># if the class is not a TypedDict, jsondaora</span>
-<span class="c1"># will create a dataclass from it</span>
-<span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">You</span><span class="p">:</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">location</span><span class="p">:</span> <span class="n">string</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="n">age</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-
-
-<span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">hello_message</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">about_you</span><span class="p">:</span> <span class="n">You</span>
-
-
 <span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">You</span><span class="p">:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">location</span><span class="p">:</span> <span class="n">string</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">age</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">hello_message</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">about_you</span><span class="p">:</span> <span class="s1">&#39;MyResponse.You&#39;</span>
+
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>
 
 
 <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">MyRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyResponse</span><span class="p">:</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponseBody</span><span class="p">(</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponse</span><span class="o">.</span><span class="n">MyResponseBody</span><span class="p">(</span>
         <span class="n">hello_message</span><span class="o">=</span><span class="n">hello_message</span><span class="p">(</span>
             <span class="n">req</span><span class="o">.</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span>
         <span class="p">),</span>
-        <span class="n">about_you</span><span class="o">=</span><span class="n">You</span><span class="p">(</span>
+        <span class="n">about_you</span><span class="o">=</span><span class="n">MyResponse</span><span class="o">.</span><span class="n">You</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
             <span class="n">last_name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;last_name&#39;</span><span class="p">],</span>
             <span class="n">location</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">],</span>

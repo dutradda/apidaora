@@ -576,28 +576,24 @@
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
 
 
 <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">MyRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyResponse</span><span class="p">:</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponseBody</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponse</span><span class="o">.</span><span class="n">MyResponseBody</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">MyResponse</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
 
 
