@@ -4,7 +4,7 @@ site_description: Asgi App using typing annotation
 theme:
     name: 'material'
     palette:
-      primary: 'pinky'
+      primary: 'pink'
       accent: 'grey'
     logo: 'apidaora-white.svg'
     favicon: 'favicon.png'
