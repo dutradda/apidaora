@@ -11,7 +11,7 @@ from jsondaora import (
     jsondaora,
 )
 
-from .headers import AsgiHeaders, AsgiPathArgs, AsgiQueryDict
+from .headers import AsgiHeaders, AsgiPathArgs, AsgiQueryDict, Headers
 
 
 logger = getLogger(__name__)
@@ -24,11 +24,6 @@ class PathArgs(TypedDict):
 
 @jsondaora
 class Query(TypedDict):
-    ...
-
-
-@jsondaora
-class Headers(TypedDict):
     ...
 
 

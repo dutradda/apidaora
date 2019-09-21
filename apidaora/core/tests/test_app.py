@@ -6,10 +6,18 @@ import pytest
 from asgi_testclient import TestClient
 from jsondaora import integer, jsondaora, string
 
-from apidaora import MethodType, Route, asgi_app
-from apidaora.request import Body, Headers, PathArgs, Query, Request
-from apidaora.response import Body as ResponseBody
-from apidaora.response import JSONResponse
+from apidaora import MethodType
+from apidaora.core import (
+    Headers,
+    JSONResponse,
+    PathArgs,
+    Query,
+    Request,
+    RequestBody,
+    ResponseBody,
+    Route,
+    asgi_app,
+)
 
 
 @jsondaora
@@ -28,7 +36,7 @@ class FakeHeaders(Headers):
 
 
 @jsondaora
-class FakeBody(Body):
+class FakeBody(RequestBody):
     string: str
     integer: int
 

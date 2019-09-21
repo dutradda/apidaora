@@ -5,15 +5,10 @@ from typing import Optional, TypedDict, _TypedDictMeta  # type: ignore
 
 from jsondaora import dataclass_asjson, jsondaora
 
-from apidaora.headers import AsgiHeaders
+from .headers import AsgiHeaders, Headers
 
 
 logger = getLogger(__name__)
-
-
-@jsondaora
-class Headers(TypedDict):
-    ...
 
 
 @jsondaora

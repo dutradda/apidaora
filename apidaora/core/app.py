@@ -7,12 +7,12 @@ from urllib import parse
 import orjson
 from jsondaora.exceptions import DeserializationError
 
-from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
-from apidaora.request import as_request
-from apidaora.response import AsgiResponse, Response
-from apidaora.response import as_asgi as as_asgi_response
-from apidaora.router import Route, route
-from apidaora.router import router as http_router
+from ..exceptions import MethodNotFoundError, PathNotFoundError
+from .request import as_request
+from .response import AsgiResponse, Response
+from .response import as_asgi as as_asgi_response
+from .router import Route, route
+from .router import router as http_router
 
 
 logger = getLogger(__name__)

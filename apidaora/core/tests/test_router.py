@@ -2,10 +2,10 @@
 
 import pytest
 
+from apidaora.core.router import Route, route
+from apidaora.core.router import router as http_router
 from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
 from apidaora.method import MethodType
-from apidaora.router import Route, route
-from apidaora.router import router as http_router
 
 
 class TestRouter:

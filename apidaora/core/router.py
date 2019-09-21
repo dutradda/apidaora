@@ -10,10 +10,10 @@ from typing import (
     Pattern,
 )
 
-from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
-from apidaora.method import MethodType
-from apidaora.request import Request
-from apidaora.response import Response
+from ..exceptions import MethodNotFoundError, PathNotFoundError
+from ..method import MethodType
+from .request import Request
+from .response import Response
 
 
 @dataclass

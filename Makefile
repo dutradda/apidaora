@@ -46,7 +46,7 @@ tests-docs-examples: _check-virtualenv ## Run docs examples tests
 
 tests-code: _check-virtualenv ## Run tests
 	@pytest -xvv --cov $(PROJECT_NAME) --no-cov-on-fail \
-		--cov-report=term-missing $(PROJECT_NAME)/tests
+		--cov-report=term-missing $(PROJECT_NAME)
 
 tests: tests-code tests-docs-examples ## Run all tests
 

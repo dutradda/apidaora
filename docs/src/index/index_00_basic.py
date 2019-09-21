@@ -3,7 +3,8 @@ from typing import TypedDict
 
 from jsondaora import jsondaora
 
-from apidaora import JSONResponse, MethodType, Request, Route, asgi_app
+from apidaora import MethodType
+from apidaora.core import JSONResponse, Request, Route, asgi_app
 
 
 @jsondaora
