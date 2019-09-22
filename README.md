@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <em>HTTP/REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
+    <em>OpenAPI / HTTP / REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
 </p>
 
 ---
@@ -21,15 +21,8 @@
 
 ## Key Features
 
-- Declare request objects as @jsondaora (can be TypedDict or @dataclass):
-    + `PathArgs` for values on path
-    + `Query` for values on query string
-    + `Headers` for values on headers
-    + `Body` for values on body
-
-- Declare response objects as @jsondaora (can be TypedDict or @dataclass):
-    + `Headers` for values on headers
-    + `Body` for values on body
+- Declare request objects as @jsondaora (can be TypedDict or @dataclass)
+- Declare response objects as @jsondaora (can be TypedDict or @dataclass)
 
 
 ## Requirements
@@ -48,37 +41,23 @@ $ pip install apidaora
 ## Basic example
 
 ```python
-from http import HTTPStatus
-from typing import TypedDict
+from dataclasses import dataclass
 
-from jsondaora import jsondaora
-
-from apidaora import JSONResponse, MethodType, Request, Route, asgi_app
+from apidaora import JSONResponse, MethodType, app_daora, path
 
 
-@jsondaora
-class MyRequest(Request):
-    class MyQuery(TypedDict):
-        name: str
-
-    query: MyQuery
+@dataclass
+class Response(JSONResponse):
+    body: str
 
 
-@jsondaora
-class MyResponse(JSONResponse):
-    class MyResponseBody(TypedDict):
-        message: str
-
-    body: MyResponseBody
+@path('/hello', MethodType.GET)
+def controller(name: str) -> Response:
+    message = f'Hello {name}!'
+    return Response(body=message)
 
 
-def hello_controller(req: MyRequest) -> MyResponse:
-    name = req.query['name']
-    body = MyResponse.MyResponseBody(message=f'Hello {name}!')
-    return MyResponse(HTTPStatus.OK, body=body)
-
-
-app = asgi_app([Route('/hello', MethodType.GET, hello_controller)])
+app = app_daora(operations=[controller])
 
 ```
 
@@ -109,84 +88,102 @@ HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 26
+content-length: 14
 
-{"message":"Hello World!"}
+"Hello World!"
 
 ```
 
 
-## Example for complete request/response
+## Example for more request/response details
 
 ```python
-from http import HTTPStatus
-from typing import TypedDict
+from typing import Optional, TypedDict, Union
 
 from jsondaora import integer, jsondaora, string
 
-from apidaora import JSONResponse, MethodType, Request, Route, asgi_app
+from apidaora import (
+    JSONRequestBody,
+    JSONResponse,
+    MethodType,
+    app_daora,
+    header_param,
+    path,
+)
+
+
+# Domain
 
 
 @jsondaora
-class MyHeaders(TypedDict):
-    x_req_id: str
+class You(TypedDict):
+    name: str
+    last_name: str
+    age: integer(minimum=18)
 
 
 @jsondaora
-class MyRequest(Request):
-    class MyPathArgs(TypedDict):
-        name: str
-
-    class MyQuery(TypedDict):
-        location: str
-
-    class MyBody(TypedDict):
-        last_name: str
-        age: int
-
-    path_args: MyPathArgs
-    query: MyQuery
-    headers: MyHeaders
-    body: MyBody
+class HelloMessage(TypedDict):
+    message: str
+    about_you: You
 
 
-@jsondaora
-class MyResponse(JSONResponse):
-    class You:
-        name: str
-        last_name: str
-        location: string(max_length=100)
-        age: integer(minimum=18)
-
-    class MyResponseBody(TypedDict):
-        hello_message: str
-        about_you: 'MyResponse.You'
-
-    body: MyResponseBody
-    headers: MyHeaders
-
-
-def hello_controller(req: MyRequest) -> MyResponse:
-    body = MyResponse.MyResponseBody(
-        hello_message=hello_message(
-            req.path_args['name'], req.query['location']
-        ),
-        about_you=MyResponse.You(
-            name=req.path_args['name'],
-            last_name=req.body['last_name'],
-            location=req.query['location'],
-            age=req.body['age'],
-        ),
+def hello_you_message(you: You, location: str) -> HelloMessage:
+    return HelloMessage(
+        message=hello_message(you['name'], location), about_you=you
     )
-    headers = MyHeaders(x_req_id=req.headers['x_req_id'])
-    return MyResponse(HTTPStatus.OK, body=body, headers=headers)
 
 
 def hello_message(name: str, location: str) -> str:
     return f'Hello {name}! Welcome to {location}!'
 
 
-app = asgi_app([Route('/hello/{name}', MethodType.PUT, hello_controller)])
+# Application
+
+
+@jsondaora
+class RequestBody(JSONRequestBody):
+    class Content(TypedDict):
+        last_name: str
+        age: str
+
+    content: Content
+
+
+@jsondaora
+class Response(JSONResponse):
+    class Headers(TypedDict):
+        x_req_id: int
+
+    headers: Headers
+    body: Union[HelloMessage, str]
+
+
+@path('/hello/{name}', MethodType.PUT)
+def controller(
+    name: str,
+    location: string(max_length=100),
+    req_id: header_param(schema=Optional[int], name='x-req-id'),
+    body: Optional[RequestBody] = None,
+) -> Response:
+    if body:
+        message = hello_you_message(
+            You(
+                name=name,
+                last_name=body.content['last_name'],
+                age=body.content['age'],
+                location=location,
+            ),
+            location,
+        )
+
+    else:
+        message = hello_message(name, location)
+
+    return Response(body=message, headers=Response.Headers(x_req_id=req_id))
+
+
+app = app_daora(operations=[controller])
 
 ```
 
@@ -209,7 +206,7 @@ Quering the server:
 
 ```bash
 curl -i -X PUT localhost:8000/hello/Me?location=World \
-    -H 'x-req-id: 1a2b3c4d5e6f7g8h' \
+    -H 'x-req-id: 1243567890' \
     -d '{"last_name":"My Self","age":32}'
 
 ```
@@ -218,10 +215,10 @@ curl -i -X PUT localhost:8000/hello/Me?location=World \
 HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-x-req-id: 1a2b3c4d5e6f7g8h
+x-req-id: 1243567890
 content-type: application/json
-content-length: 123
+content-length: 117
 
-{"hello_message":"Hello Me! Welcome to World!","about_you":{"name":"Me","last_name":"My Self","location":"World","age":32}}
+{"message":"Hello Me! Welcome to World!","about_you":{"name":"Me","last_name":"My Self","age":32,"location":"World"}}
 
 ```

@@ -42,7 +42,7 @@ mypy: _check-virtualenv ## Run mypy
 	@mypy --strict $(PROJECT_NAME) # docs/src/index
 
 tests-docs-examples: _check-virtualenv ## Run docs examples tests
-	@docs/src/*/test.sh
+	@docs/src/index/test.sh
 
 tests-code: _check-virtualenv ## Run tests
 	@pytest -xvv --cov $(PROJECT_NAME) --no-cov-on-fail \

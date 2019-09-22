@@ -1,10 +1,14 @@
-class DataClassesApi(Exception):
+class APIDaoraError(Exception):
     ...
 
 
-class MethodNotFoundError(DataClassesApi):
+class MethodNotFoundError(APIDaoraError):
     ...
 
 
-class PathNotFoundError(DataClassesApi):
+class PathNotFoundError(APIDaoraError):
+    ...
+
+
+class InvalidPathParams(APIDaoraError):
     ...

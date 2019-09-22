@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Any, Dict, Type, TypedDict
+from typing import Any, Dict, Optional, Type, TypedDict
 
 import orjson
 from jsondaora import (
@@ -11,6 +11,7 @@ from jsondaora import (
     jsondaora,
 )
 
+from ..content import ContentType
 from .headers import AsgiHeaders, AsgiPathArgs, AsgiQueryDict, Headers
 
 
@@ -37,31 +38,42 @@ class Request:
     path_args: PathArgs
     query: Query
     headers: Headers
-    body: Body
+    body: Optional[Body]
 
 
 def as_request(
     request_cls: Type[Request],
+    body: bytes,
     path_args: AsgiPathArgs = {},
     query_dict: AsgiQueryDict = {},
     headers: AsgiHeaders = [],
-    body: bytes = b'',
 ) -> Request:
     annotations = getattr(request_cls, '__annotations__', {})
     path_args_cls = annotations.get('path_args', PathArgs)
     query_cls = annotations.get('query', Query)
     headers_cls = annotations.get('headers', Headers)
     body_cls = annotations.get('body', Body)
-    body_json = orjson.loads(body) if body else {}
+    request_path_args = as_typed_dict(path_args, path_args_cls)
+    request_query = get_query(query_cls, query_dict)
+    request_headers = get_headers(headers_cls, headers)
+    content_type = request_headers.get('content_type')
+    parsed_body: Any = None
+
+    if content_type is None or content_type is ContentType.APPLICATION_JSON:
+        parsed_body = orjson.loads(body) if body else {}
+        parsed_body = as_typed_dict_field(parsed_body, 'body', body_cls)
+    else:
+        parsed_body = body.decode()
 
     return asdataclass(  # type: ignore
         dict(
-            path_args=as_typed_dict(path_args, path_args_cls),
-            query=get_query(query_cls, query_dict),
-            headers=get_headers(headers_cls, headers),
-            body=as_typed_dict_field(body_json, 'body', body_cls),
+            path_args=request_path_args,
+            query=request_query,
+            headers=request_headers,
+            body=parsed_body if parsed_body else None,
         ),
         request_cls,
+        skip_fields=('body',),
     )
 
 

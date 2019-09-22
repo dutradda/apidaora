@@ -7,17 +7,13 @@ from asgi_testclient import TestClient
 from jsondaora import integer, jsondaora, string
 
 from apidaora import MethodType
-from apidaora.core import (
-    Headers,
-    JSONResponse,
-    PathArgs,
-    Query,
-    Request,
-    RequestBody,
-    ResponseBody,
-    Route,
-    asgi_app,
-)
+from apidaora.core.app import asgi_app
+from apidaora.core.headers import Headers
+from apidaora.core.request import Body as RequestBody
+from apidaora.core.request import PathArgs, Query, Request
+from apidaora.core.response import Body as ResponseBody
+from apidaora.core.response import JSONResponse
+from apidaora.core.router import Route
 
 
 @jsondaora
@@ -68,7 +64,6 @@ class FakeResponse(JSONResponse):
 
 def fake_controller(req: FakeRequest) -> FakeResponse:
     return FakeResponse(
-        HTTPStatus.OK,
         body=FakeResponseBody(
             faked=Faked(string=req.body['string'], integer=req.body['integer'])
         ),
@@ -107,10 +102,13 @@ async def test_should_return_bad_request_on_path_arg(test_client):
     response = await test_client.get('/api/invalid')
     assert response.status_code == HTTPStatus.BAD_REQUEST.value
     assert response.json() == {
-        'type': 'int',
-        'field': 'id',
-        'invalid_value': 'invalid',
-        'error': 'ValueError',
+        'error': {
+            'type': 'int',
+            'field': 'id',
+            'invalid_value': 'invalid',
+            'name': 'ValueError',
+            'cls': 'FakePathArgs',
+        }
     }
 
 
@@ -119,9 +117,13 @@ async def test_should_return_bad_request_on_empty_query(test_client):
     response = await test_client.get('/api/1')
     assert response.status_code == HTTPStatus.BAD_REQUEST.value
     assert response.json() == {
-        'type': 'int',
-        'field': 'query',
-        'invalid_value': 'None',
+        'error': {
+            'type': 'int',
+            'field': 'query',
+            'invalid_value': None,
+            'cls': 'FakeQuery',
+            'name': 'ParameterNotFoundError',
+        }
     }
 
 
@@ -130,10 +132,13 @@ async def test_should_return_bad_request_on_invalid_type_query(test_client):
     response = await test_client.get('/api/1', params={'query': 'invalid'})
     assert response.status_code == HTTPStatus.BAD_REQUEST.value
     assert response.json() == {
-        'type': 'int',
-        'field': 'query',
-        'invalid_value': 'invalid',
-        'error': 'ValueError',
+        'error': {
+            'type': 'int',
+            'field': 'query',
+            'invalid_value': 'invalid',
+            'name': 'ValueError',
+            'cls': 'FakeQuery',
+        }
     }
 
 
@@ -142,9 +147,13 @@ async def test_should_return_bad_request_on_empty_header(test_client):
     response = await test_client.get('/api/1', params={'query': '1'})
     assert response.status_code == HTTPStatus.BAD_REQUEST.value
     assert response.json() == {
-        'type': 'float',
-        'field': 'x_header',
-        'invalid_value': 'None',
+        'error': {
+            'type': 'float',
+            'field': 'x_header',
+            'invalid_value': None,
+            'cls': 'FakeHeaders',
+            'name': 'ParameterNotFoundError',
+        }
     }
 
 
@@ -155,10 +164,50 @@ async def test_should_return_bad_request_on_invalid_type_header(test_client):
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST.value
     assert response.json() == {
-        'type': 'float',
-        'field': 'x_header',
-        'invalid_value': 'invalid',
-        'error': 'ValueError',
+        'error': {
+            'type': 'float',
+            'field': 'x_header',
+            'invalid_value': 'invalid',
+            'name': 'ValueError',
+            'cls': 'FakeHeaders',
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_should_return_bad_request_on_empty_body(test_client):
+    response = await test_client.get(
+        '/api/1', params={'query': '1'}, headers={'x-header': '0.1'}
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST.value
+    assert response.json() == {
+        'error': {
+            'type': 'str',
+            'field': 'string',
+            'invalid_value': None,
+            'name': 'ParameterNotFoundError',
+            'cls': 'FakeBody',
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_should_return_bad_request_on_invalid_type_body(test_client):
+    response = await test_client.get(
+        '/api/1',
+        params={'query': '1'},
+        headers={'x-header': '0.1'},
+        json={'string': 'str', 'integer': 'str'},
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST.value
+    assert response.json() == {
+        'error': {
+            'type': 'int',
+            'field': 'integer',
+            'invalid_value': 'str',
+            'name': 'ValueError',
+            'cls': 'FakeBody',
+        }
     }
 
 

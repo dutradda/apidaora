@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <em>HTTP/REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
+    <em>OpenAPI / HTTP / REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
 </p>
 
 ---
@@ -21,15 +21,8 @@
 
 ## Key Features
 
-- Declare request objects as @jsondaora (can be TypedDict or @dataclass):
-    + `PathArgs` for values on path
-    + `Query` for values on query string
-    + `Headers` for values on headers
-    + `Body` for values on body
-
-- Declare response objects as @jsondaora (can be TypedDict or @dataclass):
-    + `Headers` for values on headers
-    + `Body` for values on body
+- Declare request objects as @jsondaora (can be TypedDict or @dataclass)
+- Declare response objects as @jsondaora (can be TypedDict or @dataclass)
 
 
 ## Requirements
@@ -48,7 +41,7 @@ $ pip install apidaora
 ## Basic example
 
 ```python
-{!./src/index/index_00_basic.py!}
+{!./src/index/index_02_openapi.py!}
 ```
 
 Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
@@ -64,18 +57,18 @@ Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
 Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):
 
 ```bash
-{!./src/index/index_00_basic_curl.bash!}
+{!./src/index/index_02_openapi_curl.bash!}
 ```
 
 ```
-{!./src/index/index_00_basic_curl.bash.output!}
+{!./src/index/index_02_openapi_curl.bash.output!}
 ```
 
 
-## Example for complete request/response
+## Example for more request/response details
 
 ```python
-{!./src/index/index_01_complete.py!}
+{!./src/index/index_03_openapi_more.py!}
 ```
 
 Running the server:
@@ -91,9 +84,9 @@ Running the server:
 Quering the server:
 
 ```bash
-{!./src/index/index_01_complete_curl.bash!}
+{!./src/index/index_03_openapi_more_curl.bash!}
 ```
 
 ```
-{!./src/index/index_01_complete_curl.bash.output!}
+{!./src/index/index_03_openapi_more_curl.bash.output!}
 ```

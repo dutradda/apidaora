@@ -1,10 +1,11 @@
-from http import HTTPStatus
 from typing import TypedDict
 
 from jsondaora import jsondaora
 
-from apidaora import MethodType
-from apidaora.core import JSONResponse, Request, Route, asgi_app
+from apidaora import JSONResponse, MethodType
+from apidaora.core.app import asgi_app
+from apidaora.core.request import Request
+from apidaora.core.router import Route
 
 
 @jsondaora
@@ -26,7 +27,7 @@ class MyResponse(JSONResponse):
 def hello_controller(req: MyRequest) -> MyResponse:
     name = req.query['name']
     body = MyResponse.MyResponseBody(message=f'Hello {name}!')
-    return MyResponse(HTTPStatus.OK, body=body)
+    return MyResponse(body=body)
 
 
 app = asgi_app([Route('/hello', MethodType.GET, hello_controller)])

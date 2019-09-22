@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Tuple, TypedDict
+from typing import Any, Dict, List, Optional, Tuple, TypedDict
 
 from jsondaora import jsondaora
+
+from ..content import ContentType
 
 
 AsgiPathArgs = Dict[str, Any]
@@ -10,4 +12,4 @@ AsgiHeaders = List[Tuple[bytes, bytes]]
 
 @jsondaora
 class Headers(TypedDict):
-    ...
+    content_type: Optional[ContentType]

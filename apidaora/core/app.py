@@ -4,12 +4,11 @@ from logging import getLogger
 from typing import Any, Awaitable, Callable, Coroutine, Dict, Iterable
 from urllib import parse
 
-import orjson
 from jsondaora.exceptions import DeserializationError
 
 from ..exceptions import MethodNotFoundError, PathNotFoundError
 from .request import as_request
-from .response import AsgiResponse, Response
+from .response import AsgiResponse, JSONResponse, Response
 from .response import as_asgi as as_asgi_response
 from .router import Route, route
 from .router import router as http_router
@@ -34,14 +33,11 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
             resolved = route(router, scope['path'], scope['method'])
 
         except PathNotFoundError:
-            await _send_asgi_response(
-                send, AsgiResponse(HTTPStatus.NOT_FOUND)  # type: ignore
-            )
+            await _send_asgi_response(send, AsgiResponse(HTTPStatus.NOT_FOUND))
 
         except MethodNotFoundError:
             await _send_asgi_response(
-                send,
-                AsgiResponse(HTTPStatus.METHOD_NOT_ALLOWED),  # type: ignore
+                send, AsgiResponse(HTTPStatus.METHOD_NOT_ALLOWED)
             )
 
         else:
@@ -61,12 +57,13 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
                 )
 
             except DeserializationError as error:
-                logger.warning(f"DeserializationError {error.message}")
-                asgi_response = AsgiResponse(  # type: ignore
-                    status_code=HTTPStatus.BAD_REQUEST,
-                    body=orjson.dumps(error.dict),
-                    headers=headers,
+                logger.exception(f"DeserializationError {error.message}")
+                response = JSONResponse(body={'error': error.dict})
+                response.__status_code__ = (  # type: ignore
+                    HTTPStatus.BAD_REQUEST
                 )
+                asgi_response = as_asgi_response(response)
+
                 await _send_asgi_response(send, asgi_response)
 
             else:
