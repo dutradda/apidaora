@@ -1,0 +1,86 @@
+from typing import Optional, TypedDict, Union
+
+from jsondaora import integer, jsondaora, string
+
+from apidaora import (
+    JSONRequestBody,
+    JSONResponse,
+    MethodType,
+    app_daora,
+    header_param,
+    path,
+)
+
+
+# Domain
+
+
+@jsondaora
+class You(TypedDict):
+    name: str
+    last_name: str
+    age: integer(minimum=18)
+
+
+@jsondaora
+class HelloMessage(TypedDict):
+    message: str
+    about_you: You
+
+
+def hello_you_message(you: You, location: str) -> HelloMessage:
+    return HelloMessage(
+        message=hello_message(you['name'], location), about_you=you
+    )
+
+
+def hello_message(name: str, location: str) -> str:
+    return f'Hello {name}! Welcome to {location}!'
+
+
+# Application
+
+
+@jsondaora
+class RequestBody(JSONRequestBody):
+    class Content(TypedDict):
+        last_name: str
+        age: str
+
+    content: Content
+
+
+@jsondaora
+class Response(JSONResponse):
+    class Headers(TypedDict):
+        x_req_id: int
+
+    headers: Headers
+    body: Union[HelloMessage, str]
+
+
+@path('/hello/{name}', MethodType.PUT)
+def controller(
+    name: str,
+    location: string(max_length=100),
+    req_id: header_param(schema=Optional[int], name='x-req-id'),
+    body: Optional[RequestBody] = None,
+) -> Response:
+    if body:
+        message = hello_you_message(
+            You(
+                name=name,
+                last_name=body.content['last_name'],
+                age=body.content['age'],
+                location=location,
+            ),
+            location,
+        )
+
+    else:
+        message = hello_message(name, location)
+
+    return Response(body=message, headers=Response.Headers(x_req_id=req_id))
+
+
+app = app_daora(operations=[controller])
