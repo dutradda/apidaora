@@ -712,6 +712,7 @@ content-length: 14
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">string</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
     <span class="n">req_id</span><span class="p">:</span> <span class="n">header_param</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x-req-id&#39;</span><span class="p">),</span>
+    <span class="n">queries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RequestBody</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">body</span><span class="p">:</span>

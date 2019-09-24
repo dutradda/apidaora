@@ -64,6 +64,7 @@ def controller(
     name: str,
     location: string(max_length=100),
     req_id: header_param(schema=Optional[int], name='x-req-id'),
+    queries: Optional[str] = None,
     body: Optional[RequestBody] = None,
 ) -> Response:
     if body:
