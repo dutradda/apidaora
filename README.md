@@ -43,7 +43,7 @@ $ pip install apidaora
 ```python
 from dataclasses import dataclass
 
-from apidaora import JSONResponse, MethodType, app_daora, path
+from apidaora import JSONResponse, MethodType, appdaora, path
 
 
 @dataclass
@@ -57,7 +57,7 @@ def controller(name: str) -> Response:
     return Response(body=message)
 
 
-app = app_daora(operations=[controller])
+app = appdaora(operations=[controller])
 
 ```
 
@@ -106,7 +106,7 @@ from apidaora import (
     JSONRequestBody,
     JSONResponse,
     MethodType,
-    app_daora,
+    appdaora,
     header_param,
     path,
 )
@@ -183,7 +183,7 @@ def controller(
     return Response(body=message, headers=Response.Headers(x_req_id=req_id))
 
 
-app = app_daora(operations=[controller])
+app = appdaora(operations=[controller])
 
 ```
 
