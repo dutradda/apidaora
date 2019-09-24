@@ -6,7 +6,7 @@ from apidaora import (
     JSONRequestBody,
     JSONResponse,
     MethodType,
-    app_daora,
+    appdaora,
     header_param,
     path,
 )
@@ -83,4 +83,4 @@ def controller(
     return Response(body=message, headers=Response.Headers(x_req_id=req_id))
 
 
-app = app_daora(operations=[controller])
+app = appdaora(operations=[controller])

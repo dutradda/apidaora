@@ -297,8 +297,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-for-complete-requestresponse" class="md-nav__link">
-    Example for complete request/response
+  <a href="#example-for-more-requestresponse-details" class="md-nav__link">
+    Example for more request/response details
   </a>
   
 </li>
@@ -543,8 +543,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-for-complete-requestresponse" class="md-nav__link">
-    Example for complete request/response
+  <a href="#example-for-more-requestresponse-details" class="md-nav__link">
+    Example for more request/response details
   </a>
   
 </li>
@@ -574,7 +574,7 @@
 </p>
 
 <p align="center">
-    <em>HTTP/REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
+    <em>OpenAPI / HTTP / REST API using <b>dataclasses</b> and <b>TypedDict</b> annotation for python</b></em>
 </p>
 
 <hr />
@@ -583,22 +583,8 @@
 <hr />
 <h2 id="key-features">Key Features</h2>
 <ul>
-<li>
-<p>Declare request objects as @jsondaora (can be TypedDict or @dataclass):</p>
-<ul>
-<li><code>PathArgs</code> for values on path</li>
-<li><code>Query</code> for values on query string</li>
-<li><code>Headers</code> for values on headers</li>
-<li><code>Body</code> for values on body</li>
-</ul>
-</li>
-<li>
-<p>Declare response objects as @jsondaora (can be TypedDict or @dataclass):</p>
-<ul>
-<li><code>Headers</code> for values on headers</li>
-<li><code>Body</code> for values on body</li>
-</ul>
-</li>
+<li>Declare request objects as @jsondaora (can be TypedDict or @dataclass)</li>
+<li>Declare response objects as @jsondaora (can be TypedDict or @dataclass)</li>
 </ul>
 <h2 id="requirements">Requirements</h2>
 <ul>
@@ -612,39 +598,23 @@
 
 
 <h2 id="basic-example">Basic example</h2>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypedDict</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
-
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">JSONResponse</span><span class="p">,</span> <span class="n">MethodType</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.app</span> <span class="kn">import</span> <span class="n">asgi_app</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.request</span> <span class="kn">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.router</span> <span class="kn">import</span> <span class="n">Route</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">JSONResponse</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">path</span>
 
 
-<span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
+    <span class="n">body</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
+<span class="nd">@path</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">MethodType</span><span class="o">.</span><span class="n">GET</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">MyRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyResponse</span><span class="p">:</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponse</span><span class="o">.</span><span class="n">MyResponseBody</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">MyResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">asgi_app</span><span class="p">([</span><span class="n">Route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">MethodType</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">hello_controller</span><span class="p">)])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="n">controller</span><span class="p">])</span>
 </pre></div>
 
 
@@ -669,83 +639,99 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 26
+content-length: 14
 
-{&quot;message&quot;:&quot;Hello World!&quot;}
+&quot;Hello World!&quot;
 </pre></div>
 
 
-<h2 id="example-for-complete-requestresponse">Example for complete request/response</h2>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypedDict</span>
+<h2 id="example-for-more-requestresponse-details">Example for more request/response details</h2>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">integer</span><span class="p">,</span> <span class="n">jsondaora</span><span class="p">,</span> <span class="n">string</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">JSONResponse</span><span class="p">,</span> <span class="n">MethodType</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.app</span> <span class="kn">import</span> <span class="n">asgi_app</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.request</span> <span class="kn">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.router</span> <span class="kn">import</span> <span class="n">Route</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">JSONRequestBody</span><span class="p">,</span>
+    <span class="n">JSONResponse</span><span class="p">,</span>
+    <span class="n">MethodType</span><span class="p">,</span>
+    <span class="n">appdaora</span><span class="p">,</span>
+    <span class="n">header_param</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Domain</span>
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyHeaders</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-    <span class="n">x_req_id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="k">class</span> <span class="nc">You</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 
 
 <span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">MyPathArgs</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="k">class</span> <span class="nc">MyBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-
-    <span class="n">path_args</span><span class="p">:</span> <span class="n">MyPathArgs</span>
-    <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
-    <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>
-    <span class="n">body</span><span class="p">:</span> <span class="n">MyBody</span>
+<span class="k">class</span> <span class="nc">HelloMessage</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">about_you</span><span class="p">:</span> <span class="n">You</span>
 
 
-<span class="nd">@jsondaora</span>
-<span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">You</span><span class="p">:</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">location</span><span class="p">:</span> <span class="n">string</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-        <span class="n">age</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-
-    <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">hello_message</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">about_you</span><span class="p">:</span> <span class="s1">&#39;MyResponse.You&#39;</span>
-
-    <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
-    <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>
-
-
-<span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">MyRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyResponse</span><span class="p">:</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">MyResponse</span><span class="o">.</span><span class="n">MyResponseBody</span><span class="p">(</span>
-        <span class="n">hello_message</span><span class="o">=</span><span class="n">hello_message</span><span class="p">(</span>
-            <span class="n">req</span><span class="o">.</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span>
-        <span class="p">),</span>
-        <span class="n">about_you</span><span class="o">=</span><span class="n">MyResponse</span><span class="o">.</span><span class="n">You</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-            <span class="n">last_name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;last_name&#39;</span><span class="p">],</span>
-            <span class="n">location</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">],</span>
-            <span class="n">age</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span>
-        <span class="p">),</span>
+<span class="k">def</span> <span class="nf">hello_you_message</span><span class="p">(</span><span class="n">you</span><span class="p">:</span> <span class="n">You</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HelloMessage</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">HelloMessage</span><span class="p">(</span>
+        <span class="n">message</span><span class="o">=</span><span class="n">hello_message</span><span class="p">(</span><span class="n">you</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">location</span><span class="p">),</span> <span class="n">about_you</span><span class="o">=</span><span class="n">you</span>
     <span class="p">)</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="n">MyHeaders</span><span class="p">(</span><span class="n">x_req_id</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;x_req_id&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">MyResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">hello_message</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;Hello {name}! Welcome to {location}!&#39;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">asgi_app</span><span class="p">([</span><span class="n">Route</span><span class="p">(</span><span class="s1">&#39;/hello/{name}&#39;</span><span class="p">,</span> <span class="n">MethodType</span><span class="o">.</span><span class="n">PUT</span><span class="p">,</span> <span class="n">hello_controller</span><span class="p">)])</span>
+<span class="c1"># Application</span>
+
+
+<span class="nd">@jsondaora</span>
+<span class="k">class</span> <span class="nc">RequestBody</span><span class="p">(</span><span class="n">JSONRequestBody</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Content</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">age</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="n">content</span><span class="p">:</span> <span class="n">Content</span>
+
+
+<span class="nd">@jsondaora</span>
+<span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Headers</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+        <span class="n">x_req_id</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">HelloMessage</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+
+
+<span class="nd">@path</span><span class="p">(</span><span class="s1">&#39;/hello/{name}&#39;</span><span class="p">,</span> <span class="n">MethodType</span><span class="o">.</span><span class="n">PUT</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">controller</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">location</span><span class="p">:</span> <span class="n">string</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">req_id</span><span class="p">:</span> <span class="n">header_param</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x-req-id&#39;</span><span class="p">),</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RequestBody</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">hello_you_message</span><span class="p">(</span>
+            <span class="n">You</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">last_name</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;last_name&#39;</span><span class="p">],</span>
+                <span class="n">age</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span>
+                <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">location</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">hello_message</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">Response</span><span class="o">.</span><span class="n">Headers</span><span class="p">(</span><span class="n">x_req_id</span><span class="o">=</span><span class="n">req_id</span><span class="p">))</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">operations</span><span class="o">=</span><span class="p">[</span><span class="n">controller</span><span class="p">])</span>
 </pre></div>
 
 
@@ -763,7 +749,7 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
 <p>Quering the server:</p>
 <div class="codehilite"><pre><span></span>curl -i -X PUT localhost:8000/hello/Me?location<span class="o">=</span>World <span class="se">\</span>
-    -H <span class="s1">&#39;x-req-id: 1a2b3c4d5e6f7g8h&#39;</span> <span class="se">\</span>
+    -H <span class="s1">&#39;x-req-id: 1243567890&#39;</span> <span class="se">\</span>
     -d <span class="s1">&#39;{&quot;last_name&quot;:&quot;My Self&quot;,&quot;age&quot;:32}&#39;</span>
 </pre></div>
 
@@ -771,11 +757,11 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 <div class="codehilite"><pre><span></span>HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-x-req-id: 1a2b3c4d5e6f7g8h
+x-req-id: 1243567890
 content-type: application/json
-content-length: 123
+content-length: 117
 
-{&quot;hello_message&quot;:&quot;Hello Me! Welcome to World!&quot;,&quot;about_you&quot;:{&quot;name&quot;:&quot;Me&quot;,&quot;last_name&quot;:&quot;My Self&quot;,&quot;location&quot;:&quot;World&quot;,&quot;age&quot;:32}}
+{&quot;message&quot;:&quot;Hello Me! Welcome to World!&quot;,&quot;about_you&quot;:{&quot;name&quot;:&quot;Me&quot;,&quot;last_name&quot;:&quot;My Self&quot;,&quot;age&quot;:32,&quot;location&quot;:&quot;World&quot;}}
 </pre></div>
                 
                   
