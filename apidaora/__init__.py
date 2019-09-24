@@ -2,7 +2,7 @@
 ASGI App using dataclasses module for request/response objects
 """
 
-__version__ = '0.6.0a1'
+__version__ = '0.6.0a3'
 
 from apidaora.content import ContentType
 from apidaora.core.response import (
@@ -15,7 +15,7 @@ from apidaora.method import MethodType
 from apidaora.openapi.app import operations_app as appdaora
 from apidaora.openapi.app import spec_app as appdaora_spec
 from apidaora.openapi.parameters import header_param
-from apidaora.openapi.path import path
+from apidaora.openapi.path_decorator.base import path
 from apidaora.openapi.request import JSONRequestBody
 
 

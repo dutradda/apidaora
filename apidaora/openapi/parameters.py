@@ -9,8 +9,11 @@ class ParameterType(Enum):
 
 @dataclass
 class Parameter:
-    annotation_name = None
-    required = True
+    in_: ParameterType
+    name: Optional[str]
+    schema: Type[Any]
+    required: bool = True
+    description: str = ''
 
 
 def header_param(schema: Type[Any], name: Optional[str] = None) -> Type[Any]:
@@ -19,8 +22,10 @@ def header_param(schema: Type[Any], name: Optional[str] = None) -> Type[Any]:
 
     @dataclass
     class HeaderParameter(Parameter):
-        name = name_
-        schema = schema_
-        in_ = ParameterType.HEADER
+        ...
+
+    HeaderParameter.name = name_
+    HeaderParameter.schema = schema_
+    HeaderParameter.in_ = ParameterType.HEADER
 
     return HeaderParameter

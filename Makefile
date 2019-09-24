@@ -39,7 +39,7 @@ flake8: _check-virtualenv ## Run flake8
 	@flake8 $(PROJECT_NAME) docs/src
 
 mypy: _check-virtualenv ## Run mypy
-	@mypy --strict $(PROJECT_NAME) # docs/src/index
+	@mypy --show-traceback --strict $(PROJECT_NAME) # docs/src/index
 
 tests-docs-examples: _check-virtualenv ## Run docs examples tests
 	@docs/src/index/test.sh

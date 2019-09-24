@@ -7,7 +7,7 @@ def operations_app(operations: Sequence[Callable[..., Any]]) -> AsgiCallable:
     routes = []
 
     for operation in operations:
-        routes.append(operation.__route__)  # type: ignore
+        routes.append(operation.partial_path.route)  # type: ignore
 
     return asgi_app(routes)
 
