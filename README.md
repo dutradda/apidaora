@@ -128,13 +128,13 @@ class HelloMessage(TypedDict):
     about_you: You
 
 
-def hello_you_message(you: You, location: str) -> HelloMessage:
+async def hello_you_message(you: You, location: str) -> HelloMessage:
     return HelloMessage(
-        message=hello_message(you['name'], location), about_you=you
+        message=await hello_message(you['name'], location), about_you=you
     )
 
 
-def hello_message(name: str, location: str) -> str:
+async def hello_message(name: str, location: str) -> str:
     return f'Hello {name}! Welcome to {location}!'
 
 
@@ -160,7 +160,7 @@ class Response(JSONResponse):
 
 
 @path('/hello/{name}', MethodType.PUT)
-def controller(
+async def controller(
     name: str,
     location: string(max_length=100),
     req_id: header_param(schema=Optional[int], name='x-req-id'),
@@ -168,7 +168,7 @@ def controller(
     body: Optional[RequestBody] = None,
 ) -> Response:
     if body:
-        message = hello_you_message(
+        message = await hello_you_message(
             You(
                 name=name,
                 last_name=body.content['last_name'],
@@ -179,7 +179,7 @@ def controller(
         )
 
     else:
-        message = hello_message(name, location)
+        message = await hello_message(name, location)
 
     return Response(body=message, headers=Response.Headers(x_req_id=req_id))
 
