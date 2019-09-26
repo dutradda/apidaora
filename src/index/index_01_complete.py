@@ -15,16 +15,9 @@ class MyHeaders(TypedDict):
 
 @jsondaora
 class MyRequest(Request):
-    class MyPathArgs(TypedDict):
-        name: str
-
-    class MyQuery(TypedDict):
-        location: str
-
-    class MyBody(TypedDict):
-        last_name: str
-        age: int
-
+    MyPathArgs = TypedDict('MyPathArgs', {'name': str})
+    MyQuery = TypedDict('MyQuery', {'location': str})
+    MyBody = TypedDict('MyBody', {'last_name': str, 'age': int})
     path_args: MyPathArgs
     query: MyQuery
     headers: MyHeaders

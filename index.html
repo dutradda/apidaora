@@ -691,18 +691,13 @@ content-length: 14
 
 <span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">RequestBody</span><span class="p">(</span><span class="n">JSONRequestBody</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Content</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">age</span><span class="p">:</span> <span class="nb">str</span>
-
+    <span class="n">Content</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;Content&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;last_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">})</span>
     <span class="n">content</span><span class="p">:</span> <span class="n">Content</span>
 
 
 <span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Headers</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">x_req_id</span><span class="p">:</span> <span class="nb">int</span>
-
+    <span class="n">Headers</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;Headers&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;x_req_id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">})</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">HelloMessage</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 

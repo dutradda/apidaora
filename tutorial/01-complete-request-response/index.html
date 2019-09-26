@@ -538,16 +538,9 @@
 
 <span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">MyPathArgs</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="k">class</span> <span class="nc">MyBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-
+    <span class="n">MyPathArgs</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;MyPathArgs&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">})</span>
+    <span class="n">MyQuery</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;MyQuery&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">})</span>
+    <span class="n">MyBody</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;MyBody&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;last_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">})</span>
     <span class="n">path_args</span><span class="p">:</span> <span class="n">MyPathArgs</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">MyHeaders</span>

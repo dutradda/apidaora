@@ -579,17 +579,13 @@
 
 <span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">MyQuery</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
+    <span class="n">MyQuery</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;MyQuery&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">})</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">MyQuery</span>
 
 
 <span class="nd">@jsondaora</span>
 <span class="k">class</span> <span class="nc">MyResponse</span><span class="p">(</span><span class="n">JSONResponse</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">MyResponseBody</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
-
+    <span class="n">MyResponseBody</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span><span class="s1">&#39;MyResponseBody&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">})</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">MyResponseBody</span>
 
 
