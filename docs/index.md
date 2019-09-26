@@ -27,7 +27,7 @@
 
 ## Requirements
 
- - Python 3.7+
+ - Python 3.8+
  - [jsondaora](https://github.com/dutradda/jsondaora) for json validation/parsing
  - [orjson](https://github.com/ijl/orjson) for json/bytes serialization (jsondaora dependency)
 
