@@ -43,18 +43,13 @@ async def hello_message(name: str, location: str) -> str:
 
 @jsondaora
 class RequestBody(JSONRequestBody):
-    class Content(TypedDict):
-        last_name: str
-        age: str
-
+    Content = TypedDict('Content', {'last_name': str, 'age': str})
     content: Content
 
 
 @jsondaora
 class Response(JSONResponse):
-    class Headers(TypedDict):
-        x_req_id: int
-
+    Headers = TypedDict('Headers', {'x_req_id': int})
     headers: Headers
     body: Union[HelloMessage, str]
 

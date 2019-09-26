@@ -10,17 +10,13 @@ from apidaora.core.router import Route
 
 @jsondaora
 class MyRequest(Request):
-    class MyQuery(TypedDict):
-        name: str
-
+    MyQuery = TypedDict('MyQuery', {'name': str})
     query: MyQuery
 
 
 @jsondaora
 class MyResponse(JSONResponse):
-    class MyResponseBody(TypedDict):
-        message: str
-
+    MyResponseBody = TypedDict('MyResponseBody', {'message': str})
     body: MyResponseBody
 
 
