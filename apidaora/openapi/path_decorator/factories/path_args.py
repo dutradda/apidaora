@@ -4,7 +4,8 @@ from typing import Any, Dict, Type, _TypedDictMeta  # type: ignore
 from jsondaora import jsondaora
 
 from ....core.request import PathArgs
-from ....core.router import PATH_RE, split_path
+from ....core.router import split_path
+from ....core.regex_router import PATH_RE
 from ....exceptions import InvalidPathParams
 
 

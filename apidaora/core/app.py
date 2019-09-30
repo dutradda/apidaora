@@ -10,8 +10,8 @@ from ..exceptions import MethodNotFoundError, PathNotFoundError
 from .request import as_request
 from .response import AsgiResponse, JSONResponse, Response
 from .response import as_asgi as as_asgi_response
-from .router import Route, route
-from .router import router as http_router
+from .router import Route
+from .regex_router import make_router
 
 
 logger = getLogger(__name__)
@@ -24,13 +24,13 @@ AsgiCallable = Callable[[Scope, Receiver, Sender], Coroutine[Any, Any, None]]
 
 
 def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
-    router = http_router(routes)
+    router = make_router(routes)
 
     async def handler(scope: Scope, receive: Receiver, send: Sender) -> None:
         headers = scope['headers']
 
         try:
-            resolved = route(router, scope['path'], scope['method'])
+            resolved = router(scope['path'], scope['method'])
 
         except PathNotFoundError:
             await _send_asgi_response(send, AsgiResponse(HTTPStatus.NOT_FOUND))
