@@ -9,17 +9,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Add submodule
+      run: git clone https://github.com/dutradda/devtools.git
     - name: Install dependencies
       run: |
-        make python-setup-virtualenv
-        source venv/bin/activate
-        make python-setup-project
+        make setup-python-virtualenv
+        . venv/bin/activate
+        make setup-python-project
         bake dependencies
     - name: Run Code Checks
       run: |
-        source venv/bin/activate
+        . venv/bin/activate
         bake code-checks
     - name: Run Tests
       run: |
-        source venv/bin/activate
+        . venv/bin/activate
         bake tests
