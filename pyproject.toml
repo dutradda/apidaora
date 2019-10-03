@@ -36,9 +36,6 @@ test = [
     'pytest-cov',
     'pytest-mock',
     'pytest>=5.1.1',
-    'tox',
-    'towncrier',
-    'uvicorn'
 ]
 doc = [
     'mkdocs',
