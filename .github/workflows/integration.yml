@@ -26,3 +26,8 @@ jobs:
       run: |
         . venv/bin/activate
         bake tests
+    - name: Codecov
+      run: |
+        . venv/bin/activate
+        pip install codecov
+        codecov
