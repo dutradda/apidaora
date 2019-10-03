@@ -3,12 +3,11 @@
 echo -e '\n---------------------------------------'
 echo -e 'Running examples outputs assertion...\n'
 
-source ${VIRTUALENV}/bin/activate
+source ${VIRTUAL_ENV}/bin/activate
 
-test_path=$(dirname ${BASH_SOURCE[0]})
-tests_regex="s%${test_path}/(.*)\.py%\1%g"
-test_files="$(find ${test_path}/*.py | sed -r -e ${tests_regex})"
-# test_files="$(find ${test_path}/index_0*_openapi*.py | sed -r -e ${tests_regex})"
+test_path=$(dirname ${BASH_SOURCE[0]})/index
+test_regex="s%${test_path}/(.*)\.py%\1%g"
+test_files="$(find ${test_path}/*.py | sed -r -e ${test_regex})"
 
 PYTHONPATH=${test_path}:${PYTHONPATH}
 
@@ -42,7 +41,6 @@ for filename in ${test_files}; do
         exit 1
     fi
 
-    # sleep 1
     echo OK
 done
 
