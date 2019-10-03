@@ -15,6 +15,9 @@ classifiers = [
     'Topic :: Software Development :: Libraries',
 ]
 requires = [
+    'Cython',
+    'uvloop',
+    'uvicorn',
     'jsondaora'
 ]
 description-file = 'README.md'
@@ -36,9 +39,6 @@ test = [
     'pytest-cov',
     'pytest-mock',
     'pytest>=5.1.1',
-    'tox',
-    'towncrier',
-    'uvicorn'
 ]
 doc = [
     'mkdocs',
@@ -73,3 +73,8 @@ name = "Cython"
 url = "https://github.com/MagicStack/uvloop/archive/master.tar.gz"
 verify_ssl = true
 name = "uvloop"
+
+[[source]]
+url = "https://github.com/encode/uvicorn/archive/master.tar.gz"
+verify_ssl = true
+name = "uvicorn"
