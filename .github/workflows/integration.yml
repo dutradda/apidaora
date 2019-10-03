@@ -1,0 +1,33 @@
+name: Apidaora Integration
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        make python-setup-virtualenv
+        source venv/bin/activate
+        make python-setup-project
+        bake dependencies
+    - name: Run Code Checks
+      run: |
+        source venv/bin/activate
+        bake code-checks
+    - name: Run Tests
+      run: |
+        source venv/bin/activate
+        bake tests
