@@ -15,9 +15,6 @@ classifiers = [
     'Topic :: Software Development :: Libraries',
 ]
 requires = [
-    'Cython',
-    'uvloop',
-    'uvicorn',
     'jsondaora'
 ]
 description-file = 'README.md'
@@ -39,6 +36,9 @@ test = [
     'pytest-cov',
     'pytest-mock',
     'pytest>=5.1.1',
+    'tox',
+    'towncrier',
+    'uvicorn'
 ]
 doc = [
     'mkdocs',
@@ -63,18 +63,3 @@ exclude = '''
 target-version = ['py38']
 line-length = '79'
 skip-string-normalization = '1'
-
-[[source]]
-url = "https://github.com/cython/cython/archive/master.tar.gz"
-verify_ssl = true
-name = "Cython"
-
-[[source]]
-url = "https://github.com/MagicStack/uvloop/archive/master.tar.gz"
-verify_ssl = true
-name = "uvloop"
-
-[[source]]
-url = "https://github.com/encode/uvicorn/archive/master.tar.gz"
-verify_ssl = true
-name = "uvicorn"

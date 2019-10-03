@@ -20,7 +20,7 @@ jobs:
     - name: Run Code Checks
       run: |
         . venv/bin/activate
-        bake code-checks
+        bake check-code
     - name: Run Tests
       run: |
         . venv/bin/activate
