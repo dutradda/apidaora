@@ -16,6 +16,7 @@ jobs:
         make setup-python-virtualenv
         . venv/bin/activate
         make setup-python-project
+        bake setup-apidaora
         bake dependencies
     - name: Run Code Checks
       run: |
