@@ -1,0 +1,6 @@
+include devtools/python/Bakefile devtools/common/Bakefile
+
+export PYTHONPATH=.
+export PROJECT_NAME=apidaora
+
+deploy: //check-virtualenv @confirm:secure deploy-docs release-pypi
