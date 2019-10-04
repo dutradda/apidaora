@@ -27,6 +27,8 @@ jobs:
         . venv/bin/activate
         bake tests
     - name: Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         . venv/bin/activate
         pip install codecov
