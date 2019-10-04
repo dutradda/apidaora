@@ -1,27 +1,19 @@
 import asyncio
-from http import HTTPStatus
 from logging import getLogger
-from typing import Any, Awaitable, Callable, Coroutine, Dict, Iterable
+from typing import Any, Awaitable, Callable, Dict
 from urllib import parse
 
-from jsondaora.exceptions import DeserializationError
-
 from ...exceptions import MethodNotFoundError, PathNotFoundError
-from .response import (
-    send_not_found,
-    send_method_not_allowed_response,
-    send_response
-)
 from ..router import ResolvedRoute
+from .base import AsgiCallable, Receiver, Scope, Sender
+from .response import (
+    send_method_not_allowed_response,
+    send_not_found,
+    send_response,
+)
 
 
 logger = getLogger(__name__)
-
-
-Scope = Dict[str, Any]
-Receiver = Callable[[], Awaitable[Dict[str, Any]]]
-Sender = Callable[[Dict[str, Any]], Awaitable[None]]
-AsgiCallable = Callable[[Scope, Receiver, Sender], Coroutine[Any, Any, None]]
 
 
 def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> AsgiCallable:
@@ -54,10 +46,7 @@ def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> AsgiCallable:
                 headers = []
 
             response_body = route.caller(
-                resolved.path_args,
-                query_dict,
-                headers,
-                body,
+                resolved.path_args, query_dict, headers, body
             )
 
             if asyncio.iscoroutine(response_body):

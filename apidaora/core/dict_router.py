@@ -1,23 +1,25 @@
-from typing import Dict, Iterable
+from typing import Any, Callable, Dict, Iterable
 
-from .router import Route, ResolvedRoute, Caller, split_path
 from ..exceptions import MethodNotFoundError, PathNotFoundError
+from .router import ResolvedRoute, Route
 
 
-RoutesDict = Dict[str, Dict[str, Caller]]
+RoutesDict = Dict[str, Dict[str, Route]]
 
-EMPTY_PATH_ARGS = {}
+EMPTY_PATH_ARGS: Dict[str, Any] = {}
 
 
-def make_router(routes: Iterable[Route]) -> RoutesDict:
+def make_router(
+    routes: Iterable[Route]
+) -> Callable[[str, str], ResolvedRoute]:
     routes_dict: RoutesDict = {}
 
     for route in routes:
         methods = routes_dict.get(route.path_pattern, {})
         methods[route.method.value] = route
-        routes_dict[route.path_pattern] = methods    
+        routes_dict[route.path_pattern] = methods
 
-    def route(path: str, method: str) -> ResolvedRoute:
+    def route_(path: str, method: str) -> ResolvedRoute:
         methods = routes_dict.get(path)
 
         if methods:
@@ -30,4 +32,4 @@ def make_router(routes: Iterable[Route]) -> RoutesDict:
 
         raise PathNotFoundError(path)
 
-    return route
+    return route_

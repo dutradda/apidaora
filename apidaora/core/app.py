@@ -10,8 +10,7 @@ from ..exceptions import MethodNotFoundError, PathNotFoundError
 from .request import as_request
 from .response import AsgiResponse, JSONResponse, Response
 from .response import as_asgi as as_asgi_response
-from .router import Route
-from .regex_router import make_router
+from .router import Route, make_router
 
 
 logger = getLogger(__name__)
@@ -43,9 +42,7 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
         else:
             query_dict = _get_query_dict(scope)
             body = await _read_body(receive)
-            request_cls = resolved.route.caller.__annotations__[  # type: ignore
-                'req'
-            ]
+            request_cls = resolved.route.caller.__annotations__['req']
 
             try:
                 request = as_request(
@@ -67,7 +64,7 @@ def asgi_app(routes: Iterable[Route]) -> AsgiCallable:
                 await _send_asgi_response(send, asgi_response)
 
             else:
-                response = resolved.route.caller(request)  # type: ignore
+                response = resolved.route.caller(request)
                 await _send_response(send, response)
 
     return handler

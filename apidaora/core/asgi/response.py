@@ -1,67 +1,63 @@
-from typing import TypedDict, Tuple
+from typing import Awaitable, List, Tuple, TypedDict
+
+from .base import Sender
 
 
 class ASGIResponse(TypedDict):
-    headers: Tuple[bytes, bytes]
-    type: str = 'http.response.start'
-    status: int = 200
+    headers: List[Tuple[bytes, bytes]]
+    type: str
+    status: int
 
 
 JSON_RESPONSE: ASGIResponse = {
     'type': 'http.response.start',
     'status': 200,
-    'headers': [
-        [b'content-type', b'application/json'],
-    ]
+    'headers': [(b'content-type', b'application/json')],
 }
 
 HTML_RESPONSE: ASGIResponse = {
     'type': 'http.response.start',
     'status': 200,
-    'headers': [
-        [b'content-type', b'text/html; charset=utf-8'],
-    ]
+    'headers': [(b'content-type', b'text/html; charset=utf-8')],
 }
 
 PLAINTEXT_RESPONSE: ASGIResponse = {
     'type': 'http.response.start',
     'status': 200,
-    'headers': [
-        [b'content-type', b'text/plain; charset=utf-8'],
-    ]
+    'headers': [(b'content-type', b'text/plain; charset=utf-8')],
 }
 
 NOTFOUND_RESPONSE: ASGIResponse = {
     'type': 'http.response.start',
     'status': 404,
-    'headers': []
+    'headers': [],
 }
 
 METHOD_NOT_ALLOWED_RESPONSE: ASGIResponse = {
     'type': 'http.response.start',
     'status': 405,
-    'headers': []
+    'headers': [],
 }
 
 NO_CONTENT_RESPONSE: ASGIResponse = {
     'type': 'http.response.start',
     'status': 204,
-    'headers': []
+    'headers': [],
 }
 
 
-async def send_response(send, response, body):
-    await send(response)
-    await send({
-        'type': 'http.response.body',
-        'body': body,
-        'more_body': False
-    })
+async def send_response(
+    send: Sender, response: ASGIResponse, body: bytes
+) -> None:
+    await send(response)  # type: ignore
+    await send(
+        {'type': 'http.response.body', 'body': body, 'more_body': False}
+    )
 
 
-async def send_not_found(send):
+def send_not_found(send: Sender) -> Awaitable[None]:
     return send_response(send, NOTFOUND_RESPONSE, b'')
 
 
-async def send_method_not_allowed_response(send):
+def send_method_not_allowed_response(send: Sender) -> Awaitable[None]:
     return send_response(send, METHOD_NOT_ALLOWED_RESPONSE, b'')
