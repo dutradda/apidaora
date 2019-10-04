@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
     
     
       
@@ -303,6 +303,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#benchmark" class="md-nav__link">
+    Benchmark
+  </a>
+  
+</li>
+      
       
       
       
@@ -549,6 +556,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#benchmark" class="md-nav__link">
+    Benchmark
+  </a>
+  
+</li>
+      
       
       
       
@@ -583,8 +597,10 @@
 <hr />
 <h2 id="key-features">Key Features</h2>
 <ul>
-<li>Declare request objects as @jsondaora (can be TypedDict or @dataclass)</li>
-<li>Declare response objects as @jsondaora (can be TypedDict or @dataclass)</li>
+<li>Declaration of request/response as dataclasses and dicts using typing annotations</li>
+<li>Input data validation with <a href="https://github.com/dutradda/jsondaora">jsondaora</a></li>
+<li>One of the <a href="#benchmark">fastest</a> python api framework</li>
+<li>Can run on any asgi server</li>
 </ul>
 <h2 id="requirements">Requirements</h2>
 <ul>
@@ -759,6 +775,11 @@ content-length: 117
 
 {&quot;message&quot;:&quot;Hello Me! Welcome to World!&quot;,&quot;about_you&quot;:{&quot;name&quot;:&quot;Me&quot;,&quot;last_name&quot;:&quot;My Self&quot;,&quot;age&quot;:32,&quot;location&quot;:&quot;World&quot;}}
 </pre></div>
+
+
+<h2 id="benchmark">Benchmark</h2>
+<p><img alt="techempower benchmark" src="benchmark.png" title="TechEmpower Frameworks Benchmark" /></p>
+<p>The full results can be found <a href="https://www.techempower.com/benchmarks/#section=test&amp;runid=76bbd357-a161-42eb-a203-051bdd949006&amp;hw=ph&amp;test=query&amp;l=zijzen-v">here</a></p>
                 
                   
                 
@@ -814,7 +835,7 @@ content-length: 117
       
     </div>
     
-      <script src="assets/javascripts/application.c648116f.js"></script>
+      <script src="assets/javascripts/application.ac79c3b0.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
       
