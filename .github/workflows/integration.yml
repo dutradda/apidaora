@@ -1,0 +1,40 @@
+name: Apidaora Integration
+
+on: [push]
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    container: python:rc-buster
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Add submodule
+      run: git clone https://github.com/dutradda/devtools.git
+    - name: Install dependencies
+      run: |
+        make setup-python-virtualenv
+        . venv/bin/activate
+        make setup-python-project
+        bake setup-apidaora
+        bake dependencies
+    - name: Run Code Checks
+      run: |
+        . venv/bin/activate
+        bake check-code
+    - name: Run Tests
+      run: |
+        . venv/bin/activate
+        bake tests
+    - name: Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        . venv/bin/activate
+        pip install codecov
+        codecov --verbose
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

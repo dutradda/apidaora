@@ -36,9 +36,6 @@ test = [
     'pytest-cov',
     'pytest-mock',
     'pytest>=5.1.1',
-    'tox',
-    'towncrier',
-    'uvicorn'
 ]
 doc = [
     'mkdocs',
@@ -63,16 +60,3 @@ exclude = '''
 target-version = ['py38']
 line-length = '79'
 skip-string-normalization = '1'
-
-[tool.towncrier]
-    package = 'apidaora'
-    package_dir = ''
-    filename = 'docs/changelog.md'
-    title_format =  '{version} ({project_date})'
-    directory = 'changelog.d'
-    template = 'towncrier_template.rst'
-
-    [[tool.towncrier.type]]
-        directory = "change"
-        name = "Changes"
-        showcontent = true

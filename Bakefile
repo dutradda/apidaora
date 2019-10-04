@@ -1,0 +1,16 @@
+include devtools/python/Bakefile devtools/common/Bakefile
+
+export PYTHONPATH=.
+export PROJECT_NAME=apidaora
+
+deploy: //check-virtualenv @confirm:secure deploy-docs release-pypi
+
+setup-apidaora: //check-virtualenv
+    pip install 'https://github.com/cython/cython/archive/master.tar.gz#074362b47093febfe5273ea7a00f4ba5ded6e73f'
+    git clone https://github.com/MagicStack/uvloop.git --recursive
+    cd uvloop
+    git checkout 82104fb68e6cf2b469622e62169cdbeac93846cb
+    pip install .
+    cd ..
+    pip install 'https://github.com/encode/uvicorn/archive/master.tar.gz#e0a77de6baf436d182868fa280cd5e2f0d66501c'
+    pip install jsondaora
