@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.6.0 - 2019-10-04
 
  - Add devtools submodule
 
