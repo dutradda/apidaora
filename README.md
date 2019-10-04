@@ -21,8 +21,10 @@
 
 ## Key Features
 
-- Declare request objects as @jsondaora (can be TypedDict or @dataclass)
-- Declare response objects as @jsondaora (can be TypedDict or @dataclass)
+- Declaration of request/response as dataclasses and dicts using typing annotations
+- Input data validation with [jsondaora](https://github.com/dutradda/jsondaora)
+- One of the [fastest](#benchmark) python api framework
+- Can run on any asgi server
 
 
 ## Requirements
@@ -218,3 +220,10 @@ content-length: 117
 {"message":"Hello Me! Welcome to World!","about_you":{"name":"Me","last_name":"My Self","age":32,"location":"World"}}
 
 ```
+
+
+## Benchmark
+
+![techempower benchmark](https://dutradda.github.io/apidaora/benchmark.png "TechEmpower Frameworks Benchmark")
+
+The full results can be found [here](https://www.techempower.com/benchmarks/#section=test&runid=76bbd357-a161-42eb-a203-051bdd949006&hw=ph&test=query&l=zijzen-v)
