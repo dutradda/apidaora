@@ -8,7 +8,7 @@ jobs:
     container: python:rc-buster
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@master
     - name: Add submodule
       run: git clone https://github.com/dutradda/devtools.git
     - name: Install dependencies
@@ -33,3 +33,8 @@ jobs:
         . venv/bin/activate
         pip install codecov
         codecov --verbose
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
