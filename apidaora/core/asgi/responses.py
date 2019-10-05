@@ -1,12 +1,6 @@
 from typing import Awaitable, List, Tuple, TypedDict
 
-from .base import Sender
-
-
-class ASGIResponse(TypedDict):
-    headers: List[Tuple[bytes, bytes]]
-    type: str
-    status: int
+from .base import ASGIResponse, Sender
 
 
 JSON_RESPONSE: ASGIResponse = {

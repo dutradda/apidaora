@@ -1,3 +1,4 @@
+import functools
 from logging import getLogger
 from typing import Any, Callable, Dict, Optional, Tuple, Type
 
@@ -58,6 +59,7 @@ def path(pattern: str, method: MethodType) -> Any:
             json_fields,
             headers_names,
         )
+        core_operation = functools.wraps(operation)(core_operation)
         route = Route(pattern, method, core_operation)
         partial_path = PartialPath(method=OpenAPIMethod(), route=route)
         core_operation.partial_path = partial_path

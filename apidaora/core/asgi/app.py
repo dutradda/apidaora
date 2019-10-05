@@ -45,16 +45,16 @@ def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> AsgiCallable:
             else:
                 headers = []
 
-            response_body = route.caller(
+            response_and_body = route.handler(
                 resolved.path_args, query_dict, headers, body
             )
 
-            if asyncio.iscoroutine(response_body):
-                response_body = await response_body
+            if asyncio.iscoroutine(response_and_body):
+                response_and_body = await response_and_body
 
             response, body = (
-                (response_body[0], response_body[1])
-                if len(response_body) > 1
+                (response_and_body[0], response_and_body[1])
+                if len(response_and_body) > 1
                 else (response_body[0], b'')
             )
             await send_response(send, response, body)

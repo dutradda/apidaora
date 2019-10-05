@@ -12,16 +12,14 @@ from typing import (
 
 from ..exceptions import MethodNotFoundError, PathNotFoundError
 from ..method import MethodType
-
-
-Caller = Callable[..., Any]
+from .base import ASGICallable
 
 
 @dataclass
 class Route:
     path_pattern: str
     method: MethodType
-    caller: Caller
+    handler: ASGICallable
     has_query: bool = False
     has_headers: bool = False
     has_body: bool = False

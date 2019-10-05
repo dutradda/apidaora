@@ -10,7 +10,7 @@ EMPTY_PATH_ARGS: Dict[str, Any] = {}
 
 
 def make_router(
-    routes: Iterable[Route]
+    routes: Iterable[Route],
 ) -> Callable[[str, str], ResolvedRoute]:
     routes_dict: RoutesDict = {}
 
