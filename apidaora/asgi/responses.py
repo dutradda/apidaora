@@ -1,13 +1,17 @@
 from http import HTTPStatus
 from typing import Awaitable, Optional
 
+from ..content import ContentType
 from .base import ASGIResponse, Sender
 
 
 HTTP_RESPONSE_START = 'http.response.start'
-JSON_CONTENT_HEADER = (b'content-type', b'application/json')
-HTML_CONTENT_HEADER = (b'content-type', b'text/html; charset=utf-8')
-TEXT_CONTENT_HEADER = (b'content-type', b'text/plain; charset=utf-8')
+JSON_CONTENT_HEADER = (
+    b'content-type',
+    ContentType.APPLICATION_JSON.value.encode(),
+)
+HTML_CONTENT_HEADER = (b'content-type', ContentType.TEXT_HTML.value.encode())
+TEXT_CONTENT_HEADER = (b'content-type', ContentType.TEXT_PLAIN.value.encode())
 
 JSON_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,

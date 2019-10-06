@@ -14,10 +14,6 @@ class PathNotFoundError(APIDaoraError):
     ...
 
 
-class InvalidPathParamsError(APIDaoraError):
-    ...
-
-
 class InvalidReturnError(APIDaoraError):
     def __str__(self) -> str:
         return (
