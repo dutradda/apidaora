@@ -1,17 +1,8 @@
-# type: ignore
-
 from http import HTTPStatus
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Optional,
-    Type,
-    TypedDict,
-    Union,
-    _GenericAlias,
-)
+from typing import _GenericAlias  # type: ignore
+from typing import Any, Dict, Iterable, Optional, Type, Union
 
+from dictdaora import DictDaora
 from jsondaora import jsondaora
 
 from ..content import ContentType
@@ -21,11 +12,11 @@ from .security import Security, SecurityType
 
 
 @jsondaora
-class OpenAPIMethod(TypedDict):
+class OpenAPIMethod(DictDaora):  # type: ignore
     parameters: Iterable[Parameter]
 
-    class Response(TypedDict):
-        class Content(TypedDict):
+    class Response(DictDaora):  # type: ignore
+        class Content(DictDaora):  # type: ignore
             schema: Type[Any]
 
         content: Dict[ContentType, Content]
@@ -42,16 +33,16 @@ PathPattern = str
 
 
 @jsondaora
-class OpenAPISpec(TypedDict):
-    class Server(TypedDict):
+class OpenAPISpec(DictDaora):  # type: ignore
+    class Server(DictDaora):  # type: ignore
         url: str
         description: str
 
-    class Info(TypedDict):
+    class Info(DictDaora):  # type: ignore
         version: str
         title: str
 
-    class Components(TypedDict):
+    class Components(DictDaora):  # type: ignore
         parameters: Dict[ParameterName, Parameter]
         security_schemes: Dict[SecurityType, Security]
         schemas: Dict[SchemaName, Type[Any]]
@@ -62,7 +53,7 @@ class OpenAPISpec(TypedDict):
     paths: Dict[PathPattern, Dict[MethodType, OpenAPIMethod]]
 
 
-def get_operation_request_bodies(body_type):
+def get_operation_request_bodies(body_type: Type[Any]) -> Any:
     operation_bodies = {}
 
     if isinstance(body_type, _GenericAlias) and body_type.__origin__ is Union:

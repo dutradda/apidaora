@@ -3,7 +3,6 @@
 from http import HTTPStatus
 
 import pytest
-from asgi_testclient import TestClient
 from jsondaora import integer, jsondaora, string
 
 from apidaora import MethodType
@@ -14,6 +13,7 @@ from apidaora.core.request import PathArgs, Query, Request
 from apidaora.core.response import Body as ResponseBody
 from apidaora.core.response import JSONResponse
 from apidaora.core.router import Route
+from asgi_testclient import TestClient
 
 
 @jsondaora

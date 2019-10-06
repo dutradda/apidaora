@@ -10,8 +10,9 @@ from typing import (
     Pattern,
 )
 
-from ..exceptions import MethodNotFoundError, PathNotFoundError
-from ..method import MethodType
+from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
+from apidaora.method import MethodType
+
 from .base import ASGICallable
 
 
@@ -19,7 +20,8 @@ from .base import ASGICallable
 class Route:
     path_pattern: str
     method: MethodType
-    handler: ASGICallable
+    controller: ASGICallable
+    has_path_args: bool = False
     has_query: bool = False
     has_headers: bool = False
     has_body: bool = False

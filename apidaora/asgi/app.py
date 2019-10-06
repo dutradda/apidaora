@@ -3,21 +3,23 @@ from logging import getLogger
 from typing import Any, Awaitable, Callable, Dict
 from urllib import parse
 
-from ...exceptions import MethodNotFoundError, PathNotFoundError
-from ..router import ResolvedRoute
-from .base import AsgiCallable, Receiver, Scope, Sender
-from .response import (
+from ..exceptions import MethodNotFoundError, PathNotFoundError
+from .base import ASGIApp, Receiver, Scope, Sender
+from .responses import (
     send_method_not_allowed_response,
     send_not_found,
     send_response,
 )
+from .router import ResolvedRoute
 
 
 logger = getLogger(__name__)
 
 
-def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> AsgiCallable:
-    async def handler(scope: Scope, receive: Receiver, send: Sender) -> None:
+def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> ASGIApp:
+    async def controller(
+        scope: Scope, receive: Receiver, send: Sender
+    ) -> None:
         try:
             resolved = router(scope['path'], scope['method'])
 
@@ -45,21 +47,21 @@ def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> AsgiCallable:
             else:
                 headers = []
 
-            response_and_body = route.handler(
-                resolved.path_args, query_dict, headers, body
+            response_and_body = route.controller(  # type: ignore
+                resolved.path_args, query_dict, headers, body  # type: ignore
             )
 
-            if asyncio.iscoroutine(response_and_body):
+            while asyncio.iscoroutine(response_and_body):
                 response_and_body = await response_and_body
 
             response, body = (
                 (response_and_body[0], response_and_body[1])
                 if len(response_and_body) > 1
-                else (response_body[0], b'')
+                else (response_and_body[0], b'')
             )
             await send_response(send, response, body)
 
-    return handler
+    return controller
 
 
 def _get_query_dict(scope: Dict[str, Any]) -> Dict[str, Any]:

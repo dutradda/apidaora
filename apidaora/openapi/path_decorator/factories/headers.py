@@ -23,7 +23,7 @@ logger = getLogger(__name__)
 def request_headers(
     operation_annotations: Dict[str, Any], headers_names: Dict[str, str]
 ) -> Type[Headers]:
-    headers_fields = set()
+    headers_fields: Set[Tuple[str, Type[Any]]] = set()
     optional_fields: Set[Tuple[str, Type[Any]]] = set()
     annotations: Dict[str, Any] = {}
     attrs: Dict[str, Any] = {}

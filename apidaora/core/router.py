@@ -10,8 +10,8 @@ from typing import (
     Pattern,
 )
 
-from ..exceptions import MethodNotFoundError, PathNotFoundError
-from ..method import MethodType
+from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
+from apidaora.method import MethodType
 
 
 Caller = Callable[..., Any]
