@@ -63,7 +63,7 @@ async def add_you_controller(req_id: ReqID, body: You) -> JSONResponse:
 
 
 @route.get('/you/{name}')
-async def get_you_controller(name: str, req_id: ReqID):
+async def get_you_controller(name: str, req_id: ReqID) -> JSONResponse:
     try:
         return JSONResponse(get_you(name), headers=[req_id])
     except YouWereNotFoundError as error:
