@@ -14,3 +14,5 @@ setup-apidaora: //check-virtualenv
     cd ..
     pip install 'https://github.com/encode/uvicorn/archive/master.tar.gz#e0a77de6baf436d182868fa280cd5e2f0d66501c'
     pip install jsondaora
+
+integration: check-code tests-docs coverage

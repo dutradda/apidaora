@@ -28,7 +28,7 @@ for filepath in ${test_files}; do
     test_module=$(echo ${filepath} | tr '/' '.' | sed -r -e 's/\.py//g')
 
     echo Testing ${filename}..
-    uvicorn ${test_module}:app >${uvicorn_output_file} 2>&1 &
+    coverage run -p $(which uvicorn) ${test_module}:app >${uvicorn_output_file} 2>&1 &
     sleep 1
 
     bash ${curl_file} 2>/dev/null | \
