@@ -11,7 +11,7 @@ $ pip install apidaora
 ### Starts coding
 
 ```python
-{!./src/index/index_00_basic.py!}
+{!./src/index/index_00_simple.py!}
 ```
 
 Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
@@ -27,10 +27,9 @@ Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
 Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):
 
 ```bash
-{!./src/index/index_00_basic_curl.bash!}
+{!./src/index/index_00_simple_curl.bash!}
 ```
 
 ```
-{!./src/index/index_00_basic_curl.bash.output!}
+{!./src/index/index_00_simple_curl.bash.output!}
 ```
-
