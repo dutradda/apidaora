@@ -25,7 +25,11 @@ jobs:
     - name: Run Tests
       run: |
         . venv/bin/activate
-        bake tests
+        bake tests-docs
+    - name: Run Coverage
+      run: |
+        . venv/bin/activate
+        bake coverage
     - name: Codecov
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
