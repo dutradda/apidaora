@@ -1,0 +1,7 @@
+HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 43
+
+{"name":"Me","last_name":"Myself","age":32}

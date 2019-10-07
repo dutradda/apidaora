@@ -1,1 +1,0 @@
-uvicorn myapp:app
