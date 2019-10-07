@@ -59,13 +59,15 @@ async def add_you_controller(req_id: ReqID, body: You) -> JSONResponse:
     except YouAlreadyBeenAddedError as error:
         raise BadRequestError(name=error.name, info=error.info) from error
 
-    return JSONResponse(body=body, status=HTTPStatus.CREATED, headers=[req_id])
+    return JSONResponse(
+        body=body, status=HTTPStatus.CREATED, headers=(req_id,)
+    )
 
 
 @route.get('/you/{name}')
 async def get_you_controller(name: str, req_id: ReqID) -> JSONResponse:
     try:
-        return JSONResponse(get_you(name), headers=[req_id])
+        return JSONResponse(get_you(name), headers=(req_id,))
     except YouWereNotFoundError as error:
         raise BadRequestError(name=error.name, info=error.info) from error
 

@@ -5,7 +5,6 @@ from typing import (
     Coroutine,
     Dict,
     List,
-    Sequence,
     Tuple,
     TypedDict,
 )
@@ -17,7 +16,7 @@ Sender = Callable[[Dict[str, Any]], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receiver, Sender], Coroutine[Any, Any, None]]
 ASGIPathArgs = Dict[str, str]
 ASGIQueryDict = Dict[str, List[str]]
-ASGIHeaders = Sequence[Tuple[bytes, bytes]]
+ASGIHeaders = Tuple[Tuple[bytes, bytes], ...]
 ASGIBody = bytes
 
 

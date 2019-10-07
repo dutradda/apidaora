@@ -120,6 +120,14 @@ Quering the server:
 {!./src/index/index_02_more_curl.bash.output!}
 ```
 
+```bash
+{!./src/index/index_02_more_curl2.bash!}
+```
+
+```
+{!./src/index/index_02_more_curl2.bash.output!}
+```
+
 
 ## Benchmark
 

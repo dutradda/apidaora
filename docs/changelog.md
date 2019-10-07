@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix headers response
+
 ### 0.7.0 - 2019-10-06
 
  - Improve devtools

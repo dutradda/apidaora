@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Awaitable, Optional
 
 from ..content import ContentType
-from .base import ASGIResponse, Sender
+from .base import ASGIHeaders, ASGIResponse, Sender
 
 
 HTTP_RESPONSE_START = 'http.response.start'
@@ -51,18 +51,28 @@ NO_CONTENT_RESPONSE: ASGIResponse = {
 
 
 def make_json_response(
-    content_length: Optional[int] = None, status: HTTPStatus = HTTPStatus.OK
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
 ) -> ASGIResponse:
     if content_length is None:
         return JSON_RESPONSE
 
+    default_headers: ASGIHeaders = (
+        JSON_CONTENT_HEADER,
+        (b'content-length', str(content_length).encode()),
+    )
+
+    if headers:
+        if isinstance(headers, tuple):
+            headers = default_headers + headers
+        else:
+            headers = default_headers + tuple(headers)
+
     return {
         'type': HTTP_RESPONSE_START,
         'status': status.value,
-        'headers': (
-            JSON_CONTENT_HEADER,
-            (b'content-length', str(content_length).encode()),
-        ),
+        'headers': default_headers if not headers else headers,
     }
 
 

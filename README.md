@@ -124,7 +124,7 @@ class HelloOutput(TypedDict):
 async def hello_controller(
     name: str, location: str, age: Age, body: ReqBody
 ) -> HelloOutput:
-    you = You(name=name, location=location, age=age, **body)
+    you = You(name=name, location=location, age=age.value, **body)
     return HelloOutput(
         hello_message=await hello_message(name, location), about_you=you
     )
@@ -237,13 +237,15 @@ async def add_you_controller(req_id: ReqID, body: You) -> JSONResponse:
     except YouAlreadyBeenAddedError as error:
         raise BadRequestError(name=error.name, info=error.info) from error
 
-    return JSONResponse(body=body, status=HTTPStatus.CREATED, headers=[req_id])
+    return JSONResponse(
+        body=body, status=HTTPStatus.CREATED, headers=(req_id,)
+    )
 
 
 @route.get('/you/{name}')
 async def get_you_controller(name: str, req_id: ReqID) -> JSONResponse:
     try:
-        return JSONResponse(get_you(name), headers=[req_id])
+        return JSONResponse(get_you(name), headers=(req_id,))
     except YouWereNotFoundError as error:
         raise BadRequestError(name=error.name, info=error.info) from error
 
@@ -279,6 +281,24 @@ date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
 content-length: 43
+http_req_id: 1a2b3c4d
+
+{"name":"Me","last_name":"Myself","age":32}
+
+```
+
+```bash
+curl -i localhost:8000/you/Me -H 'http_req_id: 4d3c2b1a'
+
+```
+
+```
+HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 43
+http_req_id: 4d3c2b1a
 
 {"name":"Me","last_name":"Myself","age":32}
 

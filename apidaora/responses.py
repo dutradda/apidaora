@@ -3,14 +3,14 @@ from typing import Any, Dict, Sequence
 
 from jsondaora import jsondaora
 
-from .header import Header
+from .header import _Header
 
 
 @jsondaora
 class Response:
     body: Any
     status: HTTPStatus = HTTPStatus.OK
-    headers: Sequence[Header] = ()
+    headers: Sequence[_Header] = ()
 
 
 @jsondaora
