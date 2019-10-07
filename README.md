@@ -40,26 +40,18 @@ $ pip install apidaora
 ```
 
 
-## Basic example
+## Simple example
 
 ```python
-from dataclasses import dataclass
-
-from apidaora import JSONResponse, MethodType, appdaora, path
+from apidaora import appdaora, route
 
 
-@dataclass
-class Response(JSONResponse):
-    body: str
+@route.get('/hello')
+def hello_controller(name: str):
+    return f'Hello {name}!'
 
 
-@path('/hello', MethodType.GET)
-def controller(name: str) -> Response:
-    message = f'Hello {name}!'
-    return Response(body=message)
-
-
-app = appdaora(operations=[controller])
+app = appdaora(hello_controller)
 
 ```
 
@@ -67,7 +59,6 @@ Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
 
 ```bash
 uvicorn myapp:app
-
 ```
 
 ```
@@ -97,42 +88,45 @@ content-length: 14
 ```
 
 
-## Example for more request/response details
+## Basic example
 
 ```python
-from typing import Optional, TypedDict, Union
+from typing import TypedDict
 
 from jsondaora import integer, jsondaora, string
 
-from apidaora import (
-    JSONRequestBody,
-    JSONResponse,
-    MethodType,
-    appdaora,
-    header_param,
-    path,
-)
+from apidaora import appdaora, header, route
 
 
-# Domain
+Age = header(type=int)
 
 
 @jsondaora
 class You(TypedDict):
     name: str
     last_name: str
+    location: string(max_length=100)
     age: integer(minimum=18)
 
 
 @jsondaora
-class HelloMessage(TypedDict):
-    message: str
-    about_you: You
+class ReqBody(TypedDict):
+    last_name: str
 
 
-async def hello_you_message(you: You, location: str) -> HelloMessage:
-    return HelloMessage(
-        message=await hello_message(you['name'], location), about_you=you
+@jsondaora
+class HelloOutput(TypedDict):
+    hello_message: str
+    abot_you: You
+
+
+@route.put('/hello/{name}')
+async def hello_controller(
+    name: str, location: str, age: Age, body: ReqBody
+) -> HelloOutput:
+    you = You(name=name, location=location, age=age, **body)
+    return HelloOutput(
+        hello_message=await hello_message(name, location), about_you=you
     )
 
 
@@ -140,48 +134,7 @@ async def hello_message(name: str, location: str) -> str:
     return f'Hello {name}! Welcome to {location}!'
 
 
-# Application
-
-
-@jsondaora
-class RequestBody(JSONRequestBody):
-    Content = TypedDict('Content', {'last_name': str, 'age': str})
-    content: Content
-
-
-@jsondaora
-class Response(JSONResponse):
-    Headers = TypedDict('Headers', {'x_req_id': int})
-    headers: Headers
-    body: Union[HelloMessage, str]
-
-
-@path('/hello/{name}', MethodType.PUT)
-async def controller(
-    name: str,
-    location: string(max_length=100),
-    req_id: header_param(schema=Optional[int], name='x-req-id'),
-    queries: Optional[str] = None,
-    body: Optional[RequestBody] = None,
-) -> Response:
-    if body:
-        message = await hello_you_message(
-            You(
-                name=name,
-                last_name=body.content['last_name'],
-                age=body.content['age'],
-                location=location,
-            ),
-            location,
-        )
-
-    else:
-        message = await hello_message(name, location)
-
-    return Response(body=message, headers=Response.Headers(x_req_id=req_id))
-
-
-app = appdaora(operations=[controller])
+app = appdaora(hello_controller)
 
 ```
 
@@ -189,7 +142,6 @@ Running the server:
 
 ```bash
 uvicorn myapp:app
-
 ```
 
 ```
@@ -204,8 +156,8 @@ Quering the server:
 
 ```bash
 curl -i -X PUT localhost:8000/hello/Me?location=World \
-    -H 'x-req-id: 1243567890' \
-    -d '{"last_name":"My Self","age":32}'
+    -H 'x-age: 32' \
+    -d '{"last_name":"My Self"}'
 
 ```
 
@@ -213,11 +165,122 @@ curl -i -X PUT localhost:8000/hello/Me?location=World \
 HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-x-req-id: 1243567890
 content-type: application/json
-content-length: 117
+content-length: 123
 
-{"message":"Hello Me! Welcome to World!","about_you":{"name":"Me","last_name":"My Self","age":32,"location":"World"}}
+{"hello_message":"Hello Me! Welcome to World!","about_you":{"name":"Me","location":"World","age":32,"last_name":"My Self"}}
+
+```
+
+
+## Example for more request/response details
+
+```python
+from http import HTTPStatus
+
+from jsondaora import jsondaora
+
+from apidaora import BadRequestError, JSONResponse, appdaora, header, route
+
+
+# Domain layer, here are the domain related definitions
+# it is apidaora/framework/http independent
+
+
+@jsondaora
+class You:
+    name: str
+    last_name: str
+    age: int
+
+
+DB = {}
+
+
+def add_you(you):
+    if you.name in DB:
+        raise YouAlreadyBeenAddedError(you.name)
+    DB[you.name] = you
+
+
+def get_you(name):
+    try:
+        return DB[name]
+    except KeyError:
+        raise YouWereNotFoundError(name)
+
+
+class DBError(Exception):
+    @property
+    def info(self):
+        return {'name': self.args[0]}
+
+
+class YouAlreadyBeenAddedError(DBError):
+    name = 'you-already-been-added'
+
+
+class YouWereNotFoundError(DBError):
+    name = 'you-were-not-found'
+
+
+# Application layer, here are the http related definitions
+
+# See: https://dutrdda.github.io/apidaora/tutorial/headers/
+ReqID = header(type=str, http_name='http_req_id')
+
+
+@route.post('/you/')
+async def add_you_controller(req_id: ReqID, body: You) -> JSONResponse:
+    try:
+        add_you(body)
+    except YouAlreadyBeenAddedError as error:
+        raise BadRequestError(name=error.name, info=error.info) from error
+
+    return JSONResponse(body=body, status=HTTPStatus.CREATED, headers=[req_id])
+
+
+@route.get('/you/{name}')
+async def get_you_controller(name: str, req_id: ReqID) -> JSONResponse:
+    try:
+        return JSONResponse(get_you(name), headers=[req_id])
+    except YouWereNotFoundError as error:
+        raise BadRequestError(name=error.name, info=error.info) from error
+
+
+app = appdaora([add_you_controller, get_you_controller])
+
+```
+
+Running the server:
+
+```bash
+uvicorn myapp:app
+```
+
+```
+INFO: Started server process [16220]
+INFO: Waiting for application startup.
+INFO: ASGI 'lifespan' protocol appears unsupported.
+INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+```
+
+Quering the server:
+
+```bash
+curl -X POST -i localhost:8000/you/ -H 'http_req_id: 1a2b3c4d' -d '{"name":"Me","last_name":"Myself","age":32}'
+
+```
+
+```
+HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 43
+
+{"name":"Me","last_name":"Myself","age":32}
 
 ```
 

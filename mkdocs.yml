@@ -18,18 +18,20 @@ google_analytics:
 
 nav:
     - apidaora: index.md
-    - Features: features.md
+    # - Features: features.md
     - Python dataclass intro: python-dataclass.md
-    - Http intro: http.md
+    - JSON intro: json.md
+    # - Http intro: http.md
     - Tutorial - User Guide:
         - Introduction: tutorial/00-intro.md
-        - Complete Request/Response: tutorial/01-complete-request-response.md
-        - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
-        - Validating fields: tutorial/03-validating-fields.md
-        - Complex nested structures: tutorial/04-complex-nested-structures.md
-    - Alternatives, Inspiration and Comparisons: alternatives.md
-    - Benchmarks: benchmarks.md
-    - Help apidaora - Get Help: help.md
+        - Core Module: tutorial/10-using-asgi-module.md
+        # - Complete Request/Response: tutorial/01-complete-request-response.md
+        # - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
+        # - Validating fields: tutorial/03-validating-fields.md
+        # - Complex nested structures: tutorial/04-complex-nested-structures.md
+    # - Alternatives, Inspiration and Comparisons: alternatives.md
+    # - Benchmarks: benchmarks.md
+    # - Help apidaora - Get Help: help.md
     - Development - Contributing: contributing.md
     - Changelog: changelog.md
 

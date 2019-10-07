@@ -9,11 +9,11 @@
 Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
 
 ```bash
-{!./src/tutorial/tutorial__server.bash!}
+uvicorn myapp:app
 ```
 
 ```
-{!./src/tutorial/tutorial__server.bash.output!}
+{!./src/server.bash.output!}
 ```
 
 Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):

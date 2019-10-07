@@ -1,6 +1,4 @@
-## Contributing for apidaora
-
-### Starting Development
+## Starting Development
 
 ```bash
 git clone git@github.com:dutradda/apidaora.git --recursive
@@ -12,13 +10,13 @@ bake setup-apidaora
 bake dependencies
 ```
 
-### Running the integration suite:
+## Running the integration suite:
 
 ```bash
 bake integration
 ```
 
-### Other bake tasks:
+## Other bake tasks:
 
 ```bash
 bake check-code
