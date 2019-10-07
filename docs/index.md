@@ -40,57 +40,84 @@ $ pip install apidaora
 ```
 
 
-## Basic example
+## Simple example
 
 ```python
-{!./src/index/index_02_openapi.py!}
+{!./src/index/index_00_simple.py!}
 ```
 
 Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
 
 ```bash
-{!./src/index/index__server.bash!}
+uvicorn myapp:app
 ```
 
 ```
-{!./src/index/index__server.bash.output!}
+{!./src/server.bash.output!}
 ```
 
 Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):
 
 ```bash
-{!./src/index/index_02_openapi_curl.bash!}
+{!./src/index/index_00_simple_curl.bash!}
 ```
 
 ```
-{!./src/index/index_02_openapi_curl.bash.output!}
+{!./src/index/index_00_simple_curl.bash.output!}
+```
+
+
+## Basic example
+
+```python
+{!./src/index/index_01_basic.py!}
+```
+
+Running the server:
+
+```bash
+uvicorn myapp:app
+```
+
+```
+{!./src/server.bash.output!}
+```
+
+Quering the server:
+
+```bash
+{!./src/index/index_01_basic_curl.bash!}
+```
+
+```
+{!./src/index/index_01_basic_curl.bash.output!}
 ```
 
 
 ## Example for more request/response details
 
 ```python
-{!./src/index/index_03_openapi_more.py!}
+{!./src/index/index_02_more.py!}
 ```
 
 Running the server:
 
 ```bash
-{!./src/index/index__server.bash!}
+uvicorn myapp:app
 ```
 
 ```
-{!./src/index/index__server.bash.output!}
+{!./src/server.bash.output!}
 ```
 
 Quering the server:
 
 ```bash
-{!./src/index/index_03_openapi_more_curl.bash!}
+{!./src/index/index_02_more_curl.bash!}
 ```
 
 ```
-{!./src/index/index_03_openapi_more_curl.bash.output!}
+{!./src/index/index_02_more_curl.bash.output!}
 ```
 
 

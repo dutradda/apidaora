@@ -1,17 +1,9 @@
-# Tutorial - Introduction
+# Tutorial - Using ASGI module
 
-## Getting Started
-
-### Installs
-
-```
-$ pip install apidaora
-```
-
-### Starts coding
+## Example
 
 ```python
-{!./src/index/index_00_simple.py!}
+{!./src/tutorial/tutorial_10_asgi_module.py!}
 ```
 
 Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
@@ -27,9 +19,10 @@ uvicorn myapp:app
 Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):
 
 ```bash
-{!./src/index/index_00_simple_curl.bash!}
+{!./src/tutorial/tutorial_10_asgi_module_curl.bash!}
 ```
 
 ```
-{!./src/index/index_00_simple_curl.bash.output!}
+{!./src/tutorial/tutorial_10_asgi_module_curl.bash.output!}
 ```
+

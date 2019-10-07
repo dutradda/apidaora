@@ -6,11 +6,21 @@ export PROJECT_NAME=apidaora
 deploy: //check-virtualenv @confirm:secure deploy-docs release-pypi
 
 setup-apidaora: //check-virtualenv
-    pip install 'https://github.com/cython/cython/archive/master.tar.gz#074362b47093febfe5273ea7a00f4ba5ded6e73f'
+    pip install 'https://github.com/cython/cython/archive/074362b47093febfe5273ea7a00f4ba5ded6e73f.tar.gz'
     git clone https://github.com/MagicStack/uvloop.git --recursive
     cd uvloop
     git checkout 82104fb68e6cf2b469622e62169cdbeac93846cb
     pip install .
     cd ..
-    pip install 'https://github.com/encode/uvicorn/archive/master.tar.gz#e0a77de6baf436d182868fa280cd5e2f0d66501c'
-    pip install jsondaora
+    rm -rf uvloop
+    pip install 'https://github.com/encode/uvicorn/archive/e0a77de6baf436d182868fa280cd5e2f0d66501c.tar.gz'
+    git clone https://github.com/psf/black.git --recursive
+    cd black
+    git checkout d9e71a75ccfefa3d9156a64c03313a0d4ad981e5
+    pip install .
+    cd ..
+    rm -rf black
+    pip install 'https://github.com/PyCQA/pyflakes/archive/ee1eb0670a473a30f32208b7bd811282834486a6.tar.gz'
+    pip install 'https://github.com/PyCQA/flake8/archive/0359533fca164ef21c40c8074fbd3899316b8f91.tar.gz'
+
+integration: check-code tests-docs coverage
