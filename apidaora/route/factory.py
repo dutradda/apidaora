@@ -3,7 +3,7 @@ from asyncio import iscoroutine
 from dataclasses import is_dataclass
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import Any, Awaitable, Callable, Dict, Union
+from typing import Any, Awaitable, Callable, Dict, Optional, Sequence, Union
 
 import orjson
 from jsondaora import as_typed_dict, dataclass_asjson, typed_dict_asjson
@@ -19,6 +19,7 @@ from ..asgi.base import (
 from ..asgi.responses import make_json_response
 from ..asgi.router import Route
 from ..exceptions import BadRequestError, InvalidReturnError
+from ..header import _Header
 from ..method import MethodType
 from ..responses import Response
 from .controller import Controller
@@ -74,7 +75,7 @@ def make_route(
                 headers_map = ControllerInput.__headers_name_map__
                 kwargs.update(
                     {
-                        name: h_value.decode()  # type: ignore
+                        name: annotations_headers[name](h_value.decode())  # type: ignore
                         for h_name, h_value in headers
                         if (name := headers_map.get(h_name.decode()))  # noqa
                         in annotations_headers
@@ -102,6 +103,7 @@ def make_route(
     async def build_asgi_output(
         controller_output: Any,
         status: HTTPStatus = HTTPStatus.OK,
+        headers: Optional[Sequence[_Header]] = None,
         return_type_: Any = None,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
@@ -116,6 +118,7 @@ def make_route(
             return build_asgi_output(
                 controller_output.body,
                 controller_output.status,
+                controller_output.headers,
                 controller_output.__annotations__.get('body'),
             )
 
@@ -138,13 +141,25 @@ def make_route(
 
         elif controller_output is None:
             content_length = 0 if has_content_length else None
+
+            if headers:
+                return make_json_response(
+                    content_length, headers=make_asgi_headers(headers)
+                )
+
             return make_json_response(content_length)
 
         else:
             raise InvalidReturnError(controller_output, controller)
 
         content_length = len(body) if has_content_length else None
-        return make_json_response(content_length, status), body
+
+        return (
+            make_json_response(
+                content_length, status, make_asgi_headers(headers)
+            ),
+            body,
+        )
 
     class WrappedController(Controller):
         @functools.wraps(controller)
@@ -162,7 +177,7 @@ def make_route(
 
             except BadRequestError as error:
                 return send_bad_request_response(
-                    error.dict, has_content_length
+                    error.dict, has_content_length, error.headers
                 )
 
             except DeserializationError as error:
@@ -194,8 +209,33 @@ def make_route(
 
 
 def send_bad_request_response(
-    error_dict: Dict[str, Any], has_content_length: bool
+    error_dict: Dict[str, Any],
+    has_content_length: bool,
+    headers: Optional[Sequence[_Header]] = None,
 ) -> ASGICallableResults:
     body = orjson.dumps({'error': error_dict})
     content_length = len(body) if has_content_length else None
-    return (make_json_response(content_length, HTTPStatus.BAD_REQUEST), body)
+
+    return (
+        make_json_response(
+            content_length, HTTPStatus.BAD_REQUEST, make_asgi_headers(headers)
+        ),
+        body,
+    )
+
+
+def make_asgi_headers(
+    headers: Optional[Sequence[_Header]],
+) -> Optional[ASGIHeaders]:
+    if not headers:
+        return None
+
+    return tuple(
+        (
+            header.http_name.encode(),
+            str(header.value).encode()
+            if not isinstance(header.value, bytes)
+            else header.value,
+        )
+        for header in headers
+    )
