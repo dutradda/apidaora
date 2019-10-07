@@ -31,7 +31,7 @@ class HelloOutput(TypedDict):
 async def hello_controller(
     name: str, location: str, age: Age, body: ReqBody
 ) -> HelloOutput:
-    you = You(name=name, location=location, age=age, **body)
+    you = You(name=name, location=location, age=age.value, **body)
     return HelloOutput(
         hello_message=await hello_message(name, location), about_you=you
     )
