@@ -33,7 +33,7 @@ def get_annotations_headers(
     annotations_headers: Dict[str, Type[_Header]] = {}
 
     for name, type_ in annotations.items():
-        if issubclass(type_, _Header):
+        if isinstance(type_, type) and issubclass(type_, _Header):
             if type_.http_name is None:
                 http_name = (
                     ''
