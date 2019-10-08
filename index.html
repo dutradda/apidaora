@@ -665,7 +665,7 @@ content-length: 123
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">BadRequestError</span><span class="p">,</span> <span class="n">JSONResponse</span><span class="p">,</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">BadRequestError</span><span class="p">,</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">route</span>
 
 
 <span class="c1"># Domain layer, here are the domain related definitions</span>
@@ -716,21 +716,19 @@ content-length: 123
 
 
 <span class="nd">@route.post</span><span class="p">(</span><span class="s1">&#39;/you/&#39;</span><span class="p">)</span>
-<span class="n">async</span> <span class="k">def</span> <span class="nf">add_you_controller</span><span class="p">(</span><span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">You</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">add_you_controller</span><span class="p">(</span><span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">You</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">add_you</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">YouAlreadyBeenAddedError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">BadRequestError</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">info</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
 
-    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
-        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">(</span><span class="n">req_id</span><span class="p">,)</span>
-    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">(</span><span class="n">req_id</span><span class="p">,))</span>
 
 
 <span class="nd">@route.get</span><span class="p">(</span><span class="s1">&#39;/you/{name}&#39;</span><span class="p">)</span>
-<span class="n">async</span> <span class="k">def</span> <span class="nf">get_you_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">get_you_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">get_you</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="p">(</span><span class="n">req_id</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="p">(</span><span class="n">get_you</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="p">(</span><span class="n">req_id</span><span class="p">,))</span>
     <span class="k">except</span> <span class="n">YouWereNotFoundError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">BadRequestError</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">info</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
 
