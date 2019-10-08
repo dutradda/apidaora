@@ -22,12 +22,12 @@ class AnnotationsInfo:
 
 
 class ControllerInput(DictDaora):  # type: ignore
-    __annotations_info__: ClassVar[AnnotationsInfo]
-    __annotations_path_args__: ClassVar[Dict[str, Type[Any]]]
-    __annotations_query_dict__: ClassVar[Dict[str, Type[Any]]]
-    __annotations_headers__: ClassVar[Dict[str, Type[Any]]]
-    __annotations_body__: ClassVar[Dict[str, Type[Any]]]
-    __headers_name_map__: ClassVar[Dict[str, str]]
+    __annotations_info__: ClassVar[AnnotationsInfo] = AnnotationsInfo()
+    __annotations_path_args__: ClassVar[Dict[str, Type[Any]]] = {}
+    __annotations_query_dict__: ClassVar[Dict[str, Type[Any]]] = {}
+    __annotations_headers__: ClassVar[Dict[str, Type[Any]]] = {}
+    __annotations_body__: ClassVar[Dict[str, Type[Any]]] = {}
+    __headers_name_map__: ClassVar[Dict[str, str]] = {}
 
 
 def controller_input(

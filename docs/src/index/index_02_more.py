@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from jsondaora import jsondaora
 
-from apidaora import BadRequestError, JSONResponse, appdaora, header, route
+from apidaora import BadRequestError, appdaora, header, json, route
 
 
 # Domain layer, here are the domain related definitions
@@ -53,21 +53,19 @@ ReqID = header(type=str, http_name='http_req_id')
 
 
 @route.post('/you/')
-async def add_you_controller(req_id: ReqID, body: You) -> JSONResponse:
+async def add_you_controller(req_id: ReqID, body: You):
     try:
         add_you(body)
     except YouAlreadyBeenAddedError as error:
         raise BadRequestError(name=error.name, info=error.info) from error
 
-    return JSONResponse(
-        body=body, status=HTTPStatus.CREATED, headers=(req_id,)
-    )
+    return json(body, HTTPStatus.CREATED, headers=(req_id,))
 
 
 @route.get('/you/{name}')
-async def get_you_controller(name: str, req_id: ReqID) -> JSONResponse:
+async def get_you_controller(name: str, req_id: ReqID):
     try:
-        return JSONResponse(get_you(name), headers=(req_id,))
+        return json(get_you(name), headers=(req_id,))
     except YouWereNotFoundError as error:
         raise BadRequestError(name=error.name, info=error.info) from error
 

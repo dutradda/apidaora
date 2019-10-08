@@ -16,14 +16,26 @@ from ..asgi.base import (
     ASGIPathArgs,
     ASGIQueryDict,
 )
-from ..asgi.responses import make_json_response
+from ..asgi.responses import (
+    make_html_response,
+    make_json_response,
+    make_text_response,
+)
 from ..asgi.router import Route
+from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
 from ..header import _Header
 from ..method import MethodType
 from ..responses import Response
 from .controller import Controller
 from .controller_input import controller_input
+
+
+RESPONSES_MAP = {
+    ContentType.APPLICATION_JSON: make_json_response,
+    ContentType.TEXT_PLAIN: make_text_response,
+    ContentType.TEXT_HTML: make_html_response,
+}
 
 
 def make_route(
@@ -104,6 +116,7 @@ def make_route(
         controller_output: Any,
         status: HTTPStatus = HTTPStatus.OK,
         headers: Optional[Sequence[_Header]] = None,
+        content_type: ContentType = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
@@ -112,13 +125,12 @@ def make_route(
         if return_type_ is None and return_type:
             return_type_ = return_type
 
-        if isinstance(return_type_, type) and issubclass(
-            return_type_, Response
-        ):
+        if isinstance(controller_output, Response):
             return build_asgi_output(
-                controller_output.body,
-                controller_output.status,
-                controller_output.headers,
+                controller_output['body'],
+                controller_output['status'],
+                controller_output['headers'],
+                controller_output['content_type'],
                 controller_output.__annotations__.get('body'),
             )
 
@@ -132,22 +144,27 @@ def make_route(
             body = dataclass_asjson(controller_output)
 
         elif (
-            isinstance(controller_output, str)
+            isinstance(controller_output, tuple)
+            or isinstance(controller_output, str)
+            or isinstance(controller_output, list)
             or isinstance(controller_output, int)
             or isinstance(controller_output, bool)
             or isinstance(controller_output, float)
         ):
-            body = orjson.dumps(controller_output)
+            if content_type == content_type.APPLICATION_JSON:
+                body = orjson.dumps(controller_output)
+            else:
+                body = str(controller_output).encode()
 
         elif controller_output is None:
             content_length = 0 if has_content_length else None
 
             if headers:
-                return make_json_response(
+                return RESPONSES_MAP[content_type](
                     content_length, headers=make_asgi_headers(headers)
                 )
 
-            return make_json_response(content_length)
+            return RESPONSES_MAP[content_type](content_length)
 
         else:
             raise InvalidReturnError(controller_output, controller)
@@ -155,7 +172,7 @@ def make_route(
         content_length = len(body) if has_content_length else None
 
         return (
-            make_json_response(
+            RESPONSES_MAP[content_type](
                 content_length, status, make_asgi_headers(headers)
             ),
             body,
@@ -212,12 +229,13 @@ def send_bad_request_response(
     error_dict: Dict[str, Any],
     has_content_length: bool,
     headers: Optional[Sequence[_Header]] = None,
+    content_type: ContentType = ContentType.APPLICATION_JSON,
 ) -> ASGICallableResults:
     body = orjson.dumps({'error': error_dict})
     content_length = len(body) if has_content_length else None
 
     return (
-        make_json_response(
+        RESPONSES_MAP[content_type](
             content_length, HTTPStatus.BAD_REQUEST, make_asgi_headers(headers)
         ),
         body,

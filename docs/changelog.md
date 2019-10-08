@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Improve response types
+
+ - Fix headers response
+
 ### 0.8.0 - 2019-10-07
 
  - Fix headers response

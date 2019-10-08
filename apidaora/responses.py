@@ -1,18 +1,52 @@
 from http import HTTPStatus
-from typing import Any, Dict, Sequence
+from typing import Any, Sequence
 
-from jsondaora import jsondaora
+from dictdaora import DictDaora
 
+from .content import ContentType
 from .header import _Header
 
 
-@jsondaora
-class Response:
-    body: Any
-    status: HTTPStatus = HTTPStatus.OK
-    headers: Sequence[_Header] = ()
+class Response(DictDaora):  # type: ignore
+    status: HTTPStatus
+    headers: Sequence[_Header]
+    content_type: ContentType
 
 
-@jsondaora
-class JSONResponse(Response):
-    body: Dict[str, Any]
+def json(
+    body: Any,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Sequence[_Header] = (),
+) -> Response:
+    return Response(
+        body=body,
+        status=status,
+        headers=headers,
+        content_type=ContentType.APPLICATION_JSON,
+    )
+
+
+def text(
+    body: Any,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Sequence[_Header] = (),
+) -> Response:
+    return Response(
+        body=body,
+        status=status,
+        headers=headers,
+        content_type=ContentType.TEXT_PLAIN,
+    )
+
+
+def html(
+    body: Any,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Sequence[_Header] = (),
+) -> Response:
+    return Response(
+        body=body,
+        status=status,
+        headers=headers,
+        content_type=ContentType.TEXT_HTML,
+    )

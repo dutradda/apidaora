@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Awaitable, Optional
+from typing import Awaitable, Optional, Tuple
 
 from ..content import ContentType
 from .base import ASGIHeaders, ASGIResponse, Sender
@@ -11,7 +11,10 @@ JSON_CONTENT_HEADER = (
     ContentType.APPLICATION_JSON.value.encode(),
 )
 HTML_CONTENT_HEADER = (b'content-type', ContentType.TEXT_HTML.value.encode())
-TEXT_CONTENT_HEADER = (b'content-type', ContentType.TEXT_PLAIN.value.encode())
+PLAINTEXT_CONTENT_HEADER = (
+    b'content-type',
+    ContentType.TEXT_PLAIN.value.encode(),
+)
 
 JSON_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
@@ -28,7 +31,7 @@ HTML_RESPONSE: ASGIResponse = {
 PLAINTEXT_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.OK.value,
-    'headers': (TEXT_CONTENT_HEADER,),
+    'headers': (PLAINTEXT_CONTENT_HEADER,),
 }
 
 NOTFOUND_RESPONSE: ASGIResponse = {
@@ -50,16 +53,18 @@ NO_CONTENT_RESPONSE: ASGIResponse = {
 }
 
 
-def make_json_response(
-    content_length: Optional[int] = None,
-    status: HTTPStatus = HTTPStatus.OK,
-    headers: Optional[ASGIHeaders] = None,
+def make_response(
+    content_length: Optional[int],
+    status: HTTPStatus,
+    headers: Optional[ASGIHeaders],
+    default_value: ASGIResponse,
+    default_content_header: Tuple[bytes, bytes],
 ) -> ASGIResponse:
     if content_length is None:
-        return JSON_RESPONSE
+        return default_value
 
     default_headers: ASGIHeaders = (
-        JSON_CONTENT_HEADER,
+        default_content_header,
         (b'content-length', str(content_length).encode()),
     )
 
@@ -74,6 +79,40 @@ def make_json_response(
         'status': status.value,
         'headers': default_headers if not headers else headers,
     }
+
+
+def make_json_response(
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        content_length, status, headers, JSON_RESPONSE, JSON_CONTENT_HEADER
+    )
+
+
+def make_text_response(
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        content_length,
+        status,
+        headers,
+        PLAINTEXT_RESPONSE,
+        PLAINTEXT_CONTENT_HEADER,
+    )
+
+
+def make_html_response(
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        content_length, status, headers, HTML_RESPONSE, HTML_CONTENT_HEADER
+    )
 
 
 async def send_response(
