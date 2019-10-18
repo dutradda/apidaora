@@ -37,6 +37,7 @@ test = [
     'pytest-cov',
     'pytest-mock',
     'pytest>=5.1.1',
+    'uvicorn',
 ]
 doc = [
     'mkdocs',
