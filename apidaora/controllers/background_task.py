@@ -76,10 +76,10 @@ def make_background_task(
 
     executor = ThreadPoolExecutor(max_workers)
     annotations = getattr(controller, '__annotations__', {})
-    Result = annotations.get('return', Dict[str, Any])
+    Result = annotations.get('return', str)
 
     @jsondaora
-    class TaskFinishedInfo(TaskInfo):
+    class FinishedTaskInfo(TaskInfo):
         end_time: str
         result: Result  # type: ignore
 
@@ -89,18 +89,24 @@ def make_background_task(
         if asyncio.iscoroutinefunction(controller):
             loop = asyncio.get_running_loop()
 
-            if callable(tasks_database):
-                redis_tasks_database = await tasks_database()  # noqa
+            if isinstance(tasks_database, partial):
+                tasks_database_ = await tasks_database()  # noqa
             else:
-                redis_tasks_database = tasks_database
+                tasks_database_ = tasks_database
 
             async def wrapper() -> Any:
                 result = await controller(*args, **kwargs)
-                task = await redis_tasks_database.get(task_id)
-                finished_task = TaskFinishedInfo(
-                    end_time=get_iso_time(), result=result, **task  # type: ignore
+                task = await tasks_database_.get(task_id, FinishedTaskInfo)
+                finished_task = FinishedTaskInfo(
+                    end_time=get_iso_time(),
+                    result=result,
+                    status=TaskStatusType.FINISHED.value,
+                    task_id=task['task_id'],
+                    start_time=task['start_time'],
                 )
-                await redis_tasks_database.set(task_id, finished_task)
+                await tasks_database_.set(
+                    task_id, finished_task, task_cls=FinishedTaskInfo
+                )
 
             future = asyncio.run_coroutine_threadsafe(wrapper(), loop)
 
@@ -110,12 +116,25 @@ def make_background_task(
                 result = future.result()
                 policy = asyncio.get_event_loop_policy()
                 loop = policy.new_event_loop()
-                task = loop.run_until_complete(tasks_database.get(task_id))
-                finished_task = TaskFinishedInfo(
-                    end_time=get_iso_time(), result=result, **task  # type: ignore
+                if isinstance(tasks_database, partial):
+                    tasks_database_ = loop.run_until_complete(tasks_database())
+                else:
+                    tasks_database_ = tasks_database
+
+                task = loop.run_until_complete(
+                    tasks_database_.get(task_id, FinishedTaskInfo)
+                )
+                finished_task = FinishedTaskInfo(
+                    end_time=get_iso_time(),
+                    result=result,
+                    status=TaskStatusType.FINISHED.value,
+                    task_id=task['task_id'],
+                    start_time=task['start_time'],
                 )
                 loop.run_until_complete(
-                    tasks_database.set(task_id, finished_task)
+                    tasks_database_.set(
+                        task_id, finished_task, task_cls=FinishedTaskInfo
+                    )
                 )
 
             future = executor.submit(controller, *args, **kwargs)
@@ -127,12 +146,25 @@ def make_background_task(
             start_time=start_time,
             status=TaskStatusType.RUNNING.value,
         )
-        await tasks_database.set(task_id, task)
+
+        if isinstance(tasks_database, partial):
+            tasks_database_ = await tasks_database()  # noqa
+        else:
+            tasks_database_ = tasks_database
+
+        await tasks_database_.set(task_id, task, task_cls=FinishedTaskInfo)
         return task
 
-    async def get_task_results(task_id: str) -> TaskInfo:
+    async def get_task_results(task_id: str) -> FinishedTaskInfo:
+        if isinstance(tasks_database, partial):
+            tasks_database_ = await tasks_database()  # noqa
+        else:
+            tasks_database_ = tasks_database
+
         try:
-            return await tasks_database.get(uuid.UUID(task_id))  # type: ignore
+            return await tasks_database_.get(  # type: ignore
+                uuid.UUID(task_id), FinishedTaskInfo
+            )
         except KeyError:
             raise BadRequestError(
                 name='invalid_task_id', info={'task_id': task_id}
@@ -167,10 +199,12 @@ def get_iso_time() -> str:
 class SimpleTasksDatabase:
     data_source: Dict[str, Any]
 
-    async def set(self, key: Any, value: Any, finished: bool = False) -> None:
+    async def set(
+        self, key: Any, value: Any, task_cls: Type[Any] = TaskInfo
+    ) -> None:
         self.data_source[key] = value
 
-    async def get(self, key: Any, finished: bool = False) -> Any:
+    async def get(self, key: Any, finished_task_cls: Type[Any]) -> Any:
         return self.data_source[key]
 
 
@@ -183,12 +217,21 @@ if aioredis is not None:
         async def set(
             self, key: Any, value: Any, task_cls: Type[Any] = TaskInfo
         ) -> None:
-            await self.data_source.set(key, typed_dict_asjson(value, task_cls))
+            await self.data_source.set(
+                str(key), typed_dict_asjson(value, task_cls)
+            )
 
-        async def get(self, key: Any, task_cls: Type[Any] = TaskInfo) -> Any:
-            value = await self.data_source.get(key)
+        async def get(self, key: Any, finished_task_cls: Type[Any]) -> Any:
+            value = await self.data_source.get(str(key))
+
             if value:
-                return as_typed_dict(orjson.loads(value), task_cls)
+                value = orjson.loads(value)
+
+                if value['status'] == TaskStatusType.RUNNING.value:
+                    return as_typed_dict(value, TaskInfo)
+
+                if value['status'] == TaskStatusType.FINISHED.value:
+                    return as_typed_dict(value, finished_task_cls)
 
             raise KeyError(key)
 

@@ -24,14 +24,17 @@ class _RouteDecorator:
                 raise MethodNotFoundError(attr_name)
 
         def decorator(
-            path_pattern: str,
+            path_pattern: str, **kwargs: Any
         ) -> Callable[[Callable[..., Any]], Controller]:
             @functools.wraps(make_route)
             def wrapper(
                 controller: Callable[..., Any]
             ) -> Union[Controller, BackgroundTask]:
                 if brackground:
-                    return make_background_task(controller, path_pattern)
+                    tasks_database = kwargs.get('tasks_database')
+                    return make_background_task(
+                        controller, path_pattern, tasks_database=tasks_database
+                    )
 
                 else:
                     route = make_route(
