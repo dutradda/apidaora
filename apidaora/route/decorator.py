@@ -3,7 +3,7 @@ from typing import Any, Callable, Union
 
 from ..asgi.router import Controller
 from ..controllers.background_task import BackgroundTask, make_background_task
-from ..exceptions import MethodNotFoundError
+from ..exceptions import InvalidRouteArgumentsError, MethodNotFoundError
 from ..method import MethodType
 from .factory import make_route
 
@@ -26,14 +26,21 @@ class _RouteDecorator:
         def decorator(
             path_pattern: str, **kwargs: Any
         ) -> Callable[[Callable[..., Any]], Controller]:
+            if len(kwargs) > 0 and tuple(kwargs.keys()) != (
+                'tasks_repository',
+            ):
+                raise InvalidRouteArgumentsError(kwargs)
+
             @functools.wraps(make_route)
             def wrapper(
                 controller: Callable[..., Any]
             ) -> Union[Controller, BackgroundTask]:
                 if brackground:
-                    tasks_database = kwargs.get('tasks_database')
+                    tasks_repository = kwargs.get('tasks_repository')
                     return make_background_task(
-                        controller, path_pattern, tasks_database=tasks_database
+                        controller,
+                        path_pattern,
+                        tasks_repository=tasks_repository,
                     )
 
                 else:

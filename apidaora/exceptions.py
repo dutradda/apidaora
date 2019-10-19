@@ -39,5 +39,9 @@ class BadRequestError(APIDaoraError):
         return {'name': self.name, 'info': self.info}
 
 
-class InvalidTasksDatabaseError(APIDaoraError):
+class InvalidTasksRepositoryError(APIDaoraError):
+    ...
+
+
+class InvalidRouteArgumentsError(APIDaoraError):
     ...

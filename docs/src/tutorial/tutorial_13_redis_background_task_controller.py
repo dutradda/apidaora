@@ -3,7 +3,7 @@ import time
 from apidaora import appdaora, route
 
 
-@route.background('/hello', tasks_database='redis://')
+@route.background('/hello', tasks_repository='redis://')
 def hello_task(name: str):
     time.sleep(1)
     return f'Hello {name}!'

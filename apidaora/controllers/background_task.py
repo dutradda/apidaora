@@ -12,7 +12,7 @@ import orjson
 from jsondaora import as_typed_dict, jsondaora, typed_dict_asjson
 
 from ..asgi.router import Controller
-from ..exceptions import BadRequestError, InvalidTasksDatabaseError
+from ..exceptions import BadRequestError, InvalidTasksRepositoryError
 from ..method import MethodType
 from ..route.factory import make_route
 
@@ -49,30 +49,32 @@ def make_background_task(
     controller: Callable[..., Any],
     path_pattern: str,
     max_workers: int = 10,
-    tasks_database: Any = None,
+    tasks_repository: Any = None,
 ) -> BackgroundTask:
     if asyncio.iscoroutinefunction(controller):
         logger.warning(
-            'Async tasks can potentially block yours application, use with care. '
+            'Async tasks can potentially block your application, use with care. '
             'It use is recommended just for small tasks or non-blocking operations.'
         )
 
-    if tasks_database is None:
-        tasks_database = SimpleTasksDatabase({})
+    if tasks_repository is None:
+        tasks_repository = SimpleTasksRepository({})
 
-    elif isinstance(tasks_database, str) and tasks_database.startswith(
+    elif isinstance(tasks_repository, str) and tasks_repository.startswith(
         'redis://'
     ):
         if aioredis is None:
-            raise InvalidTasksDatabaseError("'aioredis' package not found!")
+            raise InvalidTasksRepositoryError("'aioredis' package not found!")
 
-        tasks_database = partial(get_redis_tasks_database, tasks_database)
+        tasks_repository = partial(
+            get_redis_tasks_repository, tasks_repository
+        )
 
-    elif aioredis is not None and isinstance(tasks_database, aioredis.Redis):
-        tasks_database = RedisTasksDatabase(tasks_database)
+    elif isinstance(tasks_repository, BaseTasksRepository):
+        ...
 
     else:
-        raise InvalidTasksDatabaseError(tasks_database)
+        raise InvalidTasksRepositoryError(tasks_repository)
 
     executor = ThreadPoolExecutor(max_workers)
     annotations = getattr(controller, '__annotations__', {})
@@ -89,14 +91,14 @@ def make_background_task(
         if asyncio.iscoroutinefunction(controller):
             loop = asyncio.get_running_loop()
 
-            if isinstance(tasks_database, partial):
-                tasks_database_ = await tasks_database()  # noqa
+            if isinstance(tasks_repository, partial):
+                tasks_repository_ = await tasks_repository()  # noqa
             else:
-                tasks_database_ = tasks_database
+                tasks_repository_ = tasks_repository
 
             async def wrapper() -> Any:
                 result = await controller(*args, **kwargs)
-                task = await tasks_database_.get(task_id, FinishedTaskInfo)
+                task = await tasks_repository_.get(task_id, FinishedTaskInfo)
                 finished_task = FinishedTaskInfo(
                     end_time=get_iso_time(),
                     result=result,
@@ -104,7 +106,7 @@ def make_background_task(
                     task_id=task['task_id'],
                     start_time=task['start_time'],
                 )
-                await tasks_database_.set(
+                await tasks_repository_.set(
                     task_id, finished_task, task_cls=FinishedTaskInfo
                 )
 
@@ -116,13 +118,15 @@ def make_background_task(
                 result = future.result()
                 policy = asyncio.get_event_loop_policy()
                 loop = policy.new_event_loop()
-                if isinstance(tasks_database, partial):
-                    tasks_database_ = loop.run_until_complete(tasks_database())
+                if isinstance(tasks_repository, partial):
+                    tasks_repository_ = loop.run_until_complete(
+                        tasks_repository()
+                    )
                 else:
-                    tasks_database_ = tasks_database
+                    tasks_repository_ = tasks_repository
 
                 task = loop.run_until_complete(
-                    tasks_database_.get(task_id, FinishedTaskInfo)
+                    tasks_repository_.get(task_id, FinishedTaskInfo)
                 )
                 finished_task = FinishedTaskInfo(
                     end_time=get_iso_time(),
@@ -132,7 +136,7 @@ def make_background_task(
                     start_time=task['start_time'],
                 )
                 loop.run_until_complete(
-                    tasks_database_.set(
+                    tasks_repository_.set(
                         task_id, finished_task, task_cls=FinishedTaskInfo
                     )
                 )
@@ -147,22 +151,22 @@ def make_background_task(
             status=TaskStatusType.RUNNING.value,
         )
 
-        if isinstance(tasks_database, partial):
-            tasks_database_ = await tasks_database()  # noqa
+        if isinstance(tasks_repository, partial):
+            tasks_repository_ = await tasks_repository()  # noqa
         else:
-            tasks_database_ = tasks_database
+            tasks_repository_ = tasks_repository
 
-        await tasks_database_.set(task_id, task, task_cls=FinishedTaskInfo)
+        await tasks_repository_.set(task_id, task, task_cls=FinishedTaskInfo)
         return task
 
     async def get_task_results(task_id: str) -> FinishedTaskInfo:
-        if isinstance(tasks_database, partial):
-            tasks_database_ = await tasks_database()  # noqa
+        if isinstance(tasks_repository, partial):
+            tasks_repository_ = await tasks_repository()  # noqa
         else:
-            tasks_database_ = tasks_database
+            tasks_repository_ = tasks_repository
 
         try:
-            return await tasks_database_.get(  # type: ignore
+            return await tasks_repository_.get(  # type: ignore
                 uuid.UUID(task_id), FinishedTaskInfo
             )
         except KeyError:
@@ -196,7 +200,12 @@ def get_iso_time() -> str:
 
 
 @dataclasses.dataclass
-class SimpleTasksDatabase:
+class BaseTasksRepository:
+    ...
+
+
+@dataclasses.dataclass
+class SimpleTasksRepository(BaseTasksRepository):
     data_source: Dict[str, Any]
 
     async def set(
@@ -211,7 +220,7 @@ class SimpleTasksDatabase:
 if aioredis is not None:
 
     @dataclasses.dataclass
-    class RedisTasksDatabase:
+    class RedisTasksRepository(BaseTasksRepository):
         data_source: aioredis.Redis
 
         async def set(
@@ -235,6 +244,6 @@ if aioredis is not None:
 
             raise KeyError(key)
 
-    async def get_redis_tasks_database(uri: str) -> RedisTasksDatabase:
+    async def get_redis_tasks_repository(uri: str) -> RedisTasksRepository:
         data_source = await aioredis.create_redis_pool(uri)
-        return RedisTasksDatabase(data_source)
+        return RedisTasksRepository(data_source)
