@@ -49,20 +49,22 @@ def make_background_task(
     def create_task(*args: Any, **kwargs: Any) -> TaskInfo:
         task_id = uuid.uuid4()
 
+        def done_callback(future: Any) -> None:
+            result = future.result()
+            task = TASKS_DB[task_id]
+            finished_task = TaskFinishedInfo(
+                end_time=get_iso_time(), result=result, **task  # type: ignore
+            )
+            TASKS_DB[task_id] = finished_task
+
         if asyncio.iscoroutinefunction(controller):
-            # loop = asyncio.get_running_loop()
-            ...
+            loop = asyncio.get_running_loop()
+            future = asyncio.run_coroutine_threadsafe(
+                controller(*args, **kwargs), loop
+            )
+            future.add_done_callback(done_callback)
 
         else:
-
-            def done_callback(future: Any) -> None:
-                result = future.result()
-                task = TASKS_DB[task_id]
-                finished_task = TaskFinishedInfo(
-                    end_time=get_iso_time(), result=result, **task  # type: ignore
-                )
-                TASKS_DB[task_id] = finished_task
-
             future = executor.submit(controller, *args, **kwargs)
             future.add_done_callback(done_callback)
 
