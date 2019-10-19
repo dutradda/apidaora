@@ -1,18 +1,23 @@
 import asyncio
 import dataclasses
 import datetime
+import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from functools import partial
-from typing import Any, Callable, Dict, TypedDict
+from typing import Any, Callable, Dict, Type, TypedDict
 
-from jsondaora import jsondaora
+import orjson
+from jsondaora import as_typed_dict, jsondaora, typed_dict_asjson
 
 from ..asgi.router import Controller
 from ..exceptions import BadRequestError, InvalidTasksDatabaseError
 from ..method import MethodType
 from ..route.factory import make_route
+
+
+logger = logging.getLogger(__name__)
 
 
 try:
@@ -34,12 +39,6 @@ class TaskInfo(TypedDict):
     status: str
 
 
-@jsondaora
-class TaskFinishedInfo(TaskInfo):
-    end_time: str
-    result: Any
-
-
 @dataclasses.dataclass
 class BackgroundTask:
     create: Controller
@@ -52,6 +51,12 @@ def make_background_task(
     max_workers: int = 10,
     tasks_database: Any = None,
 ) -> BackgroundTask:
+    if asyncio.iscoroutinefunction(controller):
+        logger.warning(
+            'Async tasks can potentially block yours application, use with care. '
+            'It use is recommended just for small tasks or non-blocking operations.'
+        )
+
     if tasks_database is None:
         tasks_database = SimpleTasksDatabase({})
 
@@ -71,6 +76,12 @@ def make_background_task(
 
     executor = ThreadPoolExecutor(max_workers)
     annotations = getattr(controller, '__annotations__', {})
+    Result = annotations.get('return', Dict[str, Any])
+
+    @jsondaora
+    class TaskFinishedInfo(TaskInfo):
+        end_time: str
+        result: Result  # type: ignore
 
     async def create_task(*args: Any, **kwargs: Any) -> TaskInfo:
         task_id = uuid.uuid4()
@@ -79,25 +90,17 @@ def make_background_task(
             loop = asyncio.get_running_loop()
 
             if callable(tasks_database):
-
-                async def wrapper() -> Any:
-                    tasks_database = await tasks_database()  # noqa
-                    result = await controller(*args, **kwargs)
-                    task = await tasks_database.get(task_id)
-                    finished_task = TaskFinishedInfo(
-                        end_time=get_iso_time(), result=result, **task  # type: ignore
-                    )
-                    await tasks_database.set(task_id, finished_task)
-
+                redis_tasks_database = await tasks_database()  # noqa
             else:
+                redis_tasks_database = tasks_database
 
-                async def wrapper() -> Any:
-                    result = await controller(*args, **kwargs)
-                    task = await tasks_database.get(task_id)
-                    finished_task = TaskFinishedInfo(
-                        end_time=get_iso_time(), result=result, **task  # type: ignore
-                    )
-                    await tasks_database.set(task_id, finished_task)
+            async def wrapper() -> Any:
+                result = await controller(*args, **kwargs)
+                task = await redis_tasks_database.get(task_id)
+                finished_task = TaskFinishedInfo(
+                    end_time=get_iso_time(), result=result, **task  # type: ignore
+                )
+                await redis_tasks_database.set(task_id, finished_task)
 
             future = asyncio.run_coroutine_threadsafe(wrapper(), loop)
 
@@ -164,10 +167,10 @@ def get_iso_time() -> str:
 class SimpleTasksDatabase:
     data_source: Dict[str, Any]
 
-    async def set(self, key: Any, value: Any) -> None:
+    async def set(self, key: Any, value: Any, finished: bool = False) -> None:
         self.data_source[key] = value
 
-    async def get(self, key: Any) -> Any:
+    async def get(self, key: Any, finished: bool = False) -> Any:
         return self.data_source[key]
 
 
@@ -177,11 +180,17 @@ if aioredis is not None:
     class RedisTasksDatabase:
         data_source: aioredis.Redis
 
-        async def set(self, key: Any, value: Any) -> None:
-            ...
+        async def set(
+            self, key: Any, value: Any, task_cls: Type[Any] = TaskInfo
+        ) -> None:
+            await self.data_source.set(key, typed_dict_asjson(value, task_cls))
 
-        async def get(self, key: Any) -> Any:
-            ...
+        async def get(self, key: Any, task_cls: Type[Any] = TaskInfo) -> Any:
+            value = await self.data_source.get(key)
+            if value:
+                return as_typed_dict(orjson.loads(value), task_cls)
+
+            raise KeyError(key)
 
     async def get_redis_tasks_database(uri: str) -> RedisTasksDatabase:
         data_source = await aioredis.create_redis_pool(uri)
