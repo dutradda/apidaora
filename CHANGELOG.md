@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Create background tasks feature
+
 ### 0.9.0 - 2019-10-07
 
  - Improve response types

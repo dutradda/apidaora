@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 171
+
+{"end_time":"1970-01-01T00:00:00+00:00","result":"Hello Me!","task_id":"4ee301eb-6487-48a0-b6ed-e5f576accfc2","start_time":"1970-01-01T00:00:00+00:00","status":"finished"}

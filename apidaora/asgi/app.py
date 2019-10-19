@@ -47,8 +47,8 @@ def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> ASGIApp:
             else:
                 headers = []
 
-            response_and_body = route.controller(  # type: ignore
-                resolved.path_args, query_dict, headers, body  # type: ignore
+            response_and_body = route.controller(
+                resolved.path_args, query_dict, headers, body
             )
 
             while asyncio.iscoroutine(response_and_body):

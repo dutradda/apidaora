@@ -38,11 +38,15 @@ test = [
     'pytest-mock',
     'pytest>=5.1.1',
     'uvicorn',
+    'aioredis'
 ]
 doc = [
     'mkdocs',
     'mkdocs-material',
     'markdown-include'
+]
+redis = [
+    'aioredis'
 ]
 
 [tool.isort]

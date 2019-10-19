@@ -2,17 +2,31 @@ from typing import Sequence, Union
 
 from .asgi.app import asgi_app
 from .asgi.base import ASGIApp
-from .asgi.router import make_router
-from .route.controller import Controller
+from .asgi.router import Controller, make_router
+from .controllers.background_task import BackgroundTask
 
 
-def appdaora(handlers: Union[Controller, Sequence[Controller]]) -> ASGIApp:
+Controllers = Union[
+    Controller,
+    BackgroundTask,
+    Sequence[Union[Controller, BackgroundTask]],
+    Sequence[Controller],
+    Sequence[BackgroundTask],
+]
+
+
+def appdaora(controllers: Controllers) -> ASGIApp:
     routes = []
 
-    if not isinstance(handlers, Sequence):
-        handlers = [handlers]
+    if not isinstance(controllers, Sequence):
+        controllers = [controllers]
 
-    for operation in handlers:
-        routes.append(operation.route)
+    for controller in controllers:
+        if isinstance(controller, BackgroundTask):
+            routes.append(controller.create.route)
+            routes.append(controller.get_results.route)
+
+        else:
+            routes.append(controller.route)
 
     return asgi_app(make_router(routes))
