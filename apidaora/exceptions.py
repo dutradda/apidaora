@@ -37,3 +37,7 @@ class BadRequestError(APIDaoraError):
     @property
     def dict(self) -> Dict[str, Any]:
         return {'name': self.name, 'info': self.info}
+
+
+class InvalidTasksDatabaseError(APIDaoraError):
+    ...
