@@ -1,4 +1,5 @@
 import re
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import (
     Any,
@@ -13,14 +14,34 @@ from typing import (
 from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
 from apidaora.method import MethodType
 
-from .base import ASGICallable
+from .base import (
+    ASGIBody,
+    ASGICallableResults,
+    ASGIHeaders,
+    ASGIPathArgs,
+    ASGIQueryDict,
+)
+
+
+class Controller(ABC):
+    route: 'Route'
+
+    @abstractmethod
+    def __call__(
+        self,
+        path_args: ASGIPathArgs,
+        query_dict: ASGIQueryDict,
+        headers: ASGIHeaders,
+        body: ASGIBody,
+    ) -> ASGICallableResults:
+        ...
 
 
 @dataclass
 class Route:
     path_pattern: str
     method: MethodType
-    controller: ASGICallable
+    controller: Controller
     has_path_args: bool = False
     has_query: bool = False
     has_headers: bool = False

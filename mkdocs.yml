@@ -25,6 +25,7 @@ nav:
     - Tutorial - User Guide:
         - Introduction: tutorial/00-intro.md
         - Core Module: tutorial/10-using-asgi-module.md
+        - Background Tasks: tutorial/11-using-background-task-controller.md
         # - Complete Request/Response: tutorial/01-complete-request-response.md
         # - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
         # - Validating fields: tutorial/03-validating-fields.md

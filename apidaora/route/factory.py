@@ -21,13 +21,12 @@ from ..asgi.responses import (
     make_json_response,
     make_text_response,
 )
-from ..asgi.router import Route
+from ..asgi.router import Controller, Route
 from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
 from ..header import _Header
 from ..method import MethodType
 from ..responses import Response
-from .controller import Controller
 from .controller_input import controller_input
 
 

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Sequence, Type
+from typing import Any, Dict, Optional, Sequence
 
 from .header import _Header
 
@@ -28,7 +28,7 @@ class InvalidReturnError(APIDaoraError):
 @dataclass
 class BadRequestError(APIDaoraError):
     name: str
-    info: Dict[str, Type[Any]]
+    info: Dict[str, Any]
     headers: Optional[Sequence[_Header]] = None
 
     def __str__(self) -> str:
