@@ -14,6 +14,8 @@ $ pip install apidaora
 {!./src/index/index_00_simple.py!}
 ```
 
+## Running
+
 Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
 
 ```bash
@@ -23,6 +25,8 @@ uvicorn myapp:app
 ```
 {!./src/server.bash.output!}
 ```
+
+## Quering
 
 Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):
 

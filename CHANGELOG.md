@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Create core module interface
+
 ### 0.10.0 - 2019-10-20
 
  - Add gzip upload support
