@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Add gzip upload support
+
  - Create background tasks feature
 
 ### 0.9.0 - 2019-10-07
