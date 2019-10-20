@@ -37,6 +37,11 @@ class Controller(ABC):
         ...
 
 
+ControllerAnnotation = Callable[
+    [ASGIPathArgs, ASGIQueryDict, ASGIHeaders, ASGIBody], ASGICallableResults
+]
+
+
 @dataclass
 class Route:
     path_pattern: str
