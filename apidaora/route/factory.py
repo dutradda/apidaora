@@ -3,7 +3,16 @@ from asyncio import iscoroutine
 from dataclasses import is_dataclass
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import Any, Awaitable, Callable, Dict, Optional, Sequence, Union
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+)
 
 import orjson
 from jsondaora import as_typed_dict, dataclass_asjson, typed_dict_asjson
@@ -22,6 +31,7 @@ from ..asgi.responses import (
     make_text_response,
 )
 from ..asgi.router import Controller, Route
+from ..bodies import _GZipFactory
 from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
 from ..header import _Header
@@ -94,20 +104,18 @@ def make_route(
                 )
 
             if annotations_info.has_body:
-                try:
-                    kwargs['body'] = orjson.loads(body)
-                except JSONDecodeError:
-                    schema = (
-                        getattr(body_type, '__annotations__', {})
-                        if body_type
-                        else None
-                    )
-                    schema = {k: t.__name__ for k, t in schema.items()}
-                    raise BadRequestError(
-                        name='invalid-body', info={'schema': schema}
-                    )
+                if isinstance(body_type, type) and issubclass(
+                    body_type, _GZipFactory
+                ):
+                    kwargs['body'] = body_type(value=body)
+                    input_ = as_typed_dict(kwargs, ControllerInput)
+                    return input_  # type: ignore
+                else:
+                    kwargs['body'] = make_json_request_body(body, body_type)
 
-            return as_typed_dict(kwargs, ControllerInput)  # type: ignore
+            return as_typed_dict(  # type: ignore
+                kwargs, ControllerInput
+            )
 
         return {}
 
@@ -222,6 +230,17 @@ def make_route(
     )
     wrapped_controller.route = route
     return route
+
+
+def make_json_request_body(body: bytes, body_type: Optional[Type[Any]]) -> Any:
+    try:
+        return orjson.loads(body)
+    except JSONDecodeError:
+        schema = (
+            getattr(body_type, '__annotations__', {}) if body_type else None
+        )
+        schema = {k: t.__name__ for k, t in schema.items()}
+        raise BadRequestError(name='invalid-body', info={'schema': schema})
 
 
 def send_bad_request_response(

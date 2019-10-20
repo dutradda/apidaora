@@ -5,6 +5,7 @@ ASGI App using dataclasses module for request/response objects
 __version__ = '0.9.0'
 
 from apidaora.app import appdaora
+from apidaora.bodies import gzip_body
 from apidaora.content import ContentType
 from apidaora.exceptions import BadRequestError
 from apidaora.header import header
@@ -18,6 +19,7 @@ __all__ = [
     ContentType.__name__,
     MethodType.__name__,
     appdaora.__name__,
+    gzip_body.__name__,
     header.__name__,
     html.__name__,
     json.__name__,

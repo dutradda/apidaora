@@ -106,3 +106,6 @@ venv.bak/
 
 # sublime
 *.sublime-*
+
+# apidaora
+hello.gz
