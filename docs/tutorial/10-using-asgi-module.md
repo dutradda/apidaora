@@ -6,7 +6,9 @@
 {!./src/tutorial/tutorial_10_asgi_module.py!}
 ```
 
-Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
+## Running
+
+Running the server:
 
 ```bash
 uvicorn myapp:app
@@ -16,7 +18,9 @@ uvicorn myapp:app
 {!./src/server.bash.output!}
 ```
 
-Quering the server (needs curl [installed](https://curl.haxx.se/docs/install.html)):
+## Quering
+
+Quering the server:
 
 ```bash
 {!./src/tutorial/tutorial_10_asgi_module_curl.bash!}

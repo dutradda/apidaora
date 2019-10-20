@@ -8,7 +8,7 @@
 
 ## Running
 
-Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
+Running the server:
 
 ```bash
 uvicorn myapp:app
@@ -17,6 +17,8 @@ uvicorn myapp:app
 ```
 {!./src/server.bash.output!}
 ```
+
+## Posting gzip file
 
 Posting the file to the api (needs gzip [installed](https://www.gzip.org)):
 

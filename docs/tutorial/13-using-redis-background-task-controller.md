@@ -10,7 +10,7 @@
 
 You will need a redis server to run this example.
 
-Running the server (needs uvicorn [installed](https://www.uvicorn.org)):
+Running the server:
 
 ```bash
 uvicorn myapp:app
@@ -20,7 +20,9 @@ uvicorn myapp:app
 {!./src/server.bash.output!}
 ```
 
-Creating the task (needs curl [installed](https://curl.haxx.se/docs/install.html)):
+## Creating task
+
+Creating the task:
 
 ```bash
 {!./src/tutorial/tutorial_13_redis_background_task_controller_curl.bash!}
@@ -30,7 +32,9 @@ Creating the task (needs curl [installed](https://curl.haxx.se/docs/install.html
 {!./src/tutorial/tutorial_13_redis_background_task_controller_curl.bash.output!}
 ```
 
-Quering the server for the task:
+## Quering
+
+Quering the server for the task (You must replace the task_id with the server output):
 
 ```bash
 {!./src/tutorial/tutorial_13_redis_background_task_controller_curl2.bash!}
