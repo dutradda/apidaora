@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.11.0 - 2019-10-22
 
  - Fix background task status code
 
