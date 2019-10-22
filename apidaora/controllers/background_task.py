@@ -6,6 +6,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from functools import partial
+from http import HTTPStatus
 from typing import Any, Callable, Coroutine, Dict, Type, TypedDict
 
 import orjson
@@ -14,6 +15,7 @@ from jsondaora import as_typed_dict, jsondaora, typed_dict_asjson
 from ..asgi.router import Controller
 from ..exceptions import BadRequestError, InvalidTasksRepositoryError
 from ..method import MethodType
+from ..responses import Response, json
 from ..route.factory import make_route
 
 
@@ -142,7 +144,7 @@ def make_create_task(
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     executor = ThreadPoolExecutor(max_workers)
 
-    async def create_task(*args: Any, **kwargs: Any) -> TaskInfo:
+    async def create_task(*args: Any, **kwargs: Any) -> Response:
         task_id = uuid.uuid4()
 
         if asyncio.iscoroutinefunction(controller):
@@ -186,7 +188,7 @@ def make_create_task(
         await tasks_repository_.set(
             task_id, task, task_cls=finished_task_info_cls
         )
-        return task
+        return json(task, status=HTTPStatus.CREATED)
 
     return create_task
 
