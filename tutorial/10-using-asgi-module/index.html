@@ -351,6 +351,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
       
       
       
@@ -466,6 +480,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
       
       
       
@@ -489,10 +517,8 @@
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span><span class="p">,</span> <span class="n">typed_dict_asjson</span>
 
-<span class="kn">from</span> <span class="nn">apidaora.asgi.app</span> <span class="kn">import</span> <span class="n">asgi_app</span>
-<span class="kn">from</span> <span class="nn">apidaora.asgi.responses</span> <span class="kn">import</span> <span class="n">JSON_RESPONSE</span>
-<span class="kn">from</span> <span class="nn">apidaora.asgi.router</span> <span class="kn">import</span> <span class="n">Route</span><span class="p">,</span> <span class="n">make_router</span>
-<span class="kn">from</span> <span class="nn">apidaora.method</span> <span class="kn">import</span> <span class="n">MethodType</span>
+<span class="kn">from</span> <span class="nn">apidaora.core</span> <span class="kn">import</span> <span class="n">appdaora_core</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">apidaora.core.responses</span> <span class="kn">import</span> <span class="n">JSON_RESPONSE</span>
 
 
 <span class="nd">@jsondaora</span>
@@ -501,25 +527,19 @@
     <span class="n">location</span><span class="p">:</span> <span class="nb">str</span>
 
 
+<span class="nd">@route.get</span><span class="p">(</span><span class="s1">&#39;/hello/{name}&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">path_args</span><span class="p">,</span> <span class="n">query_dict</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
     <span class="n">you</span> <span class="o">=</span> <span class="n">You</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">query_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">body</span> <span class="o">=</span> <span class="n">typed_dict_asjson</span><span class="p">(</span><span class="n">you</span><span class="p">,</span> <span class="n">You</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">JSON_RESPONSE</span><span class="p">,</span> <span class="n">body</span>
 
 
-<span class="n">route</span> <span class="o">=</span> <span class="n">Route</span><span class="p">(</span>
-    <span class="n">path_pattern</span><span class="o">=</span><span class="s1">&#39;/hello/{name}&#39;</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="n">MethodType</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span>
-    <span class="n">controller</span><span class="o">=</span><span class="n">hello_controller</span><span class="p">,</span>
-    <span class="n">has_path_args</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-    <span class="n">has_query</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">router</span> <span class="o">=</span> <span class="n">make_router</span><span class="p">([</span><span class="n">route</span><span class="p">])</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">asgi_app</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora_core</span><span class="p">(</span><span class="n">hello_controller</span><span class="p">)</span>
 </pre></div>
 
 
-<p>Running the server (needs uvicorn <a href="https://www.uvicorn.org">installed</a>):</p>
+<h2 id="running">Running</h2>
+<p>Running the server:</p>
 <div class="codehilite"><pre><span></span>uvicorn myapp:app
 </pre></div>
 
@@ -531,7 +551,8 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 </pre></div>
 
 
-<p>Quering the server (needs curl <a href="https://curl.haxx.se/docs/install.html">installed</a>):</p>
+<h2 id="quering">Quering</h2>
+<p>Quering the server:</p>
 <div class="codehilite"><pre><span></span>curl -i localhost:8000/hello/Me?location<span class="o">=</span>World
 </pre></div>
 

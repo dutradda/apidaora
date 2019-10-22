@@ -406,6 +406,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#posting-gzip-file" class="md-nav__link">
+    Posting gzip file
+  </a>
+  
+</li>
+      
       
       
       
@@ -480,6 +487,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#posting-gzip-file" class="md-nav__link">
+    Posting gzip file
+  </a>
+  
+</li>
+      
       
       
       
@@ -513,7 +527,7 @@
 
 
 <h2 id="running">Running</h2>
-<p>Running the server (needs uvicorn <a href="https://www.uvicorn.org">installed</a>):</p>
+<p>Running the server:</p>
 <div class="codehilite"><pre><span></span>uvicorn myapp:app
 </pre></div>
 
@@ -525,6 +539,7 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 </pre></div>
 
 
+<h2 id="posting-gzip-file">Posting gzip file</h2>
 <p>Posting the file to the api (needs gzip <a href="https://www.gzip.org">installed</a>):</p>
 <div class="codehilite"><pre><span></span><span class="nb">echo</span> -n <span class="s1">&#39;Hello World!&#39;</span> <span class="p">|</span> gzip &gt; hello.gz
 

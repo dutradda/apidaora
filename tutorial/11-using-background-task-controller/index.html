@@ -363,6 +363,27 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-task" class="md-nav__link">
+    Creating task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
       
       
       
@@ -466,6 +487,27 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-task" class="md-nav__link">
+    Creating task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
       
       
       
@@ -500,7 +542,8 @@
 </pre></div>
 
 
-<p>Running the server (needs uvicorn <a href="https://www.uvicorn.org">installed</a>):</p>
+<h2 id="running">Running</h2>
+<p>Running the server:</p>
 <div class="codehilite"><pre><span></span>uvicorn myapp:app
 </pre></div>
 
@@ -512,12 +555,13 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 </pre></div>
 
 
-<p>Creating the task (needs curl <a href="https://curl.haxx.se/docs/install.html">installed</a>):</p>
+<h2 id="creating-task">Creating task</h2>
+<p>Creating the task:</p>
 <div class="codehilite"><pre><span></span>curl -X POST -i localhost:8000/hello?name<span class="o">=</span>Me
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span>HTTP/1.1 200 OK
+<div class="codehilite"><pre><span></span>HTTP/1.1 201 Created
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
@@ -527,7 +571,8 @@ content-length: 110
 </pre></div>
 
 
-<p>Quering the server for the task:</p>
+<h2 id="quering">Quering</h2>
+<p>Quering the server for the task (You must replace the task_id with the server output):</p>
 <div class="codehilite"><pre><span></span>curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
 </pre></div>
 
