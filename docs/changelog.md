@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Fix background task status code
+
  - Create core module interface
 
 ### 0.10.0 - 2019-10-20
