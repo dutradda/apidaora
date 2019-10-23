@@ -1,8 +1,9 @@
 from http import HTTPStatus
+from typing import Dict
 
 from jsondaora import jsondaora
 
-from apidaora import BadRequestError, appdaora, header, json, route
+from apidaora import BadRequestError, Header, appdaora, json, route
 
 
 # Domain layer, here are the domain related definitions
@@ -16,7 +17,7 @@ class You:
     age: int
 
 
-DB = {}
+DB: Dict[str, You] = {}
 
 
 def add_you(you):
@@ -49,7 +50,8 @@ class YouWereNotFoundError(DBError):
 # Application layer, here are the http related definitions
 
 # See: https://dutrdda.github.io/apidaora/tutorial/headers/
-ReqID = header(type=str, http_name='http_req_id')
+class ReqID(Header, type=str, http_name='http_req_id'):
+    ...
 
 
 @route.post('/you/')
