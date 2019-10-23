@@ -7,7 +7,7 @@ from .content import ContentType
 from .header import _Header
 
 
-class Response(DictDaora):  # type: ignore
+class Response(DictDaora):
     status: HTTPStatus
     headers: Sequence[_Header]
     content_type: ContentType

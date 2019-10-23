@@ -31,7 +31,7 @@ from ..asgi.responses import (
     make_text_response,
 )
 from ..asgi.router import Controller, Route
-from ..bodies import _GZipFactory
+from ..bodies import GZipFactory
 from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
 from ..header import _Header
@@ -105,7 +105,7 @@ def make_route(
 
             if annotations_info.has_body:
                 if isinstance(body_type, type) and issubclass(
-                    body_type, _GZipFactory
+                    body_type, GZipFactory
                 ):
                     kwargs['body'] = body_type(value=body)
                     input_ = as_typed_dict(kwargs, ControllerInput)

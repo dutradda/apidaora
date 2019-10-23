@@ -1,8 +1,12 @@
-from apidaora import appdaora, gzip_body, route
+from apidaora import GZipFactory, appdaora, route
+
+
+class GzipBody(GZipFactory):
+    mode = 'rt'
 
 
 @route.post('/hello')
-def gzip_hello(body: gzip_body('rt')):
+def gzip_hello(body: GzipBody):
     with body.open() as file:
         return file.read()
 

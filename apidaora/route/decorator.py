@@ -1,4 +1,3 @@
-import functools
 from typing import Any, Callable, Union
 
 from ..asgi.router import Controller
@@ -9,9 +8,13 @@ from .factory import make_route
 
 
 class _RouteDecorator:
-    def __getattr__(self, attr_name: str) -> Any:
+    def __getattr__(
+        self, attr_name: str
+    ) -> Callable[
+        ..., Callable[[Callable[..., Any]], Union[Controller, BackgroundTask]]
+    ]:
         if attr_name == '__name__':
-            return type(self).__name__
+            return type(self).__name__  # type: ignore
 
         if attr_name == 'background':
             brackground = True
@@ -25,13 +28,12 @@ class _RouteDecorator:
 
         def decorator(
             path_pattern: str, **kwargs: Any
-        ) -> Callable[[Callable[..., Any]], Controller]:
+        ) -> Callable[[Callable[..., Any]], Union[Controller, BackgroundTask]]:
             if len(kwargs) > 0 and tuple(kwargs.keys()) != (
                 'tasks_repository',
             ):
                 raise InvalidRouteArgumentsError(kwargs)
 
-            @functools.wraps(make_route)
             def wrapper(
                 controller: Callable[..., Any]
             ) -> Union[Controller, BackgroundTask]:

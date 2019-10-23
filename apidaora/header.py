@@ -7,7 +7,10 @@ from jsondaora import as_typed_dict_field
 BUILTIN_TYPE = type
 
 
-class _Header(DictDaora):  # type: ignore
+class _Header(DictDaora):
+    type: ClassVar[Type[Any]]
+    http_name: ClassVar[str]
+
     def __init__(self, value: Any):
         value = as_typed_dict_field(value, 'value', type(self).type)
         super().__init__(value=value)

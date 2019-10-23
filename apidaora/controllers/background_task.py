@@ -141,7 +141,7 @@ def make_create_task(
     tasks_repository: Any,
     finished_task_info_cls: Any,
     max_workers: int,
-) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
+) -> Callable[..., Coroutine[Any, Any, Response]]:
     executor = ThreadPoolExecutor(max_workers)
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:

@@ -21,7 +21,7 @@ class AnnotationsInfo:
     has_body: bool = False
 
 
-class ControllerInput(DictDaora):  # type: ignore
+class ControllerInput(DictDaora):
     __annotations_info__: ClassVar[AnnotationsInfo] = AnnotationsInfo()
     __annotations_path_args__: ClassVar[Dict[str, Type[Any]]] = {}
     __annotations_query_dict__: ClassVar[Dict[str, Type[Any]]] = {}
