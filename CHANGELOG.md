@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.11.1 - 2019-10-23
 
  - Add package typing
 
