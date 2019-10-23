@@ -4,19 +4,19 @@ from typing import Any, Sequence
 from dictdaora import DictDaora
 
 from .content import ContentType
-from .header import _Header
+from .header import Header
 
 
 class Response(DictDaora):
     status: HTTPStatus
-    headers: Sequence[_Header]
+    headers: Sequence[Header]
     content_type: ContentType
 
 
 def json(
     body: Any,
     status: HTTPStatus = HTTPStatus.OK,
-    headers: Sequence[_Header] = (),
+    headers: Sequence[Header] = (),
 ) -> Response:
     return Response(
         body=body,
@@ -29,7 +29,7 @@ def json(
 def text(
     body: Any,
     status: HTTPStatus = HTTPStatus.OK,
-    headers: Sequence[_Header] = (),
+    headers: Sequence[Header] = (),
 ) -> Response:
     return Response(
         body=body,
@@ -42,7 +42,7 @@ def text(
 def html(
     body: Any,
     status: HTTPStatus = HTTPStatus.OK,
-    headers: Sequence[_Header] = (),
+    headers: Sequence[Header] = (),
 ) -> Response:
     return Response(
         body=body,

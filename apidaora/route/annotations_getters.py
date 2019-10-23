@@ -1,6 +1,6 @@
 from typing import Any, Dict, Type
 
-from ..header import _Header
+from ..header import Header
 
 
 def get_annotations_path_args(
@@ -30,10 +30,10 @@ def get_annotations_query_dict(
 def get_annotations_headers(
     headers_name_map: Dict[str, str], annotations: Dict[str, Type[Any]]
 ) -> Dict[str, Type[Any]]:
-    annotations_headers: Dict[str, Type[_Header]] = {}
+    annotations_headers: Dict[str, Type[Header]] = {}
 
     for name, type_ in annotations.items():
-        if isinstance(type_, type) and issubclass(type_, _Header):
+        if isinstance(type_, type) and issubclass(type_, Header):
             if type_.http_name is None:
                 http_name = (
                     ''

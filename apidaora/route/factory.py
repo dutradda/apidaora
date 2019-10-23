@@ -34,7 +34,7 @@ from ..asgi.router import Controller, Route
 from ..bodies import GZipFactory
 from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
-from ..header import _Header
+from ..header import Header
 from ..method import MethodType
 from ..responses import Response
 from .controller_input import controller_input
@@ -122,7 +122,7 @@ def make_route(
     async def build_asgi_output(
         controller_output: Any,
         status: HTTPStatus = HTTPStatus.OK,
-        headers: Optional[Sequence[_Header]] = None,
+        headers: Optional[Sequence[Header]] = None,
         content_type: ContentType = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
     ) -> ASGICallableResults:
@@ -246,7 +246,7 @@ def make_json_request_body(body: bytes, body_type: Optional[Type[Any]]) -> Any:
 def send_bad_request_response(
     error_dict: Dict[str, Any],
     has_content_length: bool,
-    headers: Optional[Sequence[_Header]] = None,
+    headers: Optional[Sequence[Header]] = None,
     content_type: ContentType = ContentType.APPLICATION_JSON,
 ) -> ASGICallableResults:
     body = orjson.dumps({'error': error_dict})
@@ -261,14 +261,14 @@ def send_bad_request_response(
 
 
 def make_asgi_headers(
-    headers: Optional[Sequence[_Header]],
+    headers: Optional[Sequence[Header]],
 ) -> Optional[ASGIHeaders]:
     if not headers:
         return None
 
     return tuple(
         (
-            header.http_name.encode(),
+            header.http_name.encode(),  # type: ignore
             str(header.value).encode()
             if not isinstance(header.value, bytes)
             else header.value,

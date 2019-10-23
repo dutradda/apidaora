@@ -8,7 +8,7 @@ from apidaora.app import appdaora
 from apidaora.bodies import GZipFactory
 from apidaora.content import ContentType
 from apidaora.exceptions import BadRequestError
-from apidaora.header import header
+from apidaora.header import Header
 from apidaora.method import MethodType
 from apidaora.responses import html, json, text
 from apidaora.route.decorator import route
@@ -20,7 +20,7 @@ __all__ = [
     'ContentType',
     'MethodType',
     'appdaora',
-    'header',
+    'Header',
     'html',
     'json',
     'text',

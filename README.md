@@ -93,20 +93,29 @@ content-length: 14
 ```python
 from typing import TypedDict
 
-from jsondaora import integer, jsondaora, string
+from jsondaora import IntegerField, StringField, jsondaora
 
-from apidaora import appdaora, header, route
+from apidaora import Header, appdaora, route
 
 
-Age = header(type=int)
+class Integer(IntegerField, minimum=18):
+    ...
+
+
+class String(StringField, max_length=100):
+    ...
+
+
+class Age(Header, type=Integer):
+    ...
 
 
 @jsondaora
 class You(TypedDict):
     name: str
     last_name: str
-    location: string(max_length=100)
-    age: integer(minimum=18)
+    location: str
+    age: int
 
 
 @jsondaora
@@ -117,16 +126,21 @@ class ReqBody(TypedDict):
 @jsondaora
 class HelloOutput(TypedDict):
     hello_message: str
-    abot_you: You
+    about_you: You
 
 
 @route.put('/hello/{name}')
 async def hello_controller(
-    name: str, location: str, age: Age, body: ReqBody
+    name: str, location: String, age: Age, body: ReqBody
 ) -> HelloOutput:
-    you = You(name=name, location=location, age=age.value, **body)
+    you = You(
+        name=name,
+        location=location.value,
+        age=age.value.value,
+        last_name=body['last_name'],
+    )
     return HelloOutput(
-        hello_message=await hello_message(name, location), about_you=you
+        hello_message=await hello_message(name, location.value), about_you=you
     )
 
 
@@ -177,10 +191,11 @@ content-length: 123
 
 ```python
 from http import HTTPStatus
+from typing import Dict
 
 from jsondaora import jsondaora
 
-from apidaora import BadRequestError, appdaora, header, json, route
+from apidaora import BadRequestError, Header, appdaora, json, route
 
 
 # Domain layer, here are the domain related definitions
@@ -194,7 +209,7 @@ class You:
     age: int
 
 
-DB = {}
+DB: Dict[str, You] = {}
 
 
 def add_you(you):
@@ -227,7 +242,8 @@ class YouWereNotFoundError(DBError):
 # Application layer, here are the http related definitions
 
 # See: https://dutrdda.github.io/apidaora/tutorial/headers/
-ReqID = header(type=str, http_name='http_req_id')
+class ReqID(Header, type=str, http_name='http_req_id'):
+    ...
 
 
 @route.post('/you/')

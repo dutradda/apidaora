@@ -13,3 +13,6 @@ setup-apidaora: //check-virtualenv
     pip install 'https://github.com/PyCQA/flake8/archive/0359533fca164ef21c40c8074fbd3899316b8f91.tar.gz'
 
 integration: check-code tests-docs coverage
+
+mypy-docs:
+    mypy docs/src/index docs/src/tutorial
