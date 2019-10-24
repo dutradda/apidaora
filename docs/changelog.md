@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.11.3 - 2019-10-24
 
  - Fix background tasks
 
