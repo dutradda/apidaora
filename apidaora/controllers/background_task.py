@@ -104,6 +104,9 @@ class BaseTasksRepository:
     async def get(self, key: Any, finished_task_cls: Type[Any]) -> Any:
         ...
 
+    def close(self) -> None:
+        ...
+
 
 @dataclasses.dataclass
 class SimpleTasksRepository(BaseTasksRepository):
@@ -184,6 +187,10 @@ def make_create_task(
         await tasks_repository.set(
             task_id, task, task_cls=finished_task_info_cls
         )
+
+        if not asyncio.iscoroutinefunction(controller):
+            tasks_repository.close()
+
         return json(task, status=HTTPStatus.CREATED)
 
     return create_task
@@ -210,6 +217,7 @@ def make_task_wrapper(
         await tasks_repository.set(
             task_id, finished_task, task_cls=finished_task_info_cls
         )
+        tasks_repository.close()
 
     return wrapper
 
@@ -241,6 +249,7 @@ def make_done_callback(
                 task_id, finished_task, task_cls=finished_task_info_cls
             )
         )
+        tasks_repository.close()
 
     return done_callback
 
@@ -253,13 +262,13 @@ def make_get_task_results(
 
         if isinstance(tasks_repository, partial):
             tasks_repository = await tasks_repository()
-        else:
-            tasks_repository = tasks_repository
 
         try:
-            return await tasks_repository.get(  # type: ignore
+            task = await tasks_repository.get(
                 uuid.UUID(task_id), finished_task_info_cls
             )
+            tasks_repository.close()
+            return task  # type: ignore
         except KeyError:
             raise BadRequestError(
                 name='invalid_task_id', info={'task_id': task_id}
@@ -301,6 +310,9 @@ if aioredis is not None:
                     return as_typed_dict(value, finished_task_cls)
 
             raise KeyError(key)
+
+        def close(self) -> None:
+            self.data_source.close()
 
     async def get_redis_tasks_repository(uri: str) -> RedisTasksRepository:
         data_source = await aioredis.create_redis_pool(uri)
