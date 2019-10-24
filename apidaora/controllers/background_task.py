@@ -138,7 +138,7 @@ def get_tasks_repository(tasks_repository: Any) -> Any:
 
 def make_create_task(
     controller: Callable[..., Any],
-    tasks_repository: Any,
+    tasks_repository_: Any,
     finished_task_info_cls: Any,
     max_workers: int,
 ) -> Callable[..., Coroutine[Any, Any, Response]]:
@@ -146,15 +146,13 @@ def make_create_task(
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:
         task_id = uuid.uuid4()
+        tasks_repository = tasks_repository_
 
         if asyncio.iscoroutinefunction(controller):
-            loop = asyncio.get_running_loop()
-
             if isinstance(tasks_repository, partial):
-                tasks_repository_ = await tasks_repository()  # noqa
-            else:
-                tasks_repository_ = tasks_repository
+                tasks_repository = await tasks_repository()
 
+            loop = asyncio.get_running_loop()
             wrapper = make_task_wrapper(
                 tasks_repository,
                 task_id,
@@ -163,7 +161,7 @@ def make_create_task(
                 *args,
                 **kwargs,
             )
-            future = asyncio.run_coroutine_threadsafe(wrapper(), loop)
+            asyncio.run_coroutine_threadsafe(wrapper(), loop)
 
         else:
             done_callback = make_done_callback(
@@ -181,11 +179,9 @@ def make_create_task(
         )
 
         if isinstance(tasks_repository, partial):
-            tasks_repository_ = await tasks_repository()  # noqa
-        else:
-            tasks_repository_ = tasks_repository
+            tasks_repository = await tasks_repository()
 
-        await tasks_repository_.set(
+        await tasks_repository.set(
             task_id, task, task_cls=finished_task_info_cls
         )
         return json(task, status=HTTPStatus.CREATED)
@@ -219,19 +215,19 @@ def make_task_wrapper(
 
 
 def make_done_callback(
-    tasks_repository: Any, task_id: uuid.UUID, finished_task_info_cls: Any
+    tasks_repository_: Any, task_id: uuid.UUID, finished_task_info_cls: Any
 ) -> Callable[[Any], None]:
     def done_callback(future: Any) -> None:
         result = future.result()
         policy = asyncio.get_event_loop_policy()
         loop = policy.new_event_loop()
+        tasks_repository = tasks_repository_
+
         if isinstance(tasks_repository, partial):
-            tasks_repository_ = loop.run_until_complete(tasks_repository())
-        else:
-            tasks_repository_ = tasks_repository
+            tasks_repository = loop.run_until_complete(tasks_repository())
 
         task = loop.run_until_complete(
-            tasks_repository_.get(task_id, finished_task_info_cls)
+            tasks_repository.get(task_id, finished_task_info_cls)
         )
         finished_task = finished_task_info_cls(
             end_time=get_iso_time(),
@@ -241,7 +237,7 @@ def make_done_callback(
             start_time=task['start_time'],
         )
         loop.run_until_complete(
-            tasks_repository_.set(
+            tasks_repository.set(
                 task_id, finished_task, task_cls=finished_task_info_cls
             )
         )
@@ -250,16 +246,18 @@ def make_done_callback(
 
 
 def make_get_task_results(
-    tasks_repository: Any, finished_task_info_cls: Any
+    tasks_repository_: Any, finished_task_info_cls: Any
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def get_task_results(task_id: str) -> finished_task_info_cls:  # type: ignore
+        tasks_repository = tasks_repository_
+
         if isinstance(tasks_repository, partial):
-            tasks_repository_ = await tasks_repository()  # noqa
+            tasks_repository = await tasks_repository()
         else:
-            tasks_repository_ = tasks_repository
+            tasks_repository = tasks_repository
 
         try:
-            return await tasks_repository_.get(  # type: ignore
+            return await tasks_repository.get(  # type: ignore
                 uuid.UUID(task_id), finished_task_info_cls
             )
         except KeyError:

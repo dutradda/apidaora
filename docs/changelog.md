@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix background tasks
+
 ### 0.11.2 - 2019-10-23
 
  - Improve mypy

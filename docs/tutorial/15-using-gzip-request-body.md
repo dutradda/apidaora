@@ -3,7 +3,7 @@
 ## Example
 
 ```python
-{!./src/tutorial/tutorial_14_gzip_request_body.py!}
+{!./src/tutorial/tutorial_15_gzip_request_body.py!}
 ```
 
 ## Running
@@ -23,9 +23,9 @@ uvicorn myapp:app
 Posting the file to the api (needs gzip [installed](https://www.gzip.org)):
 
 ```bash
-{!./src/tutorial/tutorial_14_gzip_request_body_curl.bash!}
+{!./src/tutorial/tutorial_15_gzip_request_body_curl.bash!}
 ```
 
 ```
-{!./src/tutorial/tutorial_14_gzip_request_body_curl.bash.output!}
+{!./src/tutorial/tutorial_15_gzip_request_body_curl.bash.output!}
 ```
