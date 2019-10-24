@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.11.4 - 2019-10-24
 
  - Fix background tasks redis
 
