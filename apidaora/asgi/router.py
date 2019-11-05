@@ -1,6 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import (
     Any,
     Callable,
@@ -106,6 +107,7 @@ def make_router(
 
         routes_tree_tmp[route.method.value] = route
 
+    @lru_cache(maxsize=1024 * 1024)
     def route_(path: str, method: str) -> ResolvedRoute:
         path_parts = split_path(path)
         path_args = {}
