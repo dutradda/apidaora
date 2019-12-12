@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Add LRU cache for router to optimizing resolutions
+
 ### 0.11.4 - 2019-10-24
 
  - Fix background tasks redis
