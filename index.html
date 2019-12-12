@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -42,7 +42,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="assets/stylesheets/application.1b62728e.css">
       
         <link rel="stylesheet" href="assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -53,12 +53,12 @@
       
     
     
-      <script src="assets/javascripts/modernizr.74668098.js"></script>
+      <script src="assets/javascripts/modernizr.268332fc.js"></script>
     
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
@@ -607,9 +607,9 @@
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
 
 
-<span class="nd">@route.get</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;Hello {name}!&#39;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">hello_controller</span><span class="p">)</span>
@@ -682,8 +682,8 @@ content-length: 14
     <span class="n">about_you</span><span class="p">:</span> <span class="n">You</span>
 
 
-<span class="nd">@route.put</span><span class="p">(</span><span class="s1">&#39;/hello/{name}&#39;</span><span class="p">)</span>
-<span class="n">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/hello/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="n">age</span><span class="p">:</span> <span class="n">Age</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">ReqBody</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HelloOutput</span><span class="p">:</span>
     <span class="n">you</span> <span class="o">=</span> <span class="n">You</span><span class="p">(</span>
@@ -693,12 +693,12 @@ content-length: 14
         <span class="n">last_name</span><span class="o">=</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;last_name&#39;</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">HelloOutput</span><span class="p">(</span>
-        <span class="n">hello_message</span><span class="o">=</span><span class="n">await</span> <span class="n">hello_message</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">about_you</span><span class="o">=</span><span class="n">you</span>
+        <span class="n">hello_message</span><span class="o">=</span><span class="k">await</span> <span class="n">hello_message</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">about_you</span><span class="o">=</span><span class="n">you</span>
     <span class="p">)</span>
 
 
-<span class="n">async</span> <span class="k">def</span> <span class="nf">hello_message</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;Hello {name}! Welcome to {location}!&#39;</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_message</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">! Welcome to </span><span class="si">{location}</span><span class="s1">!&#39;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">hello_controller</span><span class="p">)</span>
@@ -791,8 +791,8 @@ content-length: 123
     <span class="o">...</span>
 
 
-<span class="nd">@route.post</span><span class="p">(</span><span class="s1">&#39;/you/&#39;</span><span class="p">)</span>
-<span class="n">async</span> <span class="k">def</span> <span class="nf">add_you_controller</span><span class="p">(</span><span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">You</span><span class="p">):</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/you/&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_you_controller</span><span class="p">(</span><span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">You</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">add_you</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">YouAlreadyBeenAddedError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -801,8 +801,8 @@ content-length: 123
     <span class="k">return</span> <span class="n">json</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">(</span><span class="n">req_id</span><span class="p">,))</span>
 
 
-<span class="nd">@route.get</span><span class="p">(</span><span class="s1">&#39;/you/{name}&#39;</span><span class="p">)</span>
-<span class="n">async</span> <span class="k">def</span> <span class="nf">get_you_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">):</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/you/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_you_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">req_id</span><span class="p">:</span> <span class="n">ReqID</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json</span><span class="p">(</span><span class="n">get_you</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="p">(</span><span class="n">req_id</span><span class="p">,))</span>
     <span class="k">except</span> <span class="n">YouWereNotFoundError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -862,6 +862,7 @@ http_req_id: 4d3c2b1a
                 
                   
                 
+                
               
               
                 
@@ -914,7 +915,7 @@ http_req_id: 4d3c2b1a
       
     </div>
     
-      <script src="assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
       
