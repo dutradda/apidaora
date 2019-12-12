@@ -9,7 +9,7 @@ setup-apidaora: //check-virtualenv
     pip install cython==0.29.13
     pip install -e git+https://github.com/MagicStack/uvloop@82104fb68e6cf2b469622e62169cdbeac93846cb#egg=uvloop
     pip install -e git+https://github.com/psf/black@d9e71a75ccfefa3d9156a64c03313a0d4ad981e5#egg=black
-    pip install 'https://github.com/PyCQA/pyflakes/archive/ee1eb0670a473a30f32208b7bd811282834486a6.tar.gz'
+    pip install 'https://github.com/PyCQA/pyflakes/archive/d99fd24ec520524b44ec92579c7178084ce2dc90.tar.gz'
     pip install 'https://github.com/PyCQA/flake8/archive/0359533fca164ef21c40c8074fbd3899316b8f91.tar.gz'
 
 integration: check-code tests-docs coverage
