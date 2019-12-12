@@ -5,7 +5,7 @@ on: [push]
 jobs:
   integration:
     runs-on: ubuntu-latest
-    container: python:rc-buster
+    container: python:3.8
     services:
       redis:
         image: redis
