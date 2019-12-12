@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.12.0 - 2019-12-12
 
  - Add LRU cache for router to optimizing resolutions
 
