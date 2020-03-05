@@ -1,21 +1,26 @@
 import functools
+import itertools
 from asyncio import iscoroutine
 from dataclasses import is_dataclass
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import (
+from typing import (  # type: ignore
     Any,
     Awaitable,
     Callable,
     Dict,
+    Iterable,
+    List,
     Optional,
     Sequence,
     Type,
     Union,
+    _GenericAlias,
 )
 
 import orjson
 from jsondaora import as_typed_dict, dataclass_asjson, typed_dict_asjson
+from jsondaora.deserializers import deserialize_field
 from jsondaora.exceptions import DeserializationError
 
 from ..asgi.base import (
@@ -24,8 +29,11 @@ from ..asgi.base import (
     ASGIHeaders,
     ASGIPathArgs,
     ASGIQueryDict,
+    ASGIResponse,
 )
 from ..asgi.responses import (
+    NOT_FOUND_RESPONSE,
+    NO_CONTENT_RESPONSE,
     make_html_response,
     make_json_response,
     make_text_response,
@@ -40,10 +48,15 @@ from ..responses import Response
 from .controller_input import controller_input
 
 
-RESPONSES_MAP = {
+RESPONSES_MAP: Dict[
+    Union[ContentType, HTTPStatus],
+    Union[Callable[..., ASGIResponse], ASGIResponse,],
+] = {
     ContentType.APPLICATION_JSON: make_json_response,
     ContentType.TEXT_PLAIN: make_text_response,
     ContentType.TEXT_HTML: make_html_response,
+    HTTPStatus.NOT_FOUND: NOT_FOUND_RESPONSE,
+    HTTPStatus.NO_CONTENT: NO_CONTENT_RESPONSE,
 }
 
 
@@ -80,15 +93,10 @@ def make_route(
             if annotations_info.has_query_dict:
                 kwargs.update(
                     {
-                        name: value
-                        if (
-                            (value := query_dict.get(name))  # noqa
-                            and len(value) > 1  # type: ignore
+                        name: deserialize_query_args(
+                            name, type_, query_dict.get(name)
                         )
-                        else value[0]
-                        if isinstance(value, list)
-                        else None
-                        for name in annotations_query_dict.keys()
+                        for name, type_ in annotations_query_dict.items()
                     }
                 )
 
@@ -123,7 +131,7 @@ def make_route(
         controller_output: Any,
         status: HTTPStatus = HTTPStatus.OK,
         headers: Optional[Sequence[Header]] = None,
-        content_type: ContentType = ContentType.APPLICATION_JSON,
+        content_type: Optional[ContentType] = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
@@ -158,7 +166,7 @@ def make_route(
             or isinstance(controller_output, bool)
             or isinstance(controller_output, float)
         ):
-            if content_type == content_type.APPLICATION_JSON:
+            if content_type == ContentType.APPLICATION_JSON:
                 body = orjson.dumps(controller_output)
             else:
                 body = str(controller_output).encode()
@@ -166,12 +174,15 @@ def make_route(
         elif controller_output is None:
             content_length = 0 if has_content_length else None
 
+            if content_type is None and status in RESPONSES_MAP:
+                return (RESPONSES_MAP[status],)
+
             if headers:
-                return RESPONSES_MAP[content_type](
+                return RESPONSES_MAP[content_type](  # type: ignore
                     content_length, headers=make_asgi_headers(headers)
                 )
 
-            return RESPONSES_MAP[content_type](content_length)
+            return RESPONSES_MAP[content_type](content_length)  # type: ignore
 
         else:
             raise InvalidReturnError(controller_output, controller)
@@ -179,7 +190,7 @@ def make_route(
         content_length = len(body) if has_content_length else None
 
         return (
-            RESPONSES_MAP[content_type](
+            RESPONSES_MAP[content_type](  # type: ignore
                 content_length, status, make_asgi_headers(headers)
             ),
             body,
@@ -205,14 +216,9 @@ def make_route(
                 )
 
             except DeserializationError as error:
-                field = {
-                    'name': error.args[0].name,
-                    'type': error.args[0].type.__name__,
-                    'invalid_value': error.args[1],
-                }
                 error_dict = {
                     'name': 'field-parsing',
-                    'info': {'field': field},
+                    'message': error.args[0],
                 }
                 return send_bad_request_response(
                     error_dict, has_content_length
@@ -253,7 +259,7 @@ def send_bad_request_response(
     content_length = len(body) if has_content_length else None
 
     return (
-        RESPONSES_MAP[content_type](
+        RESPONSES_MAP[content_type](  # type: ignore
             content_length, HTTPStatus.BAD_REQUEST, make_asgi_headers(headers)
         ),
         body,
@@ -275,3 +281,26 @@ def make_asgi_headers(
         )
         for header in headers
     )
+
+
+def deserialize_query_args(
+    name: str, type_: Type[Any], value: Optional[List[str]]
+) -> Any:
+    if value is not None:
+        if isinstance(type_, _GenericAlias) and type_._name in (
+            'List',
+            'Tuple',
+            'Set',
+            'Deque',
+        ):
+            value = list(itertools.chain(*[v.split(',') for v in value]))
+
+        elif len(value) > 1:
+            raise BadRequestError(
+                name='invalid-query',
+                info={'name': name, 'type': type_, 'value': value},
+            )
+        else:
+            value = value[0]
+
+        return deserialize_field(name, type_, value)
