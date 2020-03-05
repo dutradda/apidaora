@@ -34,7 +34,7 @@ PLAINTEXT_RESPONSE: ASGIResponse = {
     'headers': (PLAINTEXT_CONTENT_HEADER,),
 }
 
-NOTFOUND_RESPONSE: ASGIResponse = {
+NOT_FOUND_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.NOT_FOUND.value,
     'headers': (),
@@ -125,7 +125,7 @@ async def send_response(
 
 
 def send_not_found(send: Sender) -> Awaitable[None]:
-    return send_response(send, NOTFOUND_RESPONSE, b'')
+    return send_response(send, NOT_FOUND_RESPONSE, b'')
 
 
 def send_method_not_allowed_response(send: Sender) -> Awaitable[None]:
