@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Add support for str bodies
+
 ### 0.13.0 - 2020-03-04
 
  - Create not_found and no_content responses types

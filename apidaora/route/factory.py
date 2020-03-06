@@ -50,7 +50,7 @@ from .controller_input import controller_input
 
 RESPONSES_MAP: Dict[
     Union[ContentType, HTTPStatus],
-    Union[Callable[..., ASGIResponse], ASGIResponse,],
+    Union[Callable[..., ASGIResponse], ASGIResponse],
 ] = {
     ContentType.APPLICATION_JSON: make_json_response,
     ContentType.TEXT_PLAIN: make_text_response,
@@ -116,8 +116,12 @@ def make_route(
                     body_type, GZipFactory
                 ):
                     kwargs['body'] = body_type(value=body)
-                    input_ = as_typed_dict(kwargs, ControllerInput)
-                    return input_  # type: ignore
+
+                elif isinstance(body_type, type) and issubclass(
+                    body_type, str
+                ):
+                    kwargs['body'] = body.decode()
+
                 else:
                     kwargs['body'] = make_json_request_body(body, body_type)
 
@@ -301,6 +305,6 @@ def deserialize_query_args(
                 info={'name': name, 'type': type_, 'value': value},
             )
         else:
-            value = value[0]
+            value = value[0]  # type: ignore
 
         return deserialize_field(name, type_, value)
