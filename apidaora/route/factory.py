@@ -159,13 +159,15 @@ def make_route(
             else:
                 body = orjson.dumps(controller_output)
 
-        elif is_dataclass(controller_output):
+        elif (
+            is_dataclass(controller_output)
+            or isinstance(controller_output, tuple)
+            or isinstance(controller_output, list)
+        ):
             body = dataclass_asjson(controller_output)
 
         elif (
-            isinstance(controller_output, tuple)
-            or isinstance(controller_output, str)
-            or isinstance(controller_output, list)
+            isinstance(controller_output, str)
             or isinstance(controller_output, int)
             or isinstance(controller_output, bool)
             or isinstance(controller_output, float)

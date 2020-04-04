@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix controller_output serialization
+
 ### 0.14.0 - 2020-03-06
 
  - Add support for str bodies
