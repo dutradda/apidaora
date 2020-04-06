@@ -10,7 +10,14 @@ from apidaora.content import ContentType
 from apidaora.exceptions import BadRequestError
 from apidaora.header import Header
 from apidaora.method import MethodType
-from apidaora.responses import html, json, no_content, not_found, text
+from apidaora.responses import (
+    Response,
+    html,
+    json,
+    no_content,
+    not_found,
+    text,
+)
 from apidaora.route.decorator import route
 
 
@@ -27,4 +34,5 @@ __all__ = [
     'route',
     'no_content',
     'not_found',
+    'Response',
 ]
