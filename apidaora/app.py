@@ -23,10 +23,10 @@ def appdaora(controllers: Controllers) -> ASGIApp:
 
     for controller in controllers:
         if isinstance(controller, BackgroundTask):
-            routes.append(controller.create.route)
-            routes.append(controller.get_results.route)
+            routes.extend(controller.create.routes)
+            routes.extend(controller.get_results.routes)
 
         else:
-            routes.append(controller.route)
+            routes.extend(controller.routes)
 
     return asgi_app(make_router(routes))

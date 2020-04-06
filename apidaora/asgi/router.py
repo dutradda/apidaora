@@ -8,6 +8,7 @@ from typing import (
     DefaultDict,
     Dict,
     Iterable,
+    List,
     Optional,
     Pattern,
 )
@@ -25,7 +26,7 @@ from .base import (
 
 
 class Controller(ABC):
-    route: 'Route'
+    routes: List['Route']
 
     @abstractmethod
     def __call__(

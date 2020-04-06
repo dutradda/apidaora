@@ -38,7 +38,12 @@ class _RouteDecorator:
                     has_headers=headers,
                     has_body=body,
                 )
-                controller.route = route  # type: ignore
+
+                if hasattr(controller, 'routes'):
+                    controller.routes.append(route)  # type: ignore
+                else:
+                    controller.routes = [route]  # type: ignore
+
                 return controller
 
             return wrapper

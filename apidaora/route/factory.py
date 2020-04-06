@@ -9,7 +9,6 @@ from typing import (  # type: ignore
     Awaitable,
     Callable,
     Dict,
-    Iterable,
     List,
     Optional,
     Sequence,
@@ -63,7 +62,7 @@ RESPONSES_MAP: Dict[
 def make_route(
     path_pattern: str,
     method: MethodType,
-    controller: Callable[..., Any],
+    controller: Union[Callable[..., Any], Controller],
     has_content_length: bool = True,
 ) -> Route:
     ControllerInput = controller_input(controller, path_pattern)
@@ -240,7 +239,13 @@ def make_route(
         annotations_info.has_headers,
         annotations_info.has_body,
     )
-    wrapped_controller.route = route
+    routes = [route]
+
+    if isinstance(controller, Controller) and hasattr(controller, 'routes'):
+        routes = controller.routes + routes
+
+    wrapped_controller.routes = routes
+
     return route
 
 
