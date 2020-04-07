@@ -3,7 +3,7 @@ from typing import Dict
 
 from jsondaora import jsondaora
 
-from apidaora import BadRequestError, Header, appdaora, json, route
+from apidaora import BadRequestError, Header, Response, appdaora, json, route
 
 
 # Domain layer, here are the domain related definitions
@@ -20,13 +20,13 @@ class You:
 DB: Dict[str, You] = {}
 
 
-def add_you(you):
+def add_you(you: You) -> None:
     if you.name in DB:
         raise YouAlreadyBeenAddedError(you.name)
     DB[you.name] = you
 
 
-def get_you(name):
+def get_you(name: str) -> You:
     try:
         return DB[name]
     except KeyError:
@@ -35,7 +35,7 @@ def get_you(name):
 
 class DBError(Exception):
     @property
-    def info(self):
+    def info(self) -> Dict[str, str]:
         return {'name': self.args[0]}
 
 
@@ -55,7 +55,7 @@ class ReqID(Header, type=str, http_name='http_req_id'):
 
 
 @route.post('/you/')
-async def add_you_controller(req_id: ReqID, body: You):
+async def add_you_controller(req_id: ReqID, body: You) -> Response:
     try:
         add_you(body)
     except YouAlreadyBeenAddedError as error:
@@ -65,7 +65,7 @@ async def add_you_controller(req_id: ReqID, body: You):
 
 
 @route.get('/you/{name}')
-async def get_you_controller(name: str, req_id: ReqID):
+async def get_you_controller(name: str, req_id: ReqID) -> Response:
     try:
         return json(get_you(name), headers=(req_id,))
     except YouWereNotFoundError as error:
