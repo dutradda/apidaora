@@ -1,9 +1,10 @@
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
 from ..asgi.router import Controller
 from ..controllers.background_task import BackgroundTask, make_background_task
 from ..exceptions import InvalidRouteArgumentsError, MethodNotFoundError
 from ..method import MethodType
+from ..middlewares import Middlewares
 from .factory import make_route
 
 
@@ -27,7 +28,9 @@ class _RouteDecorator:
                 raise MethodNotFoundError(attr_name)
 
         def decorator(
-            path_pattern: str, **kwargs: Any
+            path_pattern: str,
+            middlewares: Optional[Middlewares] = None,
+            **kwargs: Any,
         ) -> Callable[[Callable[..., Any]], Union[Controller, BackgroundTask]]:
             if len(kwargs) > 0 and tuple(kwargs.keys()) != (
                 'tasks_repository',
@@ -47,7 +50,10 @@ class _RouteDecorator:
 
                 else:
                     route = make_route(
-                        path_pattern, MethodType[method], controller
+                        path_pattern,
+                        MethodType[method],
+                        controller,
+                        route_middlewares=middlewares,
                     )
                     return route.controller
 

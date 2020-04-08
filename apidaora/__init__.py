@@ -10,6 +10,7 @@ from apidaora.content import ContentType
 from apidaora.exceptions import BadRequestError
 from apidaora.header import Header
 from apidaora.method import MethodType
+from apidaora.middlewares import CorsMiddleware, Middlewares
 from apidaora.responses import (
     Response,
     html,
@@ -35,4 +36,6 @@ __all__ = [
     'no_content',
     'not_found',
     'Response',
+    'Middlewares',
+    'CorsMiddleware',
 ]

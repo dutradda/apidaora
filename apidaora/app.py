@@ -1,9 +1,10 @@
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 from .asgi.app import asgi_app
 from .asgi.base import ASGIApp
 from .asgi.router import Controller, make_router
 from .controllers.background_task import BackgroundTask
+from .middlewares import Middlewares
 
 
 Controllers = Union[
@@ -15,7 +16,9 @@ Controllers = Union[
 ]
 
 
-def appdaora(controllers: Controllers) -> ASGIApp:
+def appdaora(
+    controllers: Controllers, middlewares: Optional[Middlewares] = None
+) -> ASGIApp:
     routes = []
 
     if not isinstance(controllers, Sequence):
@@ -29,4 +32,4 @@ def appdaora(controllers: Controllers) -> ASGIApp:
         else:
             routes.extend(controller.routes)
 
-    return asgi_app(make_router(routes))
+    return asgi_app(make_router(routes, middlewares=middlewares))

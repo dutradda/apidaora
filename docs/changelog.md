@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Add middlewares support
+
 ### 0.14.1 - 2020-04-04
 
  - Fix controller_output serialization

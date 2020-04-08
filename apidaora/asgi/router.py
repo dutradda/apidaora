@@ -16,6 +16,7 @@ from typing import (
 from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
 from apidaora.method import MethodType
 
+from ..middlewares import Middlewares
 from .base import (
     ASGIBody,
     ASGICallableResults,
@@ -27,6 +28,7 @@ from .base import (
 
 class Controller(ABC):
     routes: List['Route']
+    middlewares: Optional[Middlewares] = None
 
     @abstractmethod
     def __call__(
@@ -79,11 +81,28 @@ PATH_RE = re.compile(r'\{(?P<name>[^/:]+)(:(?P<pattern>[^/:]+))?\}')
 
 
 def make_router(
-    routes: Iterable[Route],
+    routes: Iterable[Route], middlewares: Optional[Middlewares] = None,
 ) -> Callable[[str, str], ResolvedRoute]:
     routes_tree = RoutesTree()
 
     for route in routes:
+        if middlewares:
+            if (
+                not hasattr(route.controller, 'middlewares')
+                or not route.controller.middlewares
+            ):
+                route.controller.middlewares = middlewares
+            else:
+                route.controller.middlewares.post_routing.extend(
+                    middlewares.post_routing
+                )
+                route.controller.middlewares.pre_execution.extend(
+                    middlewares.pre_execution
+                )
+                route.controller.middlewares.post_execution.extend(
+                    middlewares.post_execution
+                )
+
         path_pattern_parts = split_path(route.path_pattern)
         routes_tree_tmp = routes_tree
 
@@ -136,9 +155,16 @@ def make_router(
         if method not in routes_tree_:
             raise MethodNotFoundError(method, path)
 
-        return ResolvedRoute(
-            route=routes_tree_[method], path_args=path_args, path=path
-        )
+        route = routes_tree_[method]
+
+        if (
+            hasattr(route.controller, 'middlewares')
+            and route.controller.middlewares
+        ):
+            for middleware in route.controller.middlewares.post_routing:
+                middleware(path_args)
+
+        return ResolvedRoute(route=route, path_args=path_args, path=path)
 
     return route_
 

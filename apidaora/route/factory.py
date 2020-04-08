@@ -43,6 +43,11 @@ from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
 from ..header import Header
 from ..method import MethodType
+from ..middlewares import (
+    MiddlewareRequest,
+    Middlewares,
+    make_kwargs_from_requst,
+)
 from ..responses import Response
 from .controller_input import controller_input
 
@@ -64,6 +69,7 @@ def make_route(
     method: MethodType,
     controller: Union[Callable[..., Any], Controller],
     has_content_length: bool = True,
+    route_middlewares: Optional[Union[Middlewares]] = None,
 ) -> Route:
     ControllerInput = controller_input(controller, path_pattern)
     annotations_info = ControllerInput.__annotations_info__
@@ -78,37 +84,70 @@ def make_route(
         query_dict: ASGIQueryDict,
         headers: ASGIHeaders,
         body: ASGIBody,
+        middlewares: Optional[Middlewares] = None,
     ) -> Dict[str, Any]:
         kwargs: Dict[str, Any]
+        middleware_request: MiddlewareRequest
+        has_middlewares = (middlewares and middlewares.pre_execution) or (
+            route_middlewares and route_middlewares.pre_execution
+        )
+
+        if has_middlewares:
+            middleware_request = MiddlewareRequest()
+
         if annotations_info.has_input:
             if annotations_info.has_path_args:
                 kwargs = {
                     name: path_args.get(name)
                     for name in annotations_path_args.keys()
                 }
+
+                if has_middlewares:
+                    middleware_request.path_args = {
+                        name: deserialize_field(
+                            name, type_, path_args.get(name)
+                        )
+                        for name, type_ in annotations_path_args.items()
+                    }
+
             else:
                 kwargs = {}
 
             if annotations_info.has_query_dict:
                 kwargs.update(
                     {
-                        name: deserialize_query_args(
+                        name: parse_query_args(
                             name, type_, query_dict.get(name)
                         )
                         for name, type_ in annotations_query_dict.items()
                     }
                 )
 
+                if has_middlewares:
+                    middleware_request.query_dict = {
+                        name: deserialize_field(
+                            name,
+                            type_,
+                            parse_query_args(
+                                name, type_, query_dict.get(name)
+                            ),
+                        )
+                        for name, type_ in annotations_query_dict.items()
+                        if name != 'body'
+                    }
+
             if annotations_info.has_headers:
                 headers_map = ControllerInput.__headers_name_map__
-                kwargs.update(
-                    {
-                        name: annotations_headers[name](h_value.decode())  # type: ignore
-                        for h_name, h_value in headers
-                        if (name := headers_map.get(h_name.decode()))  # noqa
-                        in annotations_headers
-                    }
-                )
+                headers_dict: Dict[str, Header] = {
+                    name: annotations_headers[name](h_value.decode())  # type: ignore
+                    for h_name, h_value in headers
+                    if (name := headers_map.get(h_name.decode()))  # noqa
+                    in annotations_headers
+                }
+                kwargs.update(headers_dict)
+
+                if has_middlewares:
+                    middleware_request.headers = headers_dict.copy()
 
             if annotations_info.has_body:
                 if isinstance(body_type, type) and issubclass(
@@ -124,6 +163,21 @@ def make_route(
                 else:
                     kwargs['body'] = make_json_request_body(body, body_type)
 
+            if has_middlewares:
+                middleware_request.body = deserialize_field(
+                    'body', body_type, kwargs['body']
+                )
+
+                if middlewares:
+                    for middleware in middlewares.pre_execution:
+                        middleware(middleware_request)
+
+                if route_middlewares:
+                    for middleware in route_middlewares.pre_execution:
+                        middleware(middleware_request)
+
+                kwargs = make_kwargs_from_requst(middleware_request)
+
             return as_typed_dict(  # type: ignore
                 kwargs, ControllerInput
             )
@@ -136,6 +190,8 @@ def make_route(
         headers: Optional[Sequence[Header]] = None,
         content_type: Optional[ContentType] = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
+        middlewares: Optional[Middlewares] = None,
+        local_route_middlewares: Optional[Middlewares] = route_middlewares,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
             controller_output = await controller_output
@@ -143,13 +199,36 @@ def make_route(
         if return_type_ is None and return_type:
             return_type_ = return_type
 
+        has_middlewares = (middlewares and middlewares.post_execution) or (
+            local_route_middlewares and local_route_middlewares.post_execution
+        )
+
+        if has_middlewares and not isinstance(controller_output, Response):
+            controller_output = Response(
+                body=controller_output,
+                status=status,
+                headers=headers,
+                content_type=content_type,
+            )
+
         if isinstance(controller_output, Response):
+            if has_middlewares:
+                if middlewares:
+                    for middleware in middlewares.post_execution:
+                        middleware(controller_output)
+
+                if local_route_middlewares:
+                    for middleware in local_route_middlewares.post_execution:
+                        middleware(controller_output)
+
             return build_asgi_output(
                 controller_output['body'],
                 controller_output['status'],
                 controller_output['headers'],
                 controller_output['content_type'],
                 controller_output.__annotations__.get('body'),
+                middlewares=None,
+                local_route_middlewares=None,
             )
 
         elif isinstance(controller_output, dict):
@@ -211,9 +290,17 @@ def make_route(
             body: ASGIBody,
         ) -> Union[Awaitable[ASGICallableResults], ASGICallableResults]:
             try:
-                kwargs = parse_asgi_input(path_args, query_dict, headers, body)
+                kwargs = parse_asgi_input(
+                    path_args,
+                    query_dict,
+                    headers,
+                    body,
+                    middlewares=self.middlewares,
+                )
                 controller_output = controller(**kwargs)
-                return build_asgi_output(controller_output)
+                return build_asgi_output(
+                    controller_output, middlewares=self.middlewares
+                )
 
             except BadRequestError as error:
                 return send_bad_request_response(
@@ -245,6 +332,7 @@ def make_route(
         routes = controller.routes + routes
 
     wrapped_controller.routes = routes
+    wrapped_controller.middlewares = route_middlewares
 
     return route
 
@@ -294,7 +382,7 @@ def make_asgi_headers(
     )
 
 
-def deserialize_query_args(
+def parse_query_args(
     name: str, type_: Type[Any], value: Optional[List[str]]
 ) -> Any:
     if value is not None:
@@ -314,4 +402,4 @@ def deserialize_query_args(
         else:
             value = value[0]  # type: ignore
 
-        return deserialize_field(name, type_, value)
+        return value
