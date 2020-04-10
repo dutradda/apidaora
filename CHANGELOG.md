@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.16.1 - 2020-04-10
 
  - Change docs to dark theme
 
