@@ -14,7 +14,9 @@ from apidaora import (
 )
 
 
-def post_routing_middleware(path_args: Dict[str, Any]) -> None:
+def post_routing_middleware(
+    path_pattern: str, path_args: Dict[str, Any]
+) -> None:
     path_args['name'] = path_args['name'].replace('Me', 'You')
 
 

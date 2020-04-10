@@ -15,7 +15,7 @@ class MiddlewareRequest:
 
 @dataclass
 class Middlewares:
-    post_routing: List[Callable[[Dict[str, Any]], None]] = field(
+    post_routing: List[Callable[[str, Dict[str, Any]], None]] = field(
         default_factory=list
     )
     pre_execution: List[Callable[[MiddlewareRequest], None]] = field(

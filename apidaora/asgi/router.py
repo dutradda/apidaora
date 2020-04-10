@@ -163,7 +163,7 @@ def make_router(
             and route.controller.middlewares
         ):
             for middleware in route.controller.middlewares.post_routing:
-                middleware(path_args)
+                middleware(route.path_pattern, path_args)
 
         return ResolvedRoute(route=route, path_args=path_args, path=path)
 
