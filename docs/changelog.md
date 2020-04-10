@@ -2,7 +2,9 @@
 
 ### UNRELEASED
 
- - Fix make_not_found_response
+ - Improve docs
+
+ - Fix make_not_found_response function
 
 ### [0.15.0 - 2020-04-10]
 
