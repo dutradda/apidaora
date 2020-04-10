@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.16.0 - 2020-04-10
 
  - Add class controllers support
 
