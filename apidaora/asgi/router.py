@@ -55,6 +55,7 @@ class Route:
     has_query: bool = False
     has_headers: bool = False
     has_body: bool = False
+    has_options: bool = False
 
 
 @dataclass

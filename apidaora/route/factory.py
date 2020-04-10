@@ -31,10 +31,10 @@ from ..asgi.base import (
     ASGIResponse,
 )
 from ..asgi.responses import (
-    NOT_FOUND_RESPONSE,
-    NO_CONTENT_RESPONSE,
     make_html_response,
     make_json_response,
+    make_no_content_response,
+    make_not_found_response,
     make_text_response,
 )
 from ..asgi.router import Controller, Route
@@ -53,14 +53,13 @@ from .controller_input import controller_input
 
 
 RESPONSES_MAP: Dict[
-    Union[ContentType, HTTPStatus],
-    Union[Callable[..., ASGIResponse], ASGIResponse],
+    Union[ContentType, HTTPStatus], Union[Callable[..., ASGIResponse]],
 ] = {
     ContentType.APPLICATION_JSON: make_json_response,
     ContentType.TEXT_PLAIN: make_text_response,
     ContentType.TEXT_HTML: make_html_response,
-    HTTPStatus.NOT_FOUND: NOT_FOUND_RESPONSE,
-    HTTPStatus.NO_CONTENT: NO_CONTENT_RESPONSE,
+    HTTPStatus.NOT_FOUND: make_no_content_response,
+    HTTPStatus.NO_CONTENT: make_not_found_response,
 }
 
 
@@ -70,6 +69,7 @@ def make_route(
     controller: Union[Callable[..., Any], Controller],
     has_content_length: bool = True,
     route_middlewares: Optional[Union[Middlewares]] = None,
+    options: bool = False,
 ) -> Route:
     ControllerInput = controller_input(controller, path_pattern)
     annotations_info = ControllerInput.__annotations_info__
@@ -259,7 +259,10 @@ def make_route(
             content_length = 0 if has_content_length else None
 
             if content_type is None and status in RESPONSES_MAP:
-                return (RESPONSES_MAP[status],)
+                if headers:
+                    return (RESPONSES_MAP[status](make_asgi_headers(headers)),)
+
+                return (RESPONSES_MAP[status](headers),)
 
             if headers:
                 return RESPONSES_MAP[content_type](  # type: ignore
@@ -325,6 +328,7 @@ def make_route(
         annotations_info.has_query_dict,
         annotations_info.has_headers,
         annotations_info.has_body,
+        has_options=options,
     )
     routes = [route]
 
@@ -358,7 +362,7 @@ def send_bad_request_response(
     content_length = len(body) if has_content_length else None
 
     return (
-        RESPONSES_MAP[content_type](  # type: ignore
+        RESPONSES_MAP[content_type](
             content_length, HTTPStatus.BAD_REQUEST, make_asgi_headers(headers)
         ),
         body,

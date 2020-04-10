@@ -30,6 +30,7 @@ class _RouteDecorator:
         def decorator(
             path_pattern: str,
             middlewares: Optional[Middlewares] = None,
+            options: bool = False,
             **kwargs: Any,
         ) -> Callable[[Callable[..., Any]], Union[Controller, BackgroundTask]]:
             if len(kwargs) > 0 and tuple(kwargs.keys()) != (
@@ -54,6 +55,7 @@ class _RouteDecorator:
                         MethodType[method],
                         controller,
                         route_middlewares=middlewares,
+                        options=options,
                     )
                     return route.controller
 

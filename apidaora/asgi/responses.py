@@ -58,17 +58,24 @@ def make_response(
     status: HTTPStatus,
     headers: Optional[ASGIHeaders],
     default_value: ASGIResponse,
-    default_content_header: Tuple[bytes, bytes],
+    default_content_header: Optional[Tuple[bytes, bytes]],
 ) -> ASGIResponse:
-    if content_length is None:
+    default_headers: ASGIHeaders
+
+    if content_length is None and headers is None:
         return default_value
 
-    default_headers: ASGIHeaders = (
-        default_content_header,
-        (b'content-length', str(content_length).encode()),
-    )
+    if content_length and default_content_header:
+        default_headers = (
+            default_content_header,
+            (b'content-length', str(content_length).encode()),
+        )
+    elif default_content_header:
+        default_headers = (default_content_header,)
+    else:
+        default_headers = tuple()
 
-    if headers:
+    if headers and default_headers:
         if isinstance(headers, tuple):
             headers = default_headers + headers
         else:
@@ -112,6 +119,22 @@ def make_html_response(
 ) -> ASGIResponse:
     return make_response(
         content_length, status, headers, HTML_RESPONSE, HTML_CONTENT_HEADER
+    )
+
+
+def make_no_content_response(
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        None, HTTPStatus.NO_CONTENT, headers, NO_CONTENT_RESPONSE, None,
+    )
+
+
+def make_not_found_response(
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        None, HTTPStatus.NO_CONTENT, headers, NOT_FOUND_RESPONSE, None,
     )
 
 
