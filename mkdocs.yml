@@ -25,11 +25,13 @@ nav:
     - Tutorial - User Guide:
         - Introduction: tutorial/00-intro.md
         - Core Module: tutorial/10-using-asgi-module.md
-        - Background Tasks: tutorial/11-using-background-task-controller.md
-        - Async Background Tasks: tutorial/12-using-async-background-task-controller.md
-        - Async Background Task with Redis: tutorial/13-using-redis-background-task-async-controller.md
-        - Background Task with Redis: tutorial/14-using-redis-background-task-controller.md
-        - Upload gzip files: tutorial/15-using-gzip-request-body.md
+        - Middlewares: tutorial/11-using-middlewares.md
+        - Default Options: tutorial/12-using-options.md
+        - Background Tasks: tutorial/13-using-background-task-controller.md
+        - Async Background Tasks: tutorial/14-using-async-background-task-controller.md
+        - Async Background Task with Redis: tutorial/15-using-redis-background-task-async-controller.md
+        - Background Task with Redis: tutorial/16-using-redis-background-task-controller.md
+        - Upload gzip files: tutorial/17-using-gzip-request-body.md
         # - Complete Request/Response: tutorial/01-complete-request-response.md
         # - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
         # - Validating fields: tutorial/03-validating-fields.md
