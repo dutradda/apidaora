@@ -554,7 +554,9 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">post_routing_middleware</span><span class="p">(</span><span class="n">path_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">post_routing_middleware</span><span class="p">(</span>
+    <span class="n">path_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
 
 
