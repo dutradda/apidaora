@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Change docs to dark theme
+
 ### 0.16.0 - 2020-04-10
 
  - Add class controllers support

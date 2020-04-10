@@ -3,6 +3,7 @@ site_description: Asgi App using typing annotation
 
 theme:
     name: 'material'
+    custom_dir: 'theme'
     palette:
       primary: 'pink'
       accent: 'grey'
@@ -12,9 +13,6 @@ theme:
 repo_name: dutradda/apidaora
 repo_url: https://github.com/dutradda/apidaora
 edit_uri: ''
-google_analytics:
-    - ''
-    - 'auto'
 
 nav:
     - apidaora: index.md
@@ -42,10 +40,11 @@ nav:
     - Changelog: changelog.md
 
 markdown_extensions:
-  - markdown.extensions.codehilite:
-      guess_lang: false
-  - markdown_include.include:
-      base_path: docs
-  - admonition
-  - codehilite
-  - extra
+    - markdown_include.include:
+        base_path: docs
+    - codehilite:
+        guess_lang: false
+
+extra_css:
+  - stylesheets/dark_theme.css
+  - stylesheets/codehilite.css
