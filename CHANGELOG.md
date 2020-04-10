@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.14.2 - 2020-04-10
 
  - Create default options controller
 
