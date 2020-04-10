@@ -349,6 +349,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../using-class-controller/" title="Class Controllers" class="md-nav__link">
+      Class Controllers
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../using-middlewares/" title="Middlewares" class="md-nav__link">
       Middlewares
     </a>
@@ -515,8 +527,7 @@
 
 <span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span><span class="p">,</span> <span class="n">typed_dict_asjson</span>
 
-<span class="kn">from</span> <span class="nn">apidaora.core</span> <span class="kn">import</span> <span class="n">appdaora_core</span><span class="p">,</span> <span class="n">route</span>
-<span class="kn">from</span> <span class="nn">apidaora.core.responses</span> <span class="kn">import</span> <span class="n">JSON_RESPONSE</span>
+<span class="kn">from</span> <span class="nn">apidaora.core</span> <span class="kn">import</span> <span class="n">JSON_RESPONSE</span><span class="p">,</span> <span class="n">appdaora_core</span><span class="p">,</span> <span class="n">route</span>
 
 
 <span class="nd">@jsondaora</span>
@@ -526,7 +537,7 @@
 
 
 <span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/hello/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">path_args</span><span class="p">,</span> <span class="n">query_dict</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">path_args</span><span class="p">,</span> <span class="n">query_dict</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
     <span class="n">you</span> <span class="o">=</span> <span class="n">You</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">query_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">body</span> <span class="o">=</span> <span class="n">typed_dict_asjson</span><span class="p">(</span><span class="n">you</span><span class="p">,</span> <span class="n">You</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">JSON_RESPONSE</span><span class="p">,</span> <span class="n">body</span>
@@ -599,13 +610,13 @@ transfer-encoding: chunked
           </a>
         
         
-          <a href="../using-middlewares/" title="Middlewares" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../using-class-controller/" title="Class Controllers" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Middlewares
+                Class Controllers
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

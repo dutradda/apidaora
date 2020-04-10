@@ -297,6 +297,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../using-class-controller/" title="Class Controllers" class="md-nav__link">
+      Class Controllers
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../using-middlewares/" title="Middlewares" class="md-nav__link">
       Middlewares
     </a>
@@ -535,7 +547,7 @@
 
 
 <span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">tasks_repository</span><span class="o">=</span><span class="n">REDIS_URI</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
 

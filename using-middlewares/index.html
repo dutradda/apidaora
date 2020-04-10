@@ -295,6 +295,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../using-class-controller/" title="Class Controllers" class="md-nav__link">
+      Class Controllers
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -539,11 +551,14 @@
                 
                 <h1 id="using-middlewares">Using Middlewares</h1>
 <h2 id="example">Example</h2>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
 
 <span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">CorsMiddleware</span><span class="p">,</span>
     <span class="n">Header</span><span class="p">,</span>
+    <span class="n">MiddlewareRequest</span><span class="p">,</span>
     <span class="n">Middlewares</span><span class="p">,</span>
     <span class="n">Response</span><span class="p">,</span>
     <span class="n">appdaora</span><span class="p">,</span>
@@ -552,15 +567,16 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">post_routing_middleware</span><span class="p">(</span><span class="n">path_args</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">post_routing_middleware</span><span class="p">(</span><span class="n">path_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">pre_execution_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pre_execution_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">MiddlewareRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">response</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">PostExecutionHeader</span><span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
@@ -704,7 +720,7 @@ Hello Me!
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../using-asgi-module/" title="Core Module" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../using-class-controller/" title="Class Controllers" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -713,7 +729,7 @@ Hello Me!
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Core Module
+                Class Controllers
               </span>
             </div>
           </a>
