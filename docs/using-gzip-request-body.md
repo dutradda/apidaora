@@ -1,9 +1,9 @@
-# Tutorial - Using the gzip request body 
+# Using the gzip request body 
 
 ## Example
 
 ```python
-{!./src/tutorial/tutorial_17_gzip_request_body.py!}
+{!./src/gzip_request_body/gzip_request_body.py!}
 ```
 
 ## Running
@@ -23,9 +23,9 @@ uvicorn myapp:app
 Posting the file to the api (needs gzip [installed](https://www.gzip.org)):
 
 ```bash
-{!./src/tutorial/tutorial_17_gzip_request_body_curl.bash!}
+{!./src/gzip_request_body/gzip_request_body_curl.bash!}
 ```
 
 ```
-{!./src/tutorial/tutorial_17_gzip_request_body_curl.bash.output!}
+{!./src/gzip_request_body/gzip_request_body_curl.bash.output!}
 ```
