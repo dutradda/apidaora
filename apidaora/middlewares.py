@@ -15,12 +15,15 @@ class MiddlewareRequest:
 
 @dataclass
 class Middlewares:
-    post_routing: List[Callable[[Dict[str, Any]], None]]
-    pre_execution: List[Callable[[MiddlewareRequest], None]]
-    post_execution: List[Callable[[Response], None]]
-    post_routing = field(default_factory=list)
-    pre_execution = field(default_factory=list)
-    post_execution = field(default_factory=list)
+    post_routing: List[Callable[[Dict[str, Any]], None]] = field(
+        default_factory=list
+    )
+    pre_execution: List[Callable[[MiddlewareRequest], None]] = field(
+        default_factory=list
+    )
+    post_execution: List[Callable[[Response], None]] = field(
+        default_factory=list
+    )
 
 
 def make_kwargs_from_requst(request: MiddlewareRequest) -> Dict[str, Any]:
