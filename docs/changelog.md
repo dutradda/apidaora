@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix cors middleware
+
 ### 0.17.0 - 2020-04-10
 
  - Improve post routing middleware

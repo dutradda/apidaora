@@ -106,3 +106,6 @@ class CorsMiddleware:
 
         elif isinstance(response.headers, tuple):
             response.headers = response.headers + self.headers_tuple
+
+        elif response.headers is None:
+            response.headers = self.headers_tuple
