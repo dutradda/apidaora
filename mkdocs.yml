@@ -23,6 +23,7 @@ nav:
     - JSON intro: json.md
     # - Http intro: http.md
     - Core Module: using-asgi-module.md
+    - Class Controllers: using-class-controller.md
     - Middlewares: using-middlewares.md
     - Default Options: using-options.md
     - Background Tasks: using-background-task-controller.md

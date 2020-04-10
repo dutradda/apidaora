@@ -1,8 +1,11 @@
+from typing import Any, Dict
+
 from jsondaora import jsondaora
 
 from apidaora import (
     CorsMiddleware,
     Header,
+    MiddlewareRequest,
     Middlewares,
     Response,
     appdaora,
@@ -11,15 +14,16 @@ from apidaora import (
 )
 
 
-def post_routing_middleware(path_args):
+def post_routing_middleware(path_args: Dict[str, Any]) -> None:
     path_args['name'] = path_args['name'].replace('Me', 'You')
 
 
-def pre_execution_middleware(request):
-    request.body.name = request.body.name.replace('Me', 'You')
+def pre_execution_middleware(request: MiddlewareRequest) -> None:
+    if request.body:
+        request.body.name = request.body.name.replace('Me', 'You')
 
 
-def post_execution_middleware(response):
+def post_execution_middleware(response: Response) -> None:
     response.headers = [
         PostExecutionHeader(
             len(response.body.replace('Hello ', '').replace('!', ''))

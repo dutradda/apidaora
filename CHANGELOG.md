@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Add class controllers support
+
 ### 0.15.1 - 2020-04-10
 
  - Improve docs

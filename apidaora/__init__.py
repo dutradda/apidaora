@@ -6,11 +6,12 @@ __version__ = '0.15.1'
 
 from apidaora.app import appdaora
 from apidaora.bodies import GZipFactory
+from apidaora.class_controller import ClassController
 from apidaora.content import ContentType
 from apidaora.exceptions import BadRequestError
 from apidaora.header import Header
 from apidaora.method import MethodType
-from apidaora.middlewares import CorsMiddleware, Middlewares
+from apidaora.middlewares import CorsMiddleware, MiddlewareRequest, Middlewares
 from apidaora.responses import (
     Response,
     html,
@@ -38,4 +39,6 @@ __all__ = [
     'Response',
     'Middlewares',
     'CorsMiddleware',
+    'MiddlewareRequest',
+    'ClassController',
 ]

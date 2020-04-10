@@ -7,7 +7,7 @@ source ${VIRTUAL_ENV}/bin/activate
 
 test_path=$(dirname ${BASH_SOURCE[0]})
 test_regex="s%${test_path}/[^/]+/(.*)\.py%\1%g"
-test_files="$(find ${test_path}/**/*.py)"
+test_files="$(find ${test_path}/**/*.py | grep -v __init__)"
 
 PYTHONPATH=${test_path}:${PYTHONPATH}
 
@@ -81,6 +81,7 @@ for filepath in ${test_files}; do
     fi
 
     ps ax | (ps ax | awk "/uvicorn ${test_module}:app/ {print \$1}" | xargs kill -SIGTERM 2>/dev/null)
+    sleep 1
 
     output=$(sed -r -e 's/(.*) .*/\1/g' ${checksum_file} | uniq | wc -l)
 

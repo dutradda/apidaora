@@ -14,5 +14,8 @@ setup-apidaora: //check-virtualenv
 
 integration: check-code tests-docs coverage
 
+mypy: //check-virtualenv
+    mypy --strict ${PROJECT_NAME} docs/src
+
 mypy-docs:
-    mypy docs/src/index docs/src/tutorial
+    mypy --strict docs/src docs/src

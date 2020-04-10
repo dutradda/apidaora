@@ -6,7 +6,7 @@ class GzipBody(GZipFactory):
 
 
 @route.post('/hello')
-def gzip_hello(body: GzipBody):
+def gzip_hello(body: GzipBody) -> str:
     with body.open() as file:
         return file.read()
 
