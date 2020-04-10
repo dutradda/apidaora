@@ -38,7 +38,7 @@
     
     
       
-        <title>JSON intro - apidaora</title>
+        <title>Async Background Task with Redis - apidaora</title>
       
     
     
@@ -112,7 +112,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#javascript-object-notation" tabindex="0" class="md-skip">
+      <a href="#using-background-task-controller-with-redis-backend" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -138,7 +138,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                JSON intro
+                Async Background Task with Redis
               
             </span>
           
@@ -271,52 +271,11 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        JSON intro
-      </label>
-    
-    <a href="./" title="JSON intro" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../json/" title="JSON intro" class="md-nav__link">
       JSON intro
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#javascript-object-notation" class="md-nav__link">
-    JavaScript Object Notation
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#json-schema" class="md-nav__link">
-    JSON Schema
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
     
@@ -384,11 +343,70 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../using-redis-background-task-async-controller/" title="Async Background Task with Redis" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Async Background Task with Redis
+      </label>
+    
+    <a href="./" title="Async Background Task with Redis" class="md-nav__link md-nav__link--active">
       Async Background Task with Redis
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-task" class="md-nav__link">
+    Creating task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -454,20 +472,36 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#javascript-object-notation" class="md-nav__link">
-    JavaScript Object Notation
+  <a href="#example" class="md-nav__link">
+    Example
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#json-schema" class="md-nav__link">
-    JSON Schema
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-task" class="md-nav__link">
+    Creating task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
   </a>
   
 </li>
@@ -489,14 +523,86 @@
               
                 
                 
-                  <h1>JSON intro</h1>
-                
-                <h2 id="javascript-object-notation">JavaScript Object Notation</h2>
-<p>Introduction from <em>w3schools</em>:
-- <a href="https://www.w3schools.com/js/js_json_intro.asp">https://www.w3schools.com/js/js_json_intro.asp</a></p>
-<h2 id="json-schema">JSON Schema</h2>
-<p>Official Documentation:
-- <a href="https://json-schema.org">https://json-schema.org</a></p>
+                <h1 id="using-background-task-controller-with-redis-backend">Using Background Task Controller with Redis Backend</h1>
+<h2 id="example">Example</h2>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
+
+
+<span class="n">REDIS_URI</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;redis://{os.environ.get(&#39;REDIS&#39;, &#39;&#39;)}&quot;</span>
+
+
+<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">tasks_repository</span><span class="o">=</span><span class="n">REDIS_URI</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">hello_task</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h2 id="running">Running</h2>
+<p>You will need a redis server to run this example.</p>
+<p>Running the server:</p>
+<div class="codehilite"><pre><span></span><code>uvicorn myapp:app
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>INFO: Started server process [16220]
+INFO: Waiting for application startup.
+INFO: ASGI &#39;lifespan&#39; protocol appears unsupported.
+INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+</code></pre></div>
+
+
+<h2 id="creating-task">Creating task</h2>
+<p>Creating the task:</p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello?name<span class="o">=</span>Me
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 110
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;}
+</code></pre></div>
+
+
+<h2 id="quering">Quering</h2>
+<p>Quering the server for the task (You must replace the task_id with the server output):</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 110
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;}
+</code></pre></div>
+
+
+<p>Wait the task to finish and get results:</p>
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 171
+
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;finished&quot;}
+</code></pre></div>
                 
                   
                 
@@ -518,7 +624,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../python-dataclass/" title="Python dataclass intro" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../using-async-background-task-controller/" title="Async Background Tasks" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -527,19 +633,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Python dataclass intro
+                Async Background Tasks
               </span>
             </div>
           </a>
         
         
-          <a href="../using-asgi-module/" title="Core Module" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../using-redis-background-task-controller/" title="Background Task with Redis" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Core Module
+                Background Task with Redis
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

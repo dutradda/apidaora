@@ -38,7 +38,7 @@
     
     
       
-        <title>JSON intro - apidaora</title>
+        <title>Middlewares - apidaora</title>
       
     
     
@@ -112,7 +112,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#javascript-object-notation" tabindex="0" class="md-skip">
+      <a href="#using-middlewares" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -138,7 +138,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                JSON intro
+                Middlewares
               
             </span>
           
@@ -271,52 +271,11 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        JSON intro
-      </label>
-    
-    <a href="./" title="JSON intro" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../json/" title="JSON intro" class="md-nav__link">
       JSON intro
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#javascript-object-notation" class="md-nav__link">
-    JavaScript Object Notation
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#json-schema" class="md-nav__link">
-    JSON Schema
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
     
@@ -336,11 +295,77 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../using-middlewares/" title="Middlewares" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Middlewares
+      </label>
+    
+    <a href="./" title="Middlewares" class="md-nav__link md-nav__link--active">
       Middlewares
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering-the-post-routing-middleware" class="md-nav__link">
+    Quering the Post Routing Middleware
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering-the-pre-executition-middleware" class="md-nav__link">
+    Quering the Pre Executition Middleware
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering-the-post-executition-middleware" class="md-nav__link">
+    Quering the Post Executition Middleware
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -454,20 +479,43 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#javascript-object-notation" class="md-nav__link">
-    JavaScript Object Notation
+  <a href="#example" class="md-nav__link">
+    Example
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#json-schema" class="md-nav__link">
-    JSON Schema
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering-the-post-routing-middleware" class="md-nav__link">
+    Quering the Post Routing Middleware
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering-the-pre-executition-middleware" class="md-nav__link">
+    Quering the Pre Executition Middleware
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering-the-post-executition-middleware" class="md-nav__link">
+    Quering the Post Executition Middleware
   </a>
   
 </li>
@@ -489,14 +537,152 @@
               
                 
                 
-                  <h1>JSON intro</h1>
-                
-                <h2 id="javascript-object-notation">JavaScript Object Notation</h2>
-<p>Introduction from <em>w3schools</em>:
-- <a href="https://www.w3schools.com/js/js_json_intro.asp">https://www.w3schools.com/js/js_json_intro.asp</a></p>
-<h2 id="json-schema">JSON Schema</h2>
-<p>Official Documentation:
-- <a href="https://json-schema.org">https://json-schema.org</a></p>
+                <h1 id="using-middlewares">Using Middlewares</h1>
+<h2 id="example">Example</h2>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
+
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CorsMiddleware</span><span class="p">,</span>
+    <span class="n">Header</span><span class="p">,</span>
+    <span class="n">Middlewares</span><span class="p">,</span>
+    <span class="n">Response</span><span class="p">,</span>
+    <span class="n">appdaora</span><span class="p">,</span>
+    <span class="n">route</span><span class="p">,</span>
+    <span class="n">text</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">post_routing_middleware</span><span class="p">(</span><span class="n">path_args</span><span class="p">):</span>
+    <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">pre_execution_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">PostExecutionHeader</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+
+<span class="c1"># The route middlewares takes precedence over general middlewares</span>
+
+
+<span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s1">&#39;/hello-post-routing/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">post_routing</span><span class="o">=</span><span class="p">[</span><span class="n">post_routing_middleware</span><span class="p">]),</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">post_routing_middleware_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">hello</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="nd">@jsondaora</span>
+<span class="k">class</span> <span class="nc">PreExecutionBody</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@route</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s1">&#39;/hello-pre-execution/&#39;</span><span class="p">,</span>
+    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">pre_execution</span><span class="o">=</span><span class="p">[</span><span class="n">pre_execution_middleware</span><span class="p">]),</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">pre_execution_middleware_controller</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">PreExecutionBody</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">hello</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PostExecutionHeader</span><span class="p">(</span><span class="n">Header</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">http_name</span><span class="o">=</span><span class="s1">&#39;x-name-len&#39;</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s1">&#39;/hello-post-execution&#39;</span><span class="p">,</span>
+    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">post_execution</span><span class="o">=</span><span class="p">[</span><span class="n">post_execution_middleware</span><span class="p">]),</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">post_execution_middleware_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">hello</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">post_routing_middleware_controller</span><span class="p">,</span>
+        <span class="n">pre_execution_middleware_controller</span><span class="p">,</span>
+        <span class="n">post_execution_middleware_controller</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span>
+        <span class="n">post_execution</span><span class="o">=</span><span class="p">[</span><span class="n">CorsMiddleware</span><span class="p">(</span><span class="n">servers_all</span><span class="o">=</span><span class="s1">&#39;my-server.domain&#39;</span><span class="p">)]</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<h2 id="running">Running</h2>
+<p>Running the server:</p>
+<div class="codehilite"><pre><span></span><code>uvicorn myapp:app
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>INFO: Started server process [16220]
+INFO: Waiting for application startup.
+INFO: ASGI &#39;lifespan&#39; protocol appears unsupported.
+INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+</code></pre></div>
+
+
+<h2 id="quering-the-post-routing-middleware">Quering the Post Routing Middleware</h2>
+<p>Quering the server:</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-post-routing/Me
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 12
+
+&quot;Hello You!&quot;
+</code></pre></div>
+
+
+<h2 id="quering-the-pre-executition-middleware">Quering the Pre Executition Middleware</h2>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-pre-execution -X POST -d <span class="s1">&#39;{&quot;name&quot;: &quot;Me&quot;}&#39;</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 12
+
+&quot;Hello You!&quot;
+</code></pre></div>
+
+
+<h2 id="quering-the-post-executition-middleware">Quering the Post Executition Middleware</h2>
+<div class="codehilite"><pre><span></span><code>curl -i <span class="s1">&#39;localhost:8000/hello-post-execution?name=Me&#39;</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: text/plain
+content-length: 9
+x-name-len: 2
+access-control-allow-origin: my-server.domain
+access-control-expose-headers: my-server.domain
+access-control-allow-headers: my-server.domain
+access-control-allow-methods: my-server.domain
+
+Hello Me!
+</code></pre></div>
                 
                   
                 
@@ -518,7 +704,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../python-dataclass/" title="Python dataclass intro" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../using-asgi-module/" title="Core Module" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -527,19 +713,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Python dataclass intro
+                Core Module
               </span>
             </div>
           </a>
         
         
-          <a href="../using-asgi-module/" title="Core Module" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../using-options/" title="Default Options" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Core Module
+                Default Options
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
