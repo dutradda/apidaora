@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.17.1 - 2020-04-10
 
  - Fix cors middleware
 
