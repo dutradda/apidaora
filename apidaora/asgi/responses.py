@@ -134,7 +134,7 @@ def make_not_found_response(
     headers: Optional[ASGIHeaders] = None,
 ) -> ASGIResponse:
     return make_response(
-        None, HTTPStatus.NO_CONTENT, headers, NOT_FOUND_RESPONSE, None,
+        None, HTTPStatus.NOT_FOUND, headers, NOT_FOUND_RESPONSE, None,
     )
 
 

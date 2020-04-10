@@ -58,8 +58,8 @@ RESPONSES_MAP: Dict[
     ContentType.APPLICATION_JSON: make_json_response,
     ContentType.TEXT_PLAIN: make_text_response,
     ContentType.TEXT_HTML: make_html_response,
-    HTTPStatus.NOT_FOUND: make_no_content_response,
-    HTTPStatus.NO_CONTENT: make_not_found_response,
+    HTTPStatus.NOT_FOUND: make_not_found_response,
+    HTTPStatus.NO_CONTENT: make_no_content_response,
 }
 
 

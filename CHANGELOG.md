@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix make_not_found_response
+
 ### [0.15.0 - 2020-04-10]
 
  - Create default options controller
