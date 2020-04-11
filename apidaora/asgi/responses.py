@@ -19,37 +19,37 @@ PLAINTEXT_CONTENT_HEADER = (
 JSON_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.OK.value,
-    'headers': (JSON_CONTENT_HEADER,),
+    'headers': [JSON_CONTENT_HEADER],
 }
 
 HTML_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.OK.value,
-    'headers': (HTML_CONTENT_HEADER,),
+    'headers': [HTML_CONTENT_HEADER],
 }
 
 PLAINTEXT_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.OK.value,
-    'headers': (PLAINTEXT_CONTENT_HEADER,),
+    'headers': [PLAINTEXT_CONTENT_HEADER],
 }
 
 NOT_FOUND_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.NOT_FOUND.value,
-    'headers': (),
+    'headers': [],
 }
 
 METHOD_NOT_ALLOWED_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.METHOD_NOT_ALLOWED.value,
-    'headers': (),
+    'headers': [],
 }
 
 NO_CONTENT_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.NO_CONTENT.value,
-    'headers': (),
+    'headers': [],
 }
 
 
@@ -66,20 +66,20 @@ def make_response(
         return default_value
 
     if content_length and default_content_header:
-        default_headers = (
+        default_headers = [
             default_content_header,
             (b'content-length', str(content_length).encode()),
-        )
+        ]
     elif default_content_header:
-        default_headers = (default_content_header,)
+        default_headers = [default_content_header]
     else:
-        default_headers = tuple()
+        default_headers = []
 
     if headers and default_headers:
-        if isinstance(headers, tuple):
+        if isinstance(headers, list):
             headers = default_headers + headers
         else:
-            headers = default_headers + tuple(headers)
+            headers = default_headers + list(headers)
 
     return {
         'type': HTTP_RESPONSE_START,

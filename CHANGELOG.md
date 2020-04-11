@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix asgi headers for h11 http parser
+
 ### 0.17.1 - 2020-04-10
 
  - Fix cors middleware

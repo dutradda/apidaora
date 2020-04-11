@@ -375,7 +375,7 @@ def make_asgi_headers(
     if not headers:
         return None
 
-    return tuple(
+    return [
         (
             header.http_name.encode(),  # type: ignore
             str(header.value).encode()
@@ -383,7 +383,7 @@ def make_asgi_headers(
             else header.value,
         )
         for header in headers
-    )
+    ]
 
 
 def parse_query_args(

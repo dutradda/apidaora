@@ -16,7 +16,7 @@ Sender = Callable[[Dict[str, Any]], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receiver, Sender], Coroutine[Any, Any, None]]
 ASGIPathArgs = Dict[str, str]
 ASGIQueryDict = Dict[str, List[str]]
-ASGIHeaders = Tuple[Tuple[bytes, bytes], ...]
+ASGIHeaders = List[Tuple[bytes, bytes]]
 ASGIBody = bytes
 
 
