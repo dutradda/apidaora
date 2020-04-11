@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Set
 
+from .exceptions import BadRequestError
 from .header import Header
 from .responses import Response
 
@@ -110,3 +111,21 @@ class CorsMiddleware:
 
         elif response.headers is None:
             response.headers = self.headers_tuple
+
+
+@dataclass
+class PreventRequestMiddleware:
+    in_process: Set[str] = field(default_factory=set)
+
+    def set_in_process(
+        self, path_pattern: str, path_args: Dict[str, Any]
+    ) -> None:
+        if path_pattern in self.in_process:
+            raise BadRequestError(
+                'prevent-request', {'path_pattern': path_pattern}
+            )
+
+        self.in_process.add(path_pattern)
+
+    def remove_in_process(self, request: MiddlewareRequest) -> None:
+        self.in_process.remove(request.path_pattern)

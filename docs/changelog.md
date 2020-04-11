@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Create prevent request middleware
+
  - Fix merge of general middlewares and route middlewares
 
  - Improve MiddlewareRequest class

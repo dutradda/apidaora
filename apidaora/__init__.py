@@ -11,7 +11,12 @@ from apidaora.content import ContentType
 from apidaora.exceptions import BadRequestError
 from apidaora.header import Header
 from apidaora.method import MethodType
-from apidaora.middlewares import CorsMiddleware, MiddlewareRequest, Middlewares
+from apidaora.middlewares import (
+    CorsMiddleware,
+    MiddlewareRequest,
+    Middlewares,
+    PreventRequestMiddleware,
+)
 from apidaora.responses import (
     Response,
     html,
@@ -41,4 +46,5 @@ __all__ = [
     'CorsMiddleware',
     'MiddlewareRequest',
     'ClassController',
+    'PreventRequestMiddleware',
 ]

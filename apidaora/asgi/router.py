@@ -160,16 +160,9 @@ def make_router(
         if method not in routes_tree_:
             raise MethodNotFoundError(method, path)
 
-        route = routes_tree_[method]
-
-        if (
-            hasattr(route.controller, 'middlewares')
-            and route.controller.middlewares
-        ):
-            for middleware in route.controller.middlewares.post_routing:
-                middleware(route.path_pattern, path_args)
-
-        return ResolvedRoute(route=route, path_args=path_args, path=path)
+        return ResolvedRoute(
+            route=routes_tree_[method], path_args=path_args, path=path
+        )
 
     return route_
 

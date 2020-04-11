@@ -29,6 +29,7 @@ nav:
     - Async Background Task with Redis: using-redis-background-task-async-controller.md
     - Background Task with Redis: using-redis-background-task-controller.md
     - Upload gzip files: using-gzip-request-body.md
+    - Prevent Request Middleware: using-prevent-request-middleware.md
     # - Complete Request/Response: tutorial/01-complete-request-response.md
     # - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
     # - Validating fields: tutorial/03-validating-fields.md
