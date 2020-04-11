@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Improve MiddlewareRequest class
+
 ### 0.17.2 - 2020-04-10
 
  - Fix asgi headers for h11 http parser

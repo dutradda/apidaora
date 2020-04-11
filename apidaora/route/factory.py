@@ -93,7 +93,7 @@ def make_route(
         )
 
         if has_middlewares:
-            middleware_request = MiddlewareRequest()
+            middleware_request = MiddlewareRequest(path_pattern)
 
         if annotations_info.has_input:
             if annotations_info.has_path_args:

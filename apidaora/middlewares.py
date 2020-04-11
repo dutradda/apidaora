@@ -7,6 +7,7 @@ from .responses import Response
 
 @dataclass
 class MiddlewareRequest:
+    path_pattern: str
     path_args: Optional[Dict[str, Any]] = None
     query_dict: Optional[Dict[str, Any]] = None
     headers: Optional[Dict[str, Header]] = None
