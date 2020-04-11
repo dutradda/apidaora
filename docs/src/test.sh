@@ -7,7 +7,11 @@ source ${VIRTUAL_ENV}/bin/activate
 
 test_path=$(dirname ${BASH_SOURCE[0]})
 test_regex="s%${test_path}/[^/]+/(.*)\.py%\1%g"
-test_files="$(find ${test_path}/**/*.py | grep -v __init__)"
+if test -n "${1}"; then
+    test_files="${test_path}/${1}/${1}.py"
+else
+    test_files="$(find ${test_path}/**/*.py | grep -v __init__)"
+fi
 
 PYTHONPATH=${test_path}:${PYTHONPATH}
 

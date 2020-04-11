@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Fix merge of general middlewares and route middlewares
+
  - Improve MiddlewareRequest class
 
 ### 0.17.2 - 2020-04-10

@@ -88,11 +88,8 @@ def make_route(
     ) -> Dict[str, Any]:
         kwargs: Dict[str, Any]
         middleware_request: MiddlewareRequest
-        has_middlewares = (middlewares and middlewares.pre_execution) or (
-            route_middlewares and route_middlewares.pre_execution
-        )
 
-        if has_middlewares:
+        if middlewares:
             middleware_request = MiddlewareRequest(path_pattern)
 
         if annotations_info.has_input:
@@ -102,7 +99,7 @@ def make_route(
                     for name in annotations_path_args.keys()
                 }
 
-                if has_middlewares:
+                if middlewares:
                     middleware_request.path_args = {
                         name: deserialize_field(
                             name, type_, path_args.get(name)
@@ -123,7 +120,7 @@ def make_route(
                     }
                 )
 
-                if has_middlewares:
+                if middlewares:
                     middleware_request.query_dict = {
                         name: deserialize_field(
                             name,
@@ -146,7 +143,7 @@ def make_route(
                 }
                 kwargs.update(headers_dict)
 
-                if has_middlewares:
+                if middlewares:
                     middleware_request.headers = headers_dict.copy()
 
             if annotations_info.has_body:
@@ -163,18 +160,15 @@ def make_route(
                 else:
                     kwargs['body'] = make_json_request_body(body, body_type)
 
-            if has_middlewares:
-                middleware_request.body = deserialize_field(
-                    'body', body_type, kwargs['body']
+            if middlewares:
+                middleware_request.body = (
+                    deserialize_field('body', body_type, kwargs['body'])
+                    if 'body' in kwargs
+                    else None
                 )
 
-                if middlewares:
-                    for middleware in middlewares.pre_execution:
-                        middleware(middleware_request)
-
-                if route_middlewares:
-                    for middleware in route_middlewares.pre_execution:
-                        middleware(middleware_request)
+                for middleware in middlewares.pre_execution:
+                    middleware(middleware_request)
 
                 kwargs = make_kwargs_from_requst(middleware_request)
 
@@ -191,7 +185,6 @@ def make_route(
         content_type: Optional[ContentType] = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
         middlewares: Optional[Middlewares] = None,
-        local_route_middlewares: Optional[Middlewares] = route_middlewares,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
             controller_output = await controller_output
@@ -199,11 +192,7 @@ def make_route(
         if return_type_ is None and return_type:
             return_type_ = return_type
 
-        has_middlewares = (middlewares and middlewares.post_execution) or (
-            local_route_middlewares and local_route_middlewares.post_execution
-        )
-
-        if has_middlewares and not isinstance(controller_output, Response):
+        if middlewares and not isinstance(controller_output, Response):
             controller_output = Response(
                 body=controller_output,
                 status=status,
@@ -212,14 +201,9 @@ def make_route(
             )
 
         if isinstance(controller_output, Response):
-            if has_middlewares:
-                if middlewares:
-                    for middleware in middlewares.post_execution:
-                        middleware(controller_output)
-
-                if local_route_middlewares:
-                    for middleware in local_route_middlewares.post_execution:
-                        middleware(controller_output)
+            if middlewares:
+                for middleware in middlewares.post_execution:
+                    middleware(controller_output)
 
             return build_asgi_output(
                 controller_output['body'],
@@ -227,8 +211,6 @@ def make_route(
                 controller_output['headers'],
                 controller_output['content_type'],
                 controller_output.__annotations__.get('body'),
-                middlewares=None,
-                local_route_middlewares=None,
             )
 
         elif isinstance(controller_output, dict):
@@ -302,7 +284,7 @@ def make_route(
                 )
                 controller_output = controller(**kwargs)
                 return build_asgi_output(
-                    controller_output, middlewares=self.middlewares
+                    controller_output, middlewares=self.middlewares,
                 )
 
             except BadRequestError as error:

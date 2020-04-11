@@ -19,3 +19,6 @@ mypy: //check-virtualenv
 
 mypy-docs:
     mypy --strict docs/src docs/src
+
+tests-docs: //check-virtualenv
+    docs/src/test.sh "${q}"

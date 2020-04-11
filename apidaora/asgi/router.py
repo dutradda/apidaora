@@ -1,6 +1,6 @@
+import dataclasses
 import re
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from functools import lru_cache
 from typing import (
     Any,
@@ -46,7 +46,7 @@ ControllerAnnotation = Callable[
 ]
 
 
-@dataclass
+@dataclasses.dataclass
 class Route:
     path_pattern: str
     method: MethodType
@@ -58,14 +58,14 @@ class Route:
     has_options: bool = False
 
 
-@dataclass
+@dataclasses.dataclass
 class ResolvedRoute:
     route: Route
     path_args: Dict[str, Any]
     path: str
 
 
-@dataclass
+@dataclasses.dataclass
 class RoutesTreeRegex:
     name: str
     compiled_re: Optional[Pattern[Any]]
@@ -92,17 +92,21 @@ def make_router(
                 not hasattr(route.controller, 'middlewares')
                 or not route.controller.middlewares
             ):
-                route.controller.middlewares = middlewares
-            else:
-                route.controller.middlewares.post_routing.extend(
-                    middlewares.post_routing
+                route.controller.middlewares = Middlewares(
+                    **dataclasses.asdict(middlewares)
                 )
-                route.controller.middlewares.pre_execution.extend(
+            else:
+                route_middlewares = Middlewares(
+                    **dataclasses.asdict(route.controller.middlewares)
+                )
+                route_middlewares.post_routing.extend(middlewares.post_routing)
+                route_middlewares.pre_execution.extend(
                     middlewares.pre_execution
                 )
-                route.controller.middlewares.post_execution.extend(
+                route_middlewares.post_execution.extend(
                     middlewares.post_execution
                 )
+                route.controller.middlewares = route_middlewares
 
         path_pattern_parts = split_path(route.path_pattern)
         routes_tree_tmp = routes_tree
