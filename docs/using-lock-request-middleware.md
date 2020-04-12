@@ -1,9 +1,9 @@
-# Using Prevent Request Middleware
+# Using Lock Request Middleware
 
 ## Example
 
 ```python
-{!./src/prevent_request/prevent_request.py!}
+{!./src/lock_request/lock_request.py!}
 ```
 
 ## Running 
@@ -21,9 +21,9 @@ uvicorn myapp:app
 ## Post a large json file several times
 
 ```bash
-{!./src/prevent_request/prevent_request_curl.bash!}
+{!./src/lock_request/lock_request_curl.bash!}
 ```
 
 ```
-{!./src/prevent_request/prevent_request_curl.bash.output!}
+{!./src/lock_request/lock_request_curl.bash.output!}
 ```

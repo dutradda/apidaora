@@ -12,6 +12,7 @@ from typing import (  # type: ignore
     List,
     Optional,
     Sequence,
+    Tuple,
     Type,
     Union,
     _GenericAlias,
@@ -85,7 +86,7 @@ def make_route(
         headers: ASGIHeaders,
         body: ASGIBody,
         middlewares: Optional[Middlewares] = None,
-    ) -> Dict[str, Any]:
+    ) -> Tuple[Dict[str, Any], Optional[MiddlewareRequest]]:
         kwargs: Dict[str, Any]
         middleware_request: MiddlewareRequest
 
@@ -170,15 +171,19 @@ def make_route(
                 for middleware in middlewares.pre_execution:
                     middleware(middleware_request)
 
-                return make_asgi_input_from_requst(
-                    middleware_request, ControllerInput
+                return (
+                    make_asgi_input_from_requst(
+                        middleware_request, ControllerInput
+                    ),
+                    middleware_request,
                 )
 
-            return as_typed_dict(  # type: ignore
-                kwargs, ControllerInput
+            return (
+                as_typed_dict(kwargs, ControllerInput),
+                None,
             )
 
-        return {}
+        return {}, None
 
     async def build_asgi_output(
         controller_output: Any,
@@ -187,6 +192,7 @@ def make_route(
         content_type: Optional[ContentType] = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
         middlewares: Optional[Middlewares] = None,
+        middleware_request: Optional[MiddlewareRequest] = None,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
             controller_output = await controller_output
@@ -203,9 +209,9 @@ def make_route(
             )
 
         if isinstance(controller_output, Response):
-            if middlewares:
+            if middlewares and middleware_request:
                 for middleware in middlewares.post_execution:
-                    middleware(controller_output)
+                    middleware(middleware_request, controller_output)
 
             return build_asgi_output(
                 controller_output['body'],
@@ -277,7 +283,7 @@ def make_route(
             body: ASGIBody,
         ) -> Union[Awaitable[ASGICallableResults], ASGICallableResults]:
             try:
-                kwargs = parse_asgi_input(
+                kwargs, middleware_request = parse_asgi_input(
                     path_args,
                     query_dict,
                     headers,
@@ -286,7 +292,9 @@ def make_route(
                 )
                 controller_output = controller(**kwargs)
                 return await build_asgi_output(
-                    controller_output, middlewares=self.middlewares,
+                    controller_output,
+                    middlewares=self.middlewares,
+                    middleware_request=middleware_request,
                 )
 
             except BadRequestError as error:

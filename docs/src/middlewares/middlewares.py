@@ -25,7 +25,9 @@ def pre_execution_middleware(request: MiddlewareRequest) -> None:
         request.body.name = request.body.name.replace('Me', 'You')
 
 
-def post_execution_middleware(response: Response) -> None:
+def post_execution_middleware(
+    request: MiddlewareRequest, response: Response
+) -> None:
     response.headers = [
         PostExecutionHeader(
             len(response.body.replace('Hello ', '').replace('!', ''))

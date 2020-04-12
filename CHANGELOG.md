@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Rename PreventRequestMiddleware to LockRequestMiddleware
+
 ### 0.20.0 - 2020-04-12
 
  - Add docs for background tasks with lock args and redis

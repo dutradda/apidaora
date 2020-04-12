@@ -24,9 +24,9 @@ class Middlewares:
     pre_execution: List[Callable[[MiddlewareRequest], None]] = field(
         default_factory=list
     )
-    post_execution: List[Callable[[Response], None]] = field(
-        default_factory=list
-    )
+    post_execution: List[
+        Callable[[MiddlewareRequest, Response], None]
+    ] = field(default_factory=list)
 
 
 def make_asgi_input_from_requst(
@@ -105,7 +105,7 @@ class CorsMiddleware:
 
         self.headers_tuple = tuple(self.headers)
 
-    def __call__(self, response: Response) -> None:
+    def __call__(self, request: MiddlewareRequest, response: Response) -> None:
         if isinstance(response.headers, list):
             response.headers.extend(self.headers)
 
@@ -117,18 +117,21 @@ class CorsMiddleware:
 
 
 @dataclass
-class PreventRequestMiddleware:
-    in_process: Set[str] = field(default_factory=set)
+class LockRequestMiddleware:
+    locks: Set[str] = field(default_factory=set)
 
-    def set_in_process(
-        self, path_pattern: str, path_args: Dict[str, Any]
-    ) -> None:
-        if path_pattern in self.in_process:
+    def lock(self, path_pattern: str, path_args: Dict[str, Any]) -> None:
+        if path_pattern in self.locks:
             raise BadRequestError(
-                'prevent-request', {'path_pattern': path_pattern}
+                'lock-request', {'path_pattern': path_pattern}
             )
 
-        self.in_process.add(path_pattern)
+        self.locks.add(path_pattern)
 
-    def remove_in_process(self, request: MiddlewareRequest) -> None:
-        self.in_process.remove(request.path_pattern)
+    def unlock_pre_execution(self, request: MiddlewareRequest) -> None:
+        self.locks.remove(request.path_pattern)
+
+    def unlock_post_execution(
+        self, request: MiddlewareRequest, response: Response
+    ) -> None:
+        self.locks.remove(request.path_pattern)

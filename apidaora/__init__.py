@@ -13,9 +13,9 @@ from apidaora.header import Header
 from apidaora.method import MethodType
 from apidaora.middlewares import (
     CorsMiddleware,
+    LockRequestMiddleware,
     MiddlewareRequest,
     Middlewares,
-    PreventRequestMiddleware,
 )
 from apidaora.responses import (
     Response,
@@ -46,5 +46,5 @@ __all__ = [
     'CorsMiddleware',
     'MiddlewareRequest',
     'ClassController',
-    'PreventRequestMiddleware',
+    'LockRequestMiddleware',
 ]
