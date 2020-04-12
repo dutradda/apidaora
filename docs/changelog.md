@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.22.0 - 2020-04-12
 
  - Improve router
 
