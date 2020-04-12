@@ -277,7 +277,6 @@ def make_route(
             body: ASGIBody,
         ) -> Union[Awaitable[ASGICallableResults], ASGICallableResults]:
             try:
-                print('AAAHH')
                 kwargs = parse_asgi_input(
                     path_args,
                     query_dict,
