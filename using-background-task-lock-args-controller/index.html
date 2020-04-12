@@ -38,7 +38,7 @@
     
     
       
-        <title>Background Task Single Running - apidaora</title>
+        <title>Background Task with Lock by Args - apidaora</title>
       
     
     
@@ -99,7 +99,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#using-background-task-single-running-controller" tabindex="0" class="md-skip">
+      <a href="#using-background-task-controller-with-lock-by-args" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Background Task Single Running
+                Background Task with Lock by Args
               
             </span>
           
@@ -366,6 +366,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../using-background-task-lock-controller/" title="Background Task with Lock" class="md-nav__link">
+      Background Task with Lock
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -377,11 +389,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Background Task Single Running
+        Background Task with Lock by Args
       </label>
     
-    <a href="./" title="Background Task Single Running" class="md-nav__link md-nav__link--active">
-      Background Task Single Running
+    <a href="./" title="Background Task with Lock by Args" class="md-nav__link md-nav__link--active">
+      Background Task with Lock by Args
     </a>
     
       
@@ -444,6 +456,18 @@
   
 </nav>
     
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-redis-background-task-lock-args-controller/" title="Background Task with Lock by Args and Redis" class="md-nav__link">
+      Background Task with Lock by Args and Redis
+    </a>
   </li>
 
     
@@ -574,14 +598,14 @@
               
                 
                 
-                <h1 id="using-background-task-single-running-controller">Using Background Task Single Running Controller</h1>
+                <h1 id="using-background-task-controller-with-lock-by-args">Using Background Task Controller with Lock by Args</h1>
 <h2 id="example">Example</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
 
 
-<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello-single&#39;</span><span class="p">,</span> <span class="n">single_running</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello-single&#39;</span><span class="p">,</span> <span class="n">lock_args</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
@@ -605,10 +629,12 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
 
 <h2 id="creating-tasks">Creating tasks</h2>
-<p>Creating the task twice, getting error on second:</p>
+<p>Creating the task three times, getting error just on same arguments:</p>
 <div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
 <span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
 curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>You
 </code></pre></div>
 
 
@@ -616,23 +642,33 @@ curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 157
+content-length: 113
 
-{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;task_id&quot;:&quot;de01341028ac&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 
 HTTP/1.1 400 Bad Request
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 91
+content-length: 64
 
-{&quot;error&quot;:{&quot;name&quot;:&quot;single-running&quot;,&quot;info&quot;:{&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}}}
+{&quot;error&quot;:{&quot;name&quot;:&quot;lock-args&quot;,&quot;info&quot;:{&quot;task_id&quot;:&quot;de01341028ac&quot;}}}
+
+HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;1d62d7c10b8b&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 </code></pre></div>
 
 
 <h2 id="quering">Quering</h2>
-<p>Quering the server for the task (You must replace the task_id with the server output):</p>
-<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+<p>Quering the server for the tasks:</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-single?task_id<span class="o">=</span>de01341028ac
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -i localhost:8000/hello-single?task_id<span class="o">=</span>1d62d7c10b8b
 </code></pre></div>
 
 
@@ -640,14 +676,25 @@ content-length: 91
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 157
+content-length: 113
 
-{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;task_id&quot;:&quot;de01341028ac&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+
+HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;1d62d7c10b8b&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 </code></pre></div>
 
 
-<p>Wait the task to finish and get results:</p>
-<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+<p>Wait the tasks to finish and get results:</p>
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span>
+curl -i localhost:8000/hello-single?task_id<span class="o">=</span>de01341028ac
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -i localhost:8000/hello-single?task_id<span class="o">=</span>1d62d7c10b8b
 </code></pre></div>
 
 
@@ -655,9 +702,17 @@ content-length: 157
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 218
+content-length: 174
 
-{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;de01341028ac&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+
+HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 175
+
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello You!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;1d62d7c10b8b&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 </code></pre></div>
 
 
@@ -671,9 +726,9 @@ content-length: 218
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 157
+content-length: 113
 
-{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 </code></pre></div>
 
 
@@ -687,9 +742,9 @@ content-length: 157
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 157
+content-length: 113
 
-{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 </code></pre></div>
 
 
@@ -702,9 +757,9 @@ content-length: 157
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 218
+content-length: 174
 
-{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
 </code></pre></div>
                 
                   
@@ -727,7 +782,7 @@ content-length: 218
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../using-redis-background-task-controller/" title="Background Task with Redis" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../using-background-task-lock-controller/" title="Background Task with Lock" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -736,19 +791,19 @@ content-length: 218
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Background Task with Redis
+                Background Task with Lock
               </span>
             </div>
           </a>
         
         
-          <a href="../using-gzip-request-body/" title="Upload gzip files" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../using-redis-background-task-lock-args-controller/" title="Background Task with Lock by Args and Redis" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Upload gzip files
+                Background Task with Lock by Args and Redis
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

@@ -1,0 +1,23 @@
+HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{"task_id":"de01341028ac","start_time":"1970-01-01T00:00:00+00:00","status":"running","signature":"aedb1ee4c3c7"}
+
+HTTP/1.1 400 Bad Request
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 64
+
+{"error":{"name":"lock-args","info":{"task_id":"de01341028ac"}}}
+
+HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{"task_id":"1d62d7c10b8b","start_time":"1970-01-01T00:00:00+00:00","status":"running","signature":"aedb1ee4c3c7"}

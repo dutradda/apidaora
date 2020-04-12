@@ -1,0 +1,844 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Asgi App using typing annotation">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>Background Task with Lock by Args and Redis - apidaora</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.adb8469c.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#e91e63">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../stylesheets/dark_theme.css">
+    
+      <link rel="stylesheet" href="../stylesheets/codehilite.css">
+    
+    
+      
+    
+    
+<meta name="theme-color" content="#212121">
+
+<link rel='icon' href='/assets/images/favicon.ico'>
+
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='mobile-web-app-capable' content='yes'>
+<link rel="manifest" href="/manifest.json">
+
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="pink" data-md-color-accent="grey">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#using-redis-background-task-controller-with-lock-by-args" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="apidaora" aria-label="apidaora" class="md-header-nav__button md-logo">
+          
+            <img alt="logo" src="../apidaora-white.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              apidaora
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Background Task with Lock by Args and Redis
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/dutradda/apidaora" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    dutradda/apidaora
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href=".." title="apidaora" class="md-nav__button md-logo">
+      
+        <img alt="logo" src="../apidaora-white.svg" width="48" height="48">
+      
+    </a>
+    apidaora
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/dutradda/apidaora" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    dutradda/apidaora
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="apidaora" class="md-nav__link">
+      apidaora
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../python-dataclass/" title="Python dataclass intro" class="md-nav__link">
+      Python dataclass intro
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../json/" title="JSON intro" class="md-nav__link">
+      JSON intro
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-asgi-module/" title="Core Module" class="md-nav__link">
+      Core Module
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-class-controller/" title="Class Controllers" class="md-nav__link">
+      Class Controllers
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-middlewares/" title="Middlewares" class="md-nav__link">
+      Middlewares
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-options/" title="Default Options" class="md-nav__link">
+      Default Options
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-background-task-controller/" title="Background Tasks" class="md-nav__link">
+      Background Tasks
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-async-background-task-controller/" title="Async Background Tasks" class="md-nav__link">
+      Async Background Tasks
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-redis-background-task-async-controller/" title="Async Background Task with Redis" class="md-nav__link">
+      Async Background Task with Redis
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-redis-background-task-controller/" title="Background Task with Redis" class="md-nav__link">
+      Background Task with Redis
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-background-task-lock-controller/" title="Background Task with Lock" class="md-nav__link">
+      Background Task with Lock
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-background-task-lock-args-controller/" title="Background Task with Lock by Args" class="md-nav__link">
+      Background Task with Lock by Args
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Background Task with Lock by Args and Redis
+      </label>
+    
+    <a href="./" title="Background Task with Lock by Args and Redis" class="md-nav__link md-nav__link--active">
+      Background Task with Lock by Args and Redis
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-tasks" class="md-nav__link">
+    Creating tasks
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-another-task" class="md-nav__link">
+    Creating another task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering_1" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-gzip-request-body/" title="Upload gzip files" class="md-nav__link">
+      Upload gzip files
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-prevent-request-middleware/" title="Prevent Request Middleware" class="md-nav__link">
+      Prevent Request Middleware
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../contributing/" title="Development - Contributing" class="md-nav__link">
+      Development - Contributing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-tasks" class="md-nav__link">
+    Creating tasks
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-another-task" class="md-nav__link">
+    Creating another task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering_1" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="using-redis-background-task-controller-with-lock-by-args">Using Redis Background Task Controller with Lock by Args</h1>
+<h2 id="example">Example</h2>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
+
+
+<span class="n">REDIS_URI</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;redis://{os.environ.get(&#39;REDIS&#39;, &#39;&#39;)}&quot;</span>
+
+
+<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello-single&#39;</span><span class="p">,</span> <span class="n">lock_args</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tasks_repository</span><span class="o">=</span><span class="n">REDIS_URI</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">hello_task</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h2 id="running">Running</h2>
+<p>Running the server:</p>
+<div class="codehilite"><pre><span></span><code>uvicorn myapp:app
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>INFO: Started server process [16220]
+INFO: Waiting for application startup.
+INFO: ASGI &#39;lifespan&#39; protocol appears unsupported.
+INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+</code></pre></div>
+
+
+<h2 id="creating-tasks">Creating tasks</h2>
+<p>Creating the task three times, getting error just on same arguments:</p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>You
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;de01341028ac&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+
+HTTP/1.1 400 Bad Request
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 64
+
+{&quot;error&quot;:{&quot;name&quot;:&quot;lock-args&quot;,&quot;info&quot;:{&quot;task_id&quot;:&quot;de01341028ac&quot;}}}
+
+HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;1d62d7c10b8b&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+</code></pre></div>
+
+
+<h2 id="quering">Quering</h2>
+<p>Quering the server for the tasks:</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-single?task_id<span class="o">=</span>de01341028ac
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -i localhost:8000/hello-single?task_id<span class="o">=</span>1d62d7c10b8b
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;de01341028ac&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+
+HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;1d62d7c10b8b&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+</code></pre></div>
+
+
+<p>Wait the tasks to finish and get results:</p>
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span>
+curl -i localhost:8000/hello-single?task_id<span class="o">=</span>de01341028ac
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -i localhost:8000/hello-single?task_id<span class="o">=</span>1d62d7c10b8b
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 174
+
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;task_id&quot;:&quot;de01341028ac&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+
+HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 175
+
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello You!&quot;,&quot;task_id&quot;:&quot;1d62d7c10b8b&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+</code></pre></div>
+
+
+<h2 id="creating-another-task">Creating another task</h2>
+<p>Now the task should be able to run again</p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+</code></pre></div>
+
+
+<h2 id="quering_1">Quering</h2>
+<p>Quering the server for the task (You must replace the task_id with the server output):</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 113
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+</code></pre></div>
+
+
+<p>Wait the task to finish and get results:</p>
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 174
+
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+</code></pre></div>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../using-background-task-lock-args-controller/" title="Background Task with Lock by Args" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Background Task with Lock by Args
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../using-gzip-request-body/" title="Upload gzip files" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Upload gzip files
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.1",url:{base:".."}})</script>
+      
+    
+  </body>
+</html>
