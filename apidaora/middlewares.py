@@ -13,7 +13,8 @@ class MiddlewareRequest:
     path_args: Optional[Dict[str, Any]] = None
     query_dict: Optional[Dict[str, Any]] = None
     headers: Optional[Dict[str, Header]] = None
-    body: Optional[Any] = None
+    body: Any = None
+    kwargs: Optional[Dict[str, Any]] = None
 
 
 @dataclass
@@ -42,6 +43,8 @@ def make_asgi_input_from_requst(
         kwargs.update(request.headers)
     if request.body:
         kwargs['body'] = request.body
+    if request.kwargs and (input_cls.__annotations_info__.has_kwargs):
+        kwargs.update(request.kwargs)
 
     return input_cls(**kwargs)
 

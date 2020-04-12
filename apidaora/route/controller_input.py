@@ -19,6 +19,7 @@ class AnnotationsInfo:
     has_query_dict: bool = False
     has_headers: bool = False
     has_body: bool = False
+    has_kwargs: bool = False
 
 
 class ControllerInput(DictDaora):
@@ -75,6 +76,9 @@ def controller_input(
 
             if annotations_body:
                 annotations_info.has_body = True
+
+            if 'kwargs' in controller.__annotations__:
+                annotations_info.has_kwargs = True
 
             AnnotatedControllerInput = jsondaora(
                 type(

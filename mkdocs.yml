@@ -32,6 +32,7 @@ nav:
     - Background Task with Lock by Args: using-background-task-lock-args-controller.md
     - Background Task with Lock by Args and Redis: using-redis-background-task-lock-args-controller.md
     - Upload gzip files: using-gzip-request-body.md
+    - Extra Arguments Middlewares: using-extra-args-middlewares.md
     - Lock Request Middleware: using-lock-request-middleware.md
     # - Complete Request/Response: tutorial/01-complete-request-response.md
     # - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md

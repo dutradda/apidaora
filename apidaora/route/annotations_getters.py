@@ -24,6 +24,7 @@ def get_annotations_query_dict(
         if name not in path_args_annotations
         and name not in headers_annotations
         and name != 'return'
+        and name != 'kwargs'
     }
 
 

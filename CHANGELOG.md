@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Create feature to pass kwargs through middlewares and controller
+
  - Improve post_execution middleware
 
  - Rename PreventRequestMiddleware to LockRequestMiddleware
