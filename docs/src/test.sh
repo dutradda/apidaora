@@ -69,8 +69,6 @@ for filepath in ${test_files}; do
         grep -E "${task_id_regex}" | \
         sed -r -e "s/.*${task_id_regex}.*/${task_id_sub}/g" \
     )
-    # task_id=$(echo ${task_ids} | sed -r -e "s/^([0-9a-z-]+).*/\1/g")
-    # task_id2=$(echo ${task_ids} | sed -r -e "s/.* ([0-9a-z-]+)$/\1/g")
     sed ${output_tmpfile} -i -r -e \
         "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
     md5sum ${output_file} ${output_tmpfile} > ${checksum_file}
@@ -146,7 +144,7 @@ for filepath in ${test_files}; do
     fi
 
     ps ax | (ps ax | awk "/uvicorn ${test_module}:app/ {print \$1}" | xargs kill -SIGTERM 2>/dev/null)
-    sleep 1
+    sleep 2
 
     output=$(sed -r -e 's/(.*) .*/\1/g' ${checksum_file} | uniq | wc -l)
 
