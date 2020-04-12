@@ -38,7 +38,7 @@
     
     
       
-        <title>Background Task with Redis - apidaora</title>
+        <title>Background Task Single Running - apidaora</title>
       
     
     
@@ -99,7 +99,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#using-background-task-controller-with-redis-backend" tabindex="0" class="md-skip">
+      <a href="#using-background-task-single-running-controller" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Background Task with Redis
+                Background Task Single Running
               
             </span>
           
@@ -354,6 +354,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../using-redis-background-task-controller/" title="Background Task with Redis" class="md-nav__link">
+      Background Task with Redis
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -365,11 +377,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Background Task with Redis
+        Background Task Single Running
       </label>
     
-    <a href="./" title="Background Task with Redis" class="md-nav__link md-nav__link--active">
-      Background Task with Redis
+    <a href="./" title="Background Task Single Running" class="md-nav__link md-nav__link--active">
+      Background Task Single Running
     </a>
     
       
@@ -397,14 +409,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-task" class="md-nav__link">
-    Creating task
+  <a href="#creating-tasks" class="md-nav__link">
+    Creating tasks
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-another-task" class="md-nav__link">
+    Creating another task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering_1" class="md-nav__link">
     Quering
   </a>
   
@@ -418,18 +444,6 @@
   
 </nav>
     
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../using-background-task-single-running-controller/" title="Background Task Single Running" class="md-nav__link">
-      Background Task Single Running
-    </a>
   </li>
 
     
@@ -516,14 +530,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-task" class="md-nav__link">
-    Creating task
+  <a href="#creating-tasks" class="md-nav__link">
+    Creating tasks
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#quering" class="md-nav__link">
+    Quering
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-another-task" class="md-nav__link">
+    Creating another task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quering_1" class="md-nav__link">
     Quering
   </a>
   
@@ -546,18 +574,14 @@
               
                 
                 
-                <h1 id="using-background-task-controller-with-redis-backend">Using Background Task Controller with Redis Backend</h1>
+                <h1 id="using-background-task-single-running-controller">Using Background Task Single Running Controller</h1>
 <h2 id="example">Example</h2>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
 
 
-<span class="n">REDIS_URI</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;redis://{os.environ.get(&#39;REDIS&#39;, &#39;&#39;)}&quot;</span>
-
-
-<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">tasks_repository</span><span class="o">=</span><span class="n">REDIS_URI</span><span class="p">)</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello-single&#39;</span><span class="p">,</span> <span class="n">single_running</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
@@ -568,7 +592,6 @@
 
 
 <h2 id="running">Running</h2>
-<p>You will need a redis server to run this example.</p>
 <p>Running the server:</p>
 <div class="codehilite"><pre><span></span><code>uvicorn myapp:app
 </code></pre></div>
@@ -581,9 +604,11 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 </code></pre></div>
 
 
-<h2 id="creating-task">Creating task</h2>
-<p>Creating the task:</p>
-<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello?name<span class="o">=</span>Me
+<h2 id="creating-tasks">Creating tasks</h2>
+<p>Creating the task twice, getting error on second:</p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
+<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
+curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
 </code></pre></div>
 
 
@@ -594,12 +619,20 @@ content-type: application/json
 content-length: 157
 
 {&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+
+HTTP/1.1 400 Bad Request
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 91
+
+{&quot;error&quot;:{&quot;name&quot;:&quot;single-running&quot;,&quot;info&quot;:{&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}}}
 </code></pre></div>
 
 
 <h2 id="quering">Quering</h2>
 <p>Quering the server for the task (You must replace the task_id with the server output):</p>
-<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
 </code></pre></div>
 
 
@@ -614,7 +647,7 @@ content-length: 157
 
 
 <p>Wait the task to finish and get results:</p>
-<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
 </code></pre></div>
 
 
@@ -624,7 +657,54 @@ server: uvicorn
 content-type: application/json
 content-length: 218
 
-{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+</code></pre></div>
+
+
+<h2 id="creating-another-task">Creating another task</h2>
+<p>Now the task should be able to run again</p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 157
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+</code></pre></div>
+
+
+<h2 id="quering_1">Quering</h2>
+<p>Quering the server for the task (You must replace the task_id with the server output):</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 157
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
+</code></pre></div>
+
+
+<p>Wait the task to finish and get results:</p>
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello-single?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 218
+
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7221a041d59c660e84d2b&quot;}
 </code></pre></div>
                 
                   
@@ -647,7 +727,7 @@ content-length: 218
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../using-redis-background-task-async-controller/" title="Async Background Task with Redis" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../using-redis-background-task-controller/" title="Background Task with Redis" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -656,19 +736,19 @@ content-length: 218
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Async Background Task with Redis
+                Background Task with Redis
               </span>
             </div>
           </a>
         
         
-          <a href="../using-background-task-single-running-controller/" title="Background Task Single Running" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../using-gzip-request-body/" title="Upload gzip files" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Background Task Single Running
+                Upload gzip files
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
