@@ -2,15 +2,15 @@ HTTP/1.1 400 Bad Request
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 69
+content-length: 63
 
-{"name":"prevent-request","info":{"path_pattern":"/prevent-request"}}HTTP/1.1 400 Bad Request
+{"name":"lock-request","info":{"path_pattern":"/lock-request"}}HTTP/1.1 400 Bad Request
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 69
+content-length: 63
 
-{"name":"prevent-request","info":{"path_pattern":"/prevent-request"}}HTTP/1.1 100 Continue
+{"name":"lock-request","info":{"path_pattern":"/lock-request"}}HTTP/1.1 100 Continue
 
 HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT

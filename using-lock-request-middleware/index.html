@@ -38,7 +38,7 @@
     
     
       
-        <title>Prevent Request Middleware - apidaora</title>
+        <title>Lock Request Middleware - apidaora</title>
       
     
     
@@ -99,7 +99,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#using-prevent-request-middleware" tabindex="0" class="md-skip">
+      <a href="#using-lock-request-middleware" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Prevent Request Middleware
+                Lock Request Middleware
               
             </span>
           
@@ -414,6 +414,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../using-extra-args-middlewares/" title="Extra Arguments Middlewares" class="md-nav__link">
+      Extra Arguments Middlewares
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -425,11 +437,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Prevent Request Middleware
+        Lock Request Middleware
       </label>
     
-    <a href="./" title="Prevent Request Middleware" class="md-nav__link md-nav__link--active">
-      Prevent Request Middleware
+    <a href="./" title="Lock Request Middleware" class="md-nav__link md-nav__link--active">
+      Lock Request Middleware
     </a>
     
       
@@ -556,28 +568,39 @@
               
                 
                 
-                <h1 id="using-prevent-request-middleware">Using Prevent Request Middleware</h1>
+                <h1 id="using-lock-request-middleware">Using Lock Request Middleware</h1>
 <h2 id="example">Example</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">Middlewares</span><span class="p">,</span> <span class="n">PreventRequestMiddleware</span><span class="p">,</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">LockRequestMiddleware</span><span class="p">,</span> <span class="n">Middlewares</span><span class="p">,</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
 
 
-<span class="n">prevent_request_middleware</span> <span class="o">=</span> <span class="n">PreventRequestMiddleware</span><span class="p">()</span>
+<span class="n">prevent_request_middleware</span> <span class="o">=</span> <span class="n">LockRequestMiddleware</span><span class="p">()</span>
 
 
 <span class="nd">@route</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-    <span class="s1">&#39;/prevent-request&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;/lock-request&#39;</span><span class="p">,</span>
     <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span>
-        <span class="n">post_routing</span><span class="o">=</span><span class="p">[</span><span class="n">prevent_request_middleware</span><span class="o">.</span><span class="n">set_in_process</span><span class="p">],</span>
-        <span class="n">pre_execution</span><span class="o">=</span><span class="p">[</span><span class="n">prevent_request_middleware</span><span class="o">.</span><span class="n">remove_in_process</span><span class="p">],</span>
+        <span class="n">post_routing</span><span class="o">=</span><span class="p">[</span><span class="n">prevent_request_middleware</span><span class="o">.</span><span class="n">lock</span><span class="p">],</span>
+        <span class="n">pre_execution</span><span class="o">=</span><span class="p">[</span><span class="n">prevent_request_middleware</span><span class="o">.</span><span class="n">unlock_pre_execution</span><span class="p">],</span>
     <span class="p">),</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">pre_execution_middleware_controller</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">lock_controller</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">pre_execution_middleware_controller</span><span class="p">)</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s1">&#39;/lock-request-post&#39;</span><span class="p">,</span>
+    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span>
+        <span class="n">post_routing</span><span class="o">=</span><span class="p">[</span><span class="n">prevent_request_middleware</span><span class="o">.</span><span class="n">lock</span><span class="p">],</span>
+        <span class="n">post_execution</span><span class="o">=</span><span class="p">[</span><span class="n">prevent_request_middleware</span><span class="o">.</span><span class="n">unlock_post_execution</span><span class="p">],</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">lock_post_controller</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">([</span><span class="n">lock_controller</span><span class="p">,</span> <span class="n">lock_post_controller</span><span class="p">])</span>
 </code></pre></div>
 
 
@@ -597,11 +620,11 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 <h2 id="post-a-large-json-file-several-times">Post a large json file several times</h2>
 <div class="codehilite"><pre><span></span><code>python -c <span class="s1">&#39;import json; open(&quot;/tmp/large.json&quot;, &quot;w+&quot;).write(json.dumps(list(range(1000000))))&#39;</span>
 
-curl -i localhost:8000/prevent-request -X POST -T /tmp/large.json <span class="p">&amp;</span>
-curl -i localhost:8000/prevent-request -X POST -T /tmp/large.json <span class="p">&amp;</span>
-curl -i localhost:8000/prevent-request -X POST -T /tmp/large.json <span class="p">&amp;</span>
+curl -i localhost:8000/lock-request -X POST -T /tmp/large.json <span class="p">&amp;</span>
+curl -i localhost:8000/lock-request -X POST -T /tmp/large.json <span class="p">&amp;</span>
+curl -i localhost:8000/lock-request -X POST -T /tmp/large.json <span class="p">&amp;</span>
 sleep <span class="m">1</span>
-curl -i localhost:8000/prevent-request -X POST -T /tmp/large.json
+curl -i localhost:8000/lock-request -X POST -T /tmp/large.json
 </code></pre></div>
 
 
@@ -609,15 +632,15 @@ curl -i localhost:8000/prevent-request -X POST -T /tmp/large.json
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 69
+content-length: 63
 
-{&quot;name&quot;:&quot;prevent-request&quot;,&quot;info&quot;:{&quot;path_pattern&quot;:&quot;/prevent-request&quot;}}HTTP/1.1 400 Bad Request
+{&quot;name&quot;:&quot;lock-request&quot;,&quot;info&quot;:{&quot;path_pattern&quot;:&quot;/lock-request&quot;}}HTTP/1.1 400 Bad Request
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 69
+content-length: 63
 
-{&quot;name&quot;:&quot;prevent-request&quot;,&quot;info&quot;:{&quot;path_pattern&quot;:&quot;/prevent-request&quot;}}HTTP/1.1 100 Continue
+{&quot;name&quot;:&quot;lock-request&quot;,&quot;info&quot;:{&quot;path_pattern&quot;:&quot;/lock-request&quot;}}HTTP/1.1 100 Continue
 
 HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
@@ -656,7 +679,7 @@ content-length: 7
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../using-gzip-request-body/" title="Upload gzip files" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../using-extra-args-middlewares/" title="Extra Arguments Middlewares" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -665,7 +688,7 @@ content-length: 7
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Upload gzip files
+                Extra Arguments Middlewares
               </span>
             </div>
           </a>

@@ -482,8 +482,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../using-prevent-request-middleware/" title="Prevent Request Middleware" class="md-nav__link">
-      Prevent Request Middleware
+    <a href="../using-extra-args-middlewares/" title="Extra Arguments Middlewares" class="md-nav__link">
+      Extra Arguments Middlewares
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../using-lock-request-middleware/" title="Lock Request Middleware" class="md-nav__link">
+      Lock Request Middleware
     </a>
   </li>
 
@@ -613,7 +625,9 @@
         <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">MiddlewareRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">response</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">PostExecutionHeader</span><span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
