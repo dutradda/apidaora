@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Rename the feature background task single running to background task lock
+
 ### 0.19.0 - 2020-04-12
 
  - Fix middleware request parsing

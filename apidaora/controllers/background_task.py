@@ -55,7 +55,7 @@ def make_background_task(
     path_pattern: str,
     max_workers: int = 10,
     tasks_repository: Any = None,
-    single_running: bool = False,
+    lock: bool = False,
     middlewares: Optional[Middlewares] = None,
     options: bool = False,
 ) -> BackgroundTask:
@@ -91,11 +91,11 @@ def make_background_task(
         tasks_repository,
         FinishedTaskInfo,
         max_workers,
-        single_running,
+        lock,
         signature,
     )
     get_task_results = make_get_task_results(
-        tasks_repository, FinishedTaskInfo, single_running
+        tasks_repository, FinishedTaskInfo, lock
     )
 
     create_task.__annotations__ = {
@@ -207,7 +207,7 @@ def make_create_task(
     tasks_repository_: Any,
     finished_task_info_cls: Any,
     max_workers: int,
-    single_running: bool,
+    lock: bool,
     signature: str,
 ) -> Callable[..., Coroutine[Any, Any, Response]]:
     executor = ThreadPoolExecutor(max_workers)
@@ -215,17 +215,17 @@ def make_create_task(
     async def create_task(*args: Any, **kwargs: Any) -> Response:
         task_id = uuid.uuid4()
         tasks_repository = tasks_repository_
-        task_key = None if single_running else task_id
+        task_key = None if lock else task_id
 
         if asyncio.iscoroutinefunction(controller):
             if isinstance(tasks_repository, partial):
                 tasks_repository = await tasks_repository()
 
-            single_running_error = await get_single_running_error(
-                single_running, tasks_repository, finished_task_info_cls
+            lock_error = await get_lock_error(
+                lock, tasks_repository, finished_task_info_cls
             )
-            if single_running_error:
-                raise single_running_error
+            if lock_error:
+                raise lock_error
 
             loop = asyncio.get_running_loop()
             wrapper = make_task_wrapper(
@@ -251,11 +251,11 @@ def make_create_task(
         if isinstance(tasks_repository, partial):
             tasks_repository = await tasks_repository()
 
-        single_running_error = await get_single_running_error(
-            single_running, tasks_repository, finished_task_info_cls
+        lock_error = await get_lock_error(
+            lock, tasks_repository, finished_task_info_cls
         )
-        if single_running_error:
-            raise single_running_error
+        if lock_error:
+            raise lock_error
 
         task = TaskInfo(
             task_id=str(task_id),
@@ -342,11 +342,11 @@ def make_done_callback(
 
 
 def make_get_task_results(
-    tasks_repository_: Any, finished_task_info_cls: Any, single_running: bool,
+    tasks_repository_: Any, finished_task_info_cls: Any, lock: bool,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def get_task_results(task_id: str) -> finished_task_info_cls:  # type: ignore
         tasks_repository = tasks_repository_
-        task_key = None if single_running else uuid.UUID(task_id)
+        task_key = None if lock else uuid.UUID(task_id)
 
         if isinstance(tasks_repository, partial):
             tasks_repository = await tasks_repository()
@@ -372,10 +372,10 @@ def make_get_task_results(
     return get_task_results
 
 
-async def get_single_running_error(
-    single_running: bool, tasks_repository: Any, finished_task_info_cls: Any
+async def get_lock_error(
+    lock: bool, tasks_repository: Any, finished_task_info_cls: Any
 ) -> Optional[BadRequestError]:
-    if single_running:
+    if lock:
         try:
             task = await tasks_repository.get(finished_task_info_cls)
             if task['status'] == TaskStatusType.RUNNING.value:
