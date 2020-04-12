@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Add docs for background tasks with lock args and redis
+
  - Create the feature task background lock by args
 
  - Rename the feature background task single running to background task lock
