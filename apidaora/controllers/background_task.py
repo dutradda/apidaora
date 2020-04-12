@@ -1,13 +1,14 @@
 import asyncio
 import dataclasses
 import datetime
+import hashlib
 import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from functools import partial
 from http import HTTPStatus
-from typing import Any, Callable, Coroutine, Dict, Type, TypedDict
+from typing import Any, Callable, Coroutine, Dict, Optional, Type, TypedDict
 
 import orjson
 from jsondaora import as_typed_dict, jsondaora, typed_dict_asjson
@@ -15,6 +16,7 @@ from jsondaora import as_typed_dict, jsondaora, typed_dict_asjson
 from ..asgi.router import Controller
 from ..exceptions import BadRequestError, InvalidTasksRepositoryError
 from ..method import MethodType
+from ..middlewares import Middlewares
 from ..responses import Response, json
 from ..route.factory import make_route
 
@@ -39,6 +41,7 @@ class TaskInfo(TypedDict):
     task_id: str
     start_time: str
     status: str
+    signature: str
 
 
 @dataclasses.dataclass
@@ -52,6 +55,9 @@ def make_background_task(
     path_pattern: str,
     max_workers: int = 10,
     tasks_repository: Any = None,
+    single_running: bool = False,
+    middlewares: Optional[Middlewares] = None,
+    options: bool = False,
 ) -> BackgroundTask:
     if asyncio.iscoroutinefunction(controller):
         logger.warning(
@@ -59,10 +65,21 @@ def make_background_task(
             'It use is recommended just for small tasks or non-blocking operations.'
         )
 
-    tasks_repository = get_tasks_repository(tasks_repository)
-
     annotations = getattr(controller, '__annotations__', {})
     result_annotation = annotations.get('return', str)
+    signature = hashlib.md5(
+        '-'.join(
+            [controller.__name__]
+            + [
+                '-'.join((name, type_.__name__))
+                for name, type_ in annotations.items()
+            ]
+        ).encode()
+    ).hexdigest()
+    server_id = uuid.uuid4()
+    tasks_repository = get_tasks_repository(
+        tasks_repository, server_id, signature
+    )
 
     @jsondaora
     class FinishedTaskInfo(TaskInfo):
@@ -70,10 +87,15 @@ def make_background_task(
         result: result_annotation  # type: ignore
 
     create_task = make_create_task(
-        controller, tasks_repository, FinishedTaskInfo, max_workers
+        controller,
+        tasks_repository,
+        FinishedTaskInfo,
+        max_workers,
+        single_running,
+        signature,
     )
     get_task_results = make_get_task_results(
-        tasks_repository, FinishedTaskInfo
+        tasks_repository, FinishedTaskInfo, single_running
     )
 
     create_task.__annotations__ = {
@@ -81,8 +103,20 @@ def make_background_task(
     }
 
     return BackgroundTask(
-        make_route(path_pattern, MethodType.POST, create_task).controller,
-        make_route(path_pattern, MethodType.GET, get_task_results).controller,
+        make_route(
+            path_pattern,
+            MethodType.POST,
+            create_task,
+            route_middlewares=middlewares,
+            options=options,
+        ).controller,
+        make_route(
+            path_pattern,
+            MethodType.GET,
+            get_task_results,
+            route_middlewares=middlewares,
+            options=options,
+        ).controller,
     )
 
 
@@ -96,16 +130,33 @@ def get_iso_time() -> str:
 
 @dataclasses.dataclass
 class BaseTasksRepository:
-    async def set(
-        self, key: Any, value: Any, task_cls: Type[Any] = TaskInfo
-    ) -> None:
-        ...
+    server_id: uuid.UUID
+    signature: str
+    data_source: Any
 
-    async def get(self, key: Any, finished_task_cls: Type[Any]) -> Any:
-        ...
+    async def set(
+        self,
+        value: Any,
+        task_cls: Type[Any] = TaskInfo,
+        task_id: Optional[Any] = None,
+    ) -> None:
+        raise NotImplementedError()
+
+    async def get(
+        self, finished_task_cls: Type[Any], task_id: Optional[Any] = None,
+    ) -> Any:
+        raise NotImplementedError()
 
     def close(self) -> None:
         ...
+
+    def build_key(self, task_id: Optional[Any]) -> str:
+        base_key = f'apidaora:{self.server_id}:{self.signature}'
+
+        if task_id:
+            return f'{base_key}:{task_id}'
+
+        return base_key
 
 
 @dataclasses.dataclass
@@ -113,17 +164,24 @@ class SimpleTasksRepository(BaseTasksRepository):
     data_source: Dict[str, Any]
 
     async def set(
-        self, key: Any, value: Any, task_cls: Type[Any] = TaskInfo
+        self,
+        value: Any,
+        task_cls: Type[Any] = TaskInfo,
+        task_id: Optional[Any] = None,
     ) -> None:
-        self.data_source[key] = value
+        self.data_source[self.build_key(task_id)] = value
 
-    async def get(self, key: Any, finished_task_cls: Type[Any]) -> Any:
-        return self.data_source[key]
+    async def get(
+        self, finished_task_cls: Type[Any], task_id: Optional[Any] = None,
+    ) -> Any:
+        return self.data_source[self.build_key(task_id)]
 
 
-def get_tasks_repository(tasks_repository: Any) -> Any:
+def get_tasks_repository(
+    tasks_repository: Any, server_id: uuid.UUID, signature: str
+) -> Any:
     if tasks_repository is None:
-        return SimpleTasksRepository({})
+        return SimpleTasksRepository(server_id, signature, {})
 
     elif isinstance(tasks_repository, str) and tasks_repository.startswith(
         'redis://'
@@ -131,7 +189,12 @@ def get_tasks_repository(tasks_repository: Any) -> Any:
         if aioredis is None:
             raise InvalidTasksRepositoryError("'aioredis' package not found!")
 
-        return partial(get_redis_tasks_repository, tasks_repository)
+        return partial(
+            get_redis_tasks_repository,
+            server_id=server_id,
+            signature=signature,
+            uri=tasks_repository,
+        )
 
     elif isinstance(tasks_repository, BaseTasksRepository):
         return tasks_repository
@@ -144,23 +207,32 @@ def make_create_task(
     tasks_repository_: Any,
     finished_task_info_cls: Any,
     max_workers: int,
+    single_running: bool,
+    signature: str,
 ) -> Callable[..., Coroutine[Any, Any, Response]]:
     executor = ThreadPoolExecutor(max_workers)
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:
         task_id = uuid.uuid4()
         tasks_repository = tasks_repository_
+        task_key = None if single_running else task_id
 
         if asyncio.iscoroutinefunction(controller):
             if isinstance(tasks_repository, partial):
                 tasks_repository = await tasks_repository()
 
+            single_running_error = await get_single_running_error(
+                single_running, tasks_repository, finished_task_info_cls
+            )
+            if single_running_error:
+                raise single_running_error
+
             loop = asyncio.get_running_loop()
             wrapper = make_task_wrapper(
                 tasks_repository,
-                task_id,
                 finished_task_info_cls,
                 controller,
+                task_key,
                 *args,
                 **kwargs,
             )
@@ -168,24 +240,32 @@ def make_create_task(
 
         else:
             done_callback = make_done_callback(
-                tasks_repository, task_id, finished_task_info_cls
+                tasks_repository, task_key, finished_task_info_cls
             )
 
             future = executor.submit(controller, *args, **kwargs)
             future.add_done_callback(done_callback)
 
         start_time = get_iso_time()
-        task = TaskInfo(
-            task_id=str(task_id),
-            start_time=start_time,
-            status=TaskStatusType.RUNNING.value,
-        )
 
         if isinstance(tasks_repository, partial):
             tasks_repository = await tasks_repository()
 
+        single_running_error = await get_single_running_error(
+            single_running, tasks_repository, finished_task_info_cls
+        )
+        if single_running_error:
+            raise single_running_error
+
+        task = TaskInfo(
+            task_id=str(task_id),
+            start_time=start_time,
+            status=TaskStatusType.RUNNING.value,
+            signature=signature,
+        )
+
         await tasks_repository.set(
-            task_id, task, task_cls=finished_task_info_cls
+            task, task_cls=finished_task_info_cls, task_id=task_key
         )
 
         if not asyncio.iscoroutinefunction(controller):
@@ -198,24 +278,27 @@ def make_create_task(
 
 def make_task_wrapper(
     tasks_repository: Any,
-    task_id: uuid.UUID,
     finished_task_info_cls: Any,
     controller: Callable[..., Any],
+    task_key: Optional[uuid.UUID],
     *args: Any,
     **kwargs: Any,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def wrapper() -> Any:
         result = await controller(*args, **kwargs)
-        task = await tasks_repository.get(task_id, finished_task_info_cls)
+        task = await tasks_repository.get(
+            finished_task_info_cls, task_id=task_key
+        )
         finished_task = finished_task_info_cls(
             end_time=get_iso_time(),
             result=result,
             status=TaskStatusType.FINISHED.value,
             task_id=task['task_id'],
             start_time=task['start_time'],
+            signature=task['signature'],
         )
         await tasks_repository.set(
-            task_id, finished_task, task_cls=finished_task_info_cls
+            finished_task, task_cls=finished_task_info_cls, task_id=task_key
         )
         tasks_repository.close()
 
@@ -223,7 +306,9 @@ def make_task_wrapper(
 
 
 def make_done_callback(
-    tasks_repository_: Any, task_id: uuid.UUID, finished_task_info_cls: Any
+    tasks_repository_: Any,
+    task_key: Optional[uuid.UUID],
+    finished_task_info_cls: Any,
 ) -> Callable[[Any], None]:
     def done_callback(future: Any) -> None:
         result = future.result()
@@ -235,7 +320,7 @@ def make_done_callback(
             tasks_repository = loop.run_until_complete(tasks_repository())
 
         task = loop.run_until_complete(
-            tasks_repository.get(task_id, finished_task_info_cls)
+            tasks_repository.get(finished_task_info_cls, task_id=task_key)
         )
         finished_task = finished_task_info_cls(
             end_time=get_iso_time(),
@@ -243,45 +328,65 @@ def make_done_callback(
             status=TaskStatusType.FINISHED.value,
             task_id=task['task_id'],
             start_time=task['start_time'],
+            signature=task['signature'],
         )
         loop.run_until_complete(
             tasks_repository.set(
-                task_id, finished_task, task_cls=finished_task_info_cls
+                finished_task,
+                task_cls=finished_task_info_cls,
+                task_id=task_key,
             )
         )
-        tasks_repository.close()
 
     return done_callback
 
 
 def make_get_task_results(
-    tasks_repository_: Any, finished_task_info_cls: Any
+    tasks_repository_: Any, finished_task_info_cls: Any, single_running: bool,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def get_task_results(task_id: str) -> finished_task_info_cls:  # type: ignore
         tasks_repository = tasks_repository_
+        task_key = None if single_running else uuid.UUID(task_id)
 
         if isinstance(tasks_repository, partial):
             tasks_repository = await tasks_repository()
 
         try:
             task = await tasks_repository.get(
-                uuid.UUID(task_id), finished_task_info_cls
+                finished_task_info_cls, task_id=task_key
             )
             tasks_repository.close()
             return task  # type: ignore
         except KeyError:
             raise BadRequestError(
-                name='invalid_task_id', info={'task_id': task_id}
+                name='invalid-task-id', info={'task_id': task_id}
             )
         except ValueError as error:
             if error.args == ('badly formed hexadecimal UUID string',):
                 raise BadRequestError(
-                    name='invalid_task_id', info={'task_id': task_id}
+                    name='invalid-task-id', info={'task_id': task_id}
                 )
 
             raise error from None
 
     return get_task_results
+
+
+async def get_single_running_error(
+    single_running: bool, tasks_repository: Any, finished_task_info_cls: Any
+) -> Optional[BadRequestError]:
+    if single_running:
+        try:
+            task = await tasks_repository.get(finished_task_info_cls)
+            if task['status'] == TaskStatusType.RUNNING.value:
+                return BadRequestError(
+                    'single-running', {'signature': task['signature']}
+                )
+
+        except KeyError:
+            ...
+
+    return None
 
 
 if aioredis is not None:
@@ -291,14 +396,19 @@ if aioredis is not None:
         data_source: aioredis.Redis
 
         async def set(
-            self, key: Any, value: Any, task_cls: Type[Any] = TaskInfo
+            self,
+            value: Any,
+            task_cls: Type[Any] = TaskInfo,
+            task_id: Optional[Any] = None,
         ) -> None:
             await self.data_source.set(
-                str(key), typed_dict_asjson(value, task_cls)
+                self.build_key(task_id), typed_dict_asjson(value, task_cls)
             )
 
-        async def get(self, key: Any, finished_task_cls: Type[Any]) -> Any:
-            value = await self.data_source.get(str(key))
+        async def get(
+            self, finished_task_cls: Type[Any], task_id: Optional[Any] = None,
+        ) -> Any:
+            value = await self.data_source.get(self.build_key(task_id))
 
             if value:
                 value = orjson.loads(value)
@@ -309,11 +419,13 @@ if aioredis is not None:
                 if value['status'] == TaskStatusType.FINISHED.value:
                     return as_typed_dict(value, finished_task_cls)
 
-            raise KeyError(key)
+            raise KeyError(self.build_key(task_id))
 
         def close(self) -> None:
             self.data_source.close()
 
-    async def get_redis_tasks_repository(uri: str) -> RedisTasksRepository:
+    async def get_redis_tasks_repository(
+        server_id: uuid.UUID, signature: str, uri: str
+    ) -> RedisTasksRepository:
         data_source = await aioredis.create_redis_pool(uri)
-        return RedisTasksRepository(data_source)
+        return RedisTasksRepository(server_id, signature, data_source)

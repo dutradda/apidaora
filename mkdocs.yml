@@ -28,6 +28,7 @@ nav:
     - Async Background Tasks: using-async-background-task-controller.md
     - Async Background Task with Redis: using-redis-background-task-async-controller.md
     - Background Task with Redis: using-redis-background-task-controller.md
+    - Background Task Single Running: using-background-task-single-running-controller.md
     - Upload gzip files: using-gzip-request-body.md
     - Prevent Request Middleware: using-prevent-request-middleware.md
     # - Complete Request/Response: tutorial/01-complete-request-response.md

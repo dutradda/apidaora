@@ -267,7 +267,7 @@ def make_route(
 
     class WrappedController(Controller):
         @functools.wraps(controller)
-        def __call__(
+        async def __call__(
             self,
             path_args: ASGIPathArgs,
             query_dict: ASGIQueryDict,
@@ -283,7 +283,7 @@ def make_route(
                     middlewares=self.middlewares,
                 )
                 controller_output = controller(**kwargs)
-                return build_asgi_output(
+                return await build_asgi_output(
                     controller_output, middlewares=self.middlewares,
                 )
 
