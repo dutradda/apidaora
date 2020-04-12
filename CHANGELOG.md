@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.19.0 - 2020-04-12
 
  - Fix middleware request parsing
 
