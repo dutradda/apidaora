@@ -144,7 +144,7 @@ for filepath in ${test_files}; do
     fi
 
     ps ax | (ps ax | awk "/uvicorn ${test_module}:app/ {print \$1}" | xargs kill -SIGTERM 2>/dev/null)
-    sleep 2
+    sleep 1
 
     output=$(sed -r -e 's/(.*) .*/\1/g' ${checksum_file} | uniq | wc -l)
 
