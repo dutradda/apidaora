@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.22.1 - 2020-04-12
 
  - Fix factory when has middlewares and the controller has no inputs
 
