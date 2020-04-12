@@ -45,3 +45,7 @@ class InvalidTasksRepositoryError(APIDaoraError):
 
 class InvalidRouteArgumentsError(APIDaoraError):
     ...
+
+
+class InvalidPathError(APIDaoraError):
+    ...

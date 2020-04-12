@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Improve router
+
 ### 0.21.0 - 2020-04-12
 
  - Create feature to pass kwargs through middlewares and controller

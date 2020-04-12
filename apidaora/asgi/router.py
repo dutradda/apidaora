@@ -11,9 +11,15 @@ from typing import (
     List,
     Optional,
     Pattern,
+    Tuple,
+    Union,
 )
 
-from apidaora.exceptions import MethodNotFoundError, PathNotFoundError
+from apidaora.exceptions import (
+    InvalidPathError,
+    MethodNotFoundError,
+    PathNotFoundError,
+)
 from apidaora.method import MethodType
 
 from ..middlewares import Middlewares
@@ -82,32 +88,32 @@ PATH_RE = re.compile(r'\{(?P<name>[^/:]+)(:(?P<pattern>[^/:]+))?\}')
 
 
 def make_router(
+    routes: Union[List[Route], Tuple[Route]],
+    middlewares: Optional[Middlewares] = None,
+) -> Callable[[str, str], ResolvedRoute]:
+    has_regex_path = False
+
+    for route in routes:
+        if '{' in route.path_pattern and '}' in route.path_pattern:
+            has_regex_path = True
+            break
+
+        elif '{' in route.path_pattern or '}' in route.path_pattern:
+            raise InvalidPathError(route.path_pattern)
+
+    if has_regex_path:
+        return make_tree_router(routes, middlewares)
+
+    return make_dict_router(routes, middlewares)
+
+
+def make_tree_router(
     routes: Iterable[Route], middlewares: Optional[Middlewares] = None,
 ) -> Callable[[str, str], ResolvedRoute]:
     routes_tree = RoutesTree()
 
     for route in routes:
-        if middlewares:
-            if (
-                not hasattr(route.controller, 'middlewares')
-                or not route.controller.middlewares
-            ):
-                route.controller.middlewares = Middlewares(
-                    **dataclasses.asdict(middlewares)
-                )
-            else:
-                route_middlewares = Middlewares(
-                    **dataclasses.asdict(route.controller.middlewares)
-                )
-                route_middlewares.post_routing.extend(middlewares.post_routing)
-                route_middlewares.pre_execution.extend(
-                    middlewares.pre_execution
-                )
-                route_middlewares.post_execution.extend(
-                    middlewares.post_execution
-                )
-                route.controller.middlewares = route_middlewares
-
+        set_middlewares_route(route, middlewares)
         path_pattern_parts = split_path(route.path_pattern)
         routes_tree_tmp = routes_tree
 
@@ -167,5 +173,54 @@ def make_router(
     return route_
 
 
+def make_dict_router(
+    routes: Iterable[Route], middlewares: Optional[Middlewares] = None,
+) -> Callable[[str, str], ResolvedRoute]:
+    routes_dict = {}
+
+    for route in routes:
+        set_middlewares_route(route, middlewares)
+        path = route.path_pattern.strip(STRIP_VALUES)
+        routes_dict[(path, route.method.value)] = ResolvedRoute(
+            route, {}, path
+        )
+
+    def route_(path: str, method: str) -> ResolvedRoute:
+        try:
+            return routes_dict[(path.strip(STRIP_VALUES), method)]
+
+        except KeyError:
+            if any([path in k for k in routes_dict.keys()]):
+                raise MethodNotFoundError(method, path)
+
+            raise PathNotFoundError(path)
+
+    return route_
+
+
+def set_middlewares_route(
+    route: Route, middlewares: Optional[Middlewares]
+) -> None:
+    if middlewares:
+        if (
+            not hasattr(route.controller, 'middlewares')
+            or not route.controller.middlewares
+        ):
+            route.controller.middlewares = Middlewares(
+                **dataclasses.asdict(middlewares)
+            )
+        else:
+            route_middlewares = Middlewares(
+                **dataclasses.asdict(route.controller.middlewares)
+            )
+            route_middlewares.post_routing.extend(middlewares.post_routing)
+            route_middlewares.pre_execution.extend(middlewares.pre_execution)
+            route_middlewares.post_execution.extend(middlewares.post_execution)
+            route.controller.middlewares = route_middlewares
+
+
 def split_path(path: str) -> Iterable[str]:
-    return path.strip(' /').split('/')
+    return path.strip(STRIP_VALUES).split('/')
+
+
+STRIP_VALUES = ' /'
