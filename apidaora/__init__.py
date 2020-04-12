@@ -2,7 +2,7 @@
 ASGI App using dataclasses module for request/response objects
 """
 
-__version__ = '0.21.0'
+__version__ = '0.22.0'
 
 from apidaora.app import appdaora
 from apidaora.bodies import GZipFactory
