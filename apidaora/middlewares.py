@@ -1,9 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set, Type
 
 from .exceptions import BadRequestError
 from .header import Header
 from .responses import Response
+from .route.controller_input import ControllerInput
 
 
 @dataclass
@@ -28,7 +29,9 @@ class Middlewares:
     )
 
 
-def make_kwargs_from_requst(request: MiddlewareRequest) -> Dict[str, Any]:
+def make_asgi_input_from_requst(
+    request: MiddlewareRequest, input_cls: Type[ControllerInput]
+) -> ControllerInput:
     kwargs = {}
 
     if request.path_args:
@@ -40,7 +43,7 @@ def make_kwargs_from_requst(request: MiddlewareRequest) -> Dict[str, Any]:
     if request.body:
         kwargs['body'] = request.body
 
-    return kwargs
+    return input_cls(**kwargs)
 
 
 class AllowOriginHeader(

@@ -46,7 +46,7 @@ from ..method import MethodType
 from ..middlewares import (
     MiddlewareRequest,
     Middlewares,
-    make_kwargs_from_requst,
+    make_asgi_input_from_requst,
 )
 from ..responses import Response
 from .controller_input import controller_input
@@ -170,7 +170,9 @@ def make_route(
                 for middleware in middlewares.pre_execution:
                     middleware(middleware_request)
 
-                kwargs = make_kwargs_from_requst(middleware_request)
+                return make_asgi_input_from_requst(
+                    middleware_request, ControllerInput
+                )
 
             return as_typed_dict(  # type: ignore
                 kwargs, ControllerInput
@@ -275,6 +277,7 @@ def make_route(
             body: ASGIBody,
         ) -> Union[Awaitable[ASGICallableResults], ASGICallableResults]:
             try:
+                print('AAAHH')
                 kwargs = parse_asgi_input(
                     path_args,
                     query_dict,

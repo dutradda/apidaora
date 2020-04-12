@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Fix middleware request parsing
+
  - Create single running feature for background tasks
 
 ### 0.18.0 - 2020-04-11
