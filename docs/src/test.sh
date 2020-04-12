@@ -58,7 +58,7 @@ for filepath in ${test_files}; do
 
     echo Testing ${filename}..
     coverage run -p $(which uvicorn) ${test_module}:app >${uvicorn_output_file} 2>&1 &
-    sleep 1
+    sleep 2
 
     bash ${curl_file} 2>/dev/null | \
         sed -r -e "s/${date_regex}/${date_sub}/g" \
@@ -144,7 +144,7 @@ for filepath in ${test_files}; do
     fi
 
     ps ax | (ps ax | awk "/uvicorn ${test_module}:app/ {print \$1}" | xargs kill -SIGTERM 2>/dev/null)
-    sleep 1
+    sleep 2
 
     output=$(sed -r -e 's/(.*) .*/\1/g' ${checksum_file} | uniq | wc -l)
 
