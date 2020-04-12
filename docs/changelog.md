@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Improve post_execution middleware
+
  - Rename PreventRequestMiddleware to LockRequestMiddleware
 
 ### 0.20.0 - 2020-04-12
