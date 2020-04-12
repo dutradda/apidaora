@@ -183,6 +183,12 @@ def make_route(
                 None,
             )
 
+        if middlewares:
+            for middleware in middlewares.pre_execution:
+                middleware(middleware_request)
+
+            return {}, middleware_request
+
         return {}, None
 
     async def build_asgi_output(

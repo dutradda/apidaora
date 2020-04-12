@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix factory when has middlewares and the controller has no inputs
+
 ### 0.22.0 - 2020-04-12
 
  - Improve router
