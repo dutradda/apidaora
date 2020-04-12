@@ -56,6 +56,7 @@ def make_background_task(
     max_workers: int = 10,
     tasks_repository: Any = None,
     lock: bool = False,
+    lock_args: bool = False,
     middlewares: Optional[Middlewares] = None,
     options: bool = False,
 ) -> BackgroundTask:
@@ -75,7 +76,7 @@ def make_background_task(
                 for name, type_ in annotations.items()
             ]
         ).encode()
-    ).hexdigest()
+    ).hexdigest()[:12]
     server_id = uuid.uuid4()
     tasks_repository = get_tasks_repository(
         tasks_repository, server_id, signature
@@ -92,10 +93,11 @@ def make_background_task(
         FinishedTaskInfo,
         max_workers,
         lock,
+        lock_args,
         signature,
     )
     get_task_results = make_get_task_results(
-        tasks_repository, FinishedTaskInfo, lock
+        tasks_repository, FinishedTaskInfo, lock, lock_args
     )
 
     create_task.__annotations__ = {
@@ -138,19 +140,19 @@ class BaseTasksRepository:
         self,
         value: Any,
         task_cls: Type[Any] = TaskInfo,
-        task_id: Optional[Any] = None,
+        task_id: Optional[str] = None,
     ) -> None:
         raise NotImplementedError()
 
     async def get(
-        self, finished_task_cls: Type[Any], task_id: Optional[Any] = None,
+        self, finished_task_cls: Type[Any], task_id: Optional[str] = None,
     ) -> Any:
         raise NotImplementedError()
 
     def close(self) -> None:
         ...
 
-    def build_key(self, task_id: Optional[Any]) -> str:
+    def build_key(self, task_id: Optional[str]) -> str:
         base_key = f'apidaora:{self.server_id}:{self.signature}'
 
         if task_id:
@@ -167,12 +169,12 @@ class SimpleTasksRepository(BaseTasksRepository):
         self,
         value: Any,
         task_cls: Type[Any] = TaskInfo,
-        task_id: Optional[Any] = None,
+        task_id: Optional[str] = None,
     ) -> None:
         self.data_source[self.build_key(task_id)] = value
 
     async def get(
-        self, finished_task_cls: Type[Any], task_id: Optional[Any] = None,
+        self, finished_task_cls: Type[Any], task_id: Optional[str] = None,
     ) -> Any:
         return self.data_source[self.build_key(task_id)]
 
@@ -208,13 +210,27 @@ def make_create_task(
     finished_task_info_cls: Any,
     max_workers: int,
     lock: bool,
+    lock_args: bool,
     signature: str,
 ) -> Callable[..., Coroutine[Any, Any, Response]]:
     executor = ThreadPoolExecutor(max_workers)
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:
-        task_id = uuid.uuid4()
         tasks_repository = tasks_repository_
+
+        if lock_args:
+            task_id = hashlib.md5(
+                '-'.join(
+                    [str(arg) for arg in args]
+                    + [
+                        '-'.join((key, str(value)))
+                        for key, value in kwargs.items()
+                    ]
+                ).encode()
+            ).hexdigest()[:12]
+        else:
+            task_id = str(uuid.uuid4())
+
         task_key = None if lock else task_id
 
         if asyncio.iscoroutinefunction(controller):
@@ -222,7 +238,11 @@ def make_create_task(
                 tasks_repository = await tasks_repository()
 
             lock_error = await get_lock_error(
-                lock, tasks_repository, finished_task_info_cls
+                lock,
+                lock_args,
+                tasks_repository,
+                finished_task_info_cls,
+                task_key,
             )
             if lock_error:
                 raise lock_error
@@ -252,7 +272,7 @@ def make_create_task(
             tasks_repository = await tasks_repository()
 
         lock_error = await get_lock_error(
-            lock, tasks_repository, finished_task_info_cls
+            lock, lock_args, tasks_repository, finished_task_info_cls, task_key
         )
         if lock_error:
             raise lock_error
@@ -280,7 +300,7 @@ def make_task_wrapper(
     tasks_repository: Any,
     finished_task_info_cls: Any,
     controller: Callable[..., Any],
-    task_key: Optional[uuid.UUID],
+    task_key: Optional[str],
     *args: Any,
     **kwargs: Any,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
@@ -307,7 +327,7 @@ def make_task_wrapper(
 
 def make_done_callback(
     tasks_repository_: Any,
-    task_key: Optional[uuid.UUID],
+    task_key: Optional[str],
     finished_task_info_cls: Any,
 ) -> Callable[[Any], None]:
     def done_callback(future: Any) -> None:
@@ -342,11 +362,14 @@ def make_done_callback(
 
 
 def make_get_task_results(
-    tasks_repository_: Any, finished_task_info_cls: Any, lock: bool,
+    tasks_repository_: Any,
+    finished_task_info_cls: Any,
+    lock: bool,
+    lock_args: bool,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def get_task_results(task_id: str) -> finished_task_info_cls:  # type: ignore
         tasks_repository = tasks_repository_
-        task_key = None if lock else uuid.UUID(task_id)
+        task_key = None if lock else (task_id if lock_args else task_id)
 
         if isinstance(tasks_repository, partial):
             tasks_repository = await tasks_repository()
@@ -373,14 +396,25 @@ def make_get_task_results(
 
 
 async def get_lock_error(
-    lock: bool, tasks_repository: Any, finished_task_info_cls: Any
+    lock: bool,
+    lock_args: bool,
+    tasks_repository: Any,
+    finished_task_info_cls: Any,
+    task_key: Optional[str],
 ) -> Optional[BadRequestError]:
-    if lock:
+    if lock or lock_args:
         try:
-            task = await tasks_repository.get(finished_task_info_cls)
+            task = await tasks_repository.get(
+                finished_task_info_cls, task_id=task_key
+            )
             if task['status'] == TaskStatusType.RUNNING.value:
+                if lock_args:
+                    return BadRequestError(
+                        'lock-args', {'task_id': task['task_id']}
+                    )
+
                 return BadRequestError(
-                    'single-running', {'signature': task['signature']}
+                    'lock', {'signature': task['signature']}
                 )
 
         except KeyError:
@@ -399,14 +433,14 @@ if aioredis is not None:
             self,
             value: Any,
             task_cls: Type[Any] = TaskInfo,
-            task_id: Optional[Any] = None,
+            task_id: Optional[str] = None,
         ) -> None:
             await self.data_source.set(
                 self.build_key(task_id), typed_dict_asjson(value, task_cls)
             )
 
         async def get(
-            self, finished_task_cls: Type[Any], task_id: Optional[Any] = None,
+            self, finished_task_cls: Type[Any], task_id: Optional[str] = None,
         ) -> Any:
             value = await self.data_source.get(self.build_key(task_id))
 

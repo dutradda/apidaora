@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Create the feature task background lock by args
+
  - Rename the feature background task single running to background task lock
 
 ### 0.19.0 - 2020-04-12
