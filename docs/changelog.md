@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.23.0 - 2020-04-12
 
  - Create background tasks middlewares
 
