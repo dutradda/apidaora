@@ -54,7 +54,7 @@ def make_background_task(
     controller: Callable[..., Any],
     path_pattern: str,
     max_workers: int = 10,
-    tasks_repository: Any = None,
+    tasks_repository_uri: Optional[str] = None,
     lock: bool = False,
     lock_args: bool = False,
     middlewares: Optional[Middlewares] = None,
@@ -78,8 +78,8 @@ def make_background_task(
         ).encode()
     ).hexdigest()[:12]
     server_id = uuid.uuid4()
-    tasks_repository = get_tasks_repository(
-        tasks_repository, server_id, signature
+    tasks_repository_builder = get_tasks_repository_builder(
+        tasks_repository_uri, server_id, signature
     )
 
     @jsondaora
@@ -89,7 +89,7 @@ def make_background_task(
 
     create_task = make_create_task(
         controller,
-        tasks_repository,
+        tasks_repository_builder,
         FinishedTaskInfo,
         max_workers,
         lock,
@@ -97,7 +97,7 @@ def make_background_task(
         signature,
     )
     get_task_results = make_get_task_results(
-        tasks_repository, FinishedTaskInfo, lock, lock_args
+        tasks_repository_builder, FinishedTaskInfo, lock, lock_args
     )
 
     create_task.__annotations__ = {
@@ -149,7 +149,7 @@ class BaseTasksRepository:
     ) -> Any:
         raise NotImplementedError()
 
-    def close(self) -> None:
+    async def close(self) -> None:
         ...
 
     def build_key(self, task_id: Optional[str]) -> str:
@@ -179,15 +179,17 @@ class SimpleTasksRepository(BaseTasksRepository):
         return self.data_source[self.build_key(task_id)]
 
 
-def get_tasks_repository(
-    tasks_repository: Any, server_id: uuid.UUID, signature: str
+def get_tasks_repository_builder(
+    uri: Optional[str], server_id: uuid.UUID, signature: str
 ) -> Any:
-    if tasks_repository is None:
-        return SimpleTasksRepository(server_id, signature, {})
+    if uri is None:
 
-    elif isinstance(tasks_repository, str) and tasks_repository.startswith(
-        'redis://'
-    ):
+        async def builder() -> SimpleTasksRepository:
+            return SimpleTasksRepository(server_id, signature, TASKS_DB)
+
+        return builder
+
+    elif isinstance(uri, str) and uri.startswith('redis://'):
         if aioredis is None:
             raise InvalidTasksRepositoryError("'aioredis' package not found!")
 
@@ -195,18 +197,15 @@ def get_tasks_repository(
             get_redis_tasks_repository,
             server_id=server_id,
             signature=signature,
-            uri=tasks_repository,
+            uri=uri,
         )
 
-    elif isinstance(tasks_repository, BaseTasksRepository):
-        return tasks_repository
-
-    raise InvalidTasksRepositoryError(tasks_repository)
+    raise InvalidTasksRepositoryError(uri)
 
 
 def make_create_task(
     controller: Callable[..., Any],
-    tasks_repository_: Any,
+    tasks_repository_builder: Any,
     finished_task_info_cls: Any,
     max_workers: int,
     lock: bool,
@@ -216,8 +215,6 @@ def make_create_task(
     executor = ThreadPoolExecutor(max_workers)
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:
-        tasks_repository = tasks_repository_
-
         if lock_args:
             task_id = hashlib.md5(
                 '-'.join(
@@ -232,50 +229,34 @@ def make_create_task(
             task_id = str(uuid.uuid4())
 
         task_key = None if lock else task_id
+        tasks_repository = await tasks_repository_builder()
+        lock_error = await get_lock_error(
+            lock, lock_args, tasks_repository, finished_task_info_cls, task_key
+        )
+
+        if lock_error:
+            raise lock_error
 
         if asyncio.iscoroutinefunction(controller):
-            if isinstance(tasks_repository, partial):
-                tasks_repository = await tasks_repository()
-
-            lock_error = await get_lock_error(
-                lock,
-                lock_args,
-                tasks_repository,
+            wrapper = make_controller_wrapper(
+                tasks_repository_builder,
                 finished_task_info_cls,
                 task_key,
-            )
-            if lock_error:
-                raise lock_error
-
-            loop = asyncio.get_running_loop()
-            wrapper = make_task_wrapper(
-                tasks_repository,
-                finished_task_info_cls,
                 controller,
-                task_key,
                 *args,
                 **kwargs,
             )
-            asyncio.run_coroutine_threadsafe(wrapper(), loop)
+            task_ = asyncio.create_task(wrapper())
+            task_.add_done_callback(lambda f: f.result())
 
         else:
             done_callback = make_done_callback(
-                tasks_repository, task_key, finished_task_info_cls
+                tasks_repository_builder, task_key, finished_task_info_cls
             )
-
             future = executor.submit(controller, *args, **kwargs)
             future.add_done_callback(done_callback)
 
         start_time = get_iso_time()
-
-        if isinstance(tasks_repository, partial):
-            tasks_repository = await tasks_repository()
-
-        lock_error = await get_lock_error(
-            lock, lock_args, tasks_repository, finished_task_info_cls, task_key
-        )
-        if lock_error:
-            raise lock_error
 
         task = TaskInfo(
             task_id=str(task_id),
@@ -283,36 +264,46 @@ def make_create_task(
             status=TaskStatusType.RUNNING.value,
             signature=signature,
         )
-
         await tasks_repository.set(
             task, task_cls=finished_task_info_cls, task_id=task_key
         )
-
-        if not asyncio.iscoroutinefunction(controller):
-            tasks_repository.close()
+        await tasks_repository.close()
 
         return json(task, status=HTTPStatus.CREATED)
 
     return create_task
 
 
-def make_task_wrapper(
-    tasks_repository: Any,
+def make_controller_wrapper(
+    tasks_repository_builder: Any,
     finished_task_info_cls: Any,
-    controller: Callable[..., Any],
     task_key: Optional[str],
+    controller: Any,
     *args: Any,
     **kwargs: Any,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def wrapper() -> Any:
-        result = await controller(*args, **kwargs)
+        tasks_repository = await tasks_repository_builder()
+
+        try:
+            result = await controller(*args, **kwargs)
+            status = TaskStatusType.FINISHED.value
+        except Exception:
+            logger.exception(
+                f'server-id={tasks_repository.server_id}; '
+                f'signature={tasks_repository.signature}; '
+                f'task-key={task_key};'
+            )
+            result = None
+            status = TaskStatusType.ERROR.value
+
         task = await tasks_repository.get(
             finished_task_info_cls, task_id=task_key
         )
         finished_task = finished_task_info_cls(
             end_time=get_iso_time(),
             result=result,
-            status=TaskStatusType.FINISHED.value,
+            status=status,
             task_id=task['task_id'],
             start_time=task['start_time'],
             signature=task['signature'],
@@ -320,36 +311,46 @@ def make_task_wrapper(
         await tasks_repository.set(
             finished_task, task_cls=finished_task_info_cls, task_id=task_key
         )
-        tasks_repository.close()
+        await tasks_repository.close()
 
     return wrapper
 
 
 def make_done_callback(
-    tasks_repository_: Any,
+    tasks_repository_builder: Any,
     task_key: Optional[str],
     finished_task_info_cls: Any,
 ) -> Callable[[Any], None]:
     def done_callback(future: Any) -> None:
-        result = future.result()
         policy = asyncio.get_event_loop_policy()
         loop = policy.new_event_loop()
-        tasks_repository = tasks_repository_
+        tasks_repository = loop.run_until_complete(tasks_repository_builder())
 
-        if isinstance(tasks_repository, partial):
-            tasks_repository = loop.run_until_complete(tasks_repository())
+        try:
+            result = future.result()
+            status = TaskStatusType.FINISHED.value
+        except Exception:
+            logger.exception(
+                f'server-id={tasks_repository.server_id}; '
+                f'signature={tasks_repository.signature}; '
+                f'task-key={task_key};'
+            )
+            result = None
+            status = TaskStatusType.ERROR.value
 
         task = loop.run_until_complete(
             tasks_repository.get(finished_task_info_cls, task_id=task_key)
         )
+
         finished_task = finished_task_info_cls(
             end_time=get_iso_time(),
             result=result,
-            status=TaskStatusType.FINISHED.value,
+            status=status,
             task_id=task['task_id'],
             start_time=task['start_time'],
             signature=task['signature'],
         )
+
         loop.run_until_complete(
             tasks_repository.set(
                 finished_task,
@@ -357,28 +358,25 @@ def make_done_callback(
                 task_id=task_key,
             )
         )
+        loop.run_until_complete(tasks_repository.close())
 
     return done_callback
 
 
 def make_get_task_results(
-    tasks_repository_: Any,
+    tasks_repository_builder: Any,
     finished_task_info_cls: Any,
     lock: bool,
     lock_args: bool,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def get_task_results(task_id: str) -> finished_task_info_cls:  # type: ignore
-        tasks_repository = tasks_repository_
         task_key = None if lock else (task_id if lock_args else task_id)
-
-        if isinstance(tasks_repository, partial):
-            tasks_repository = await tasks_repository()
+        tasks_repository = await tasks_repository_builder()
 
         try:
             task = await tasks_repository.get(
                 finished_task_info_cls, task_id=task_key
             )
-            tasks_repository.close()
             return task  # type: ignore
         except KeyError:
             raise BadRequestError(
@@ -391,6 +389,8 @@ def make_get_task_results(
                 )
 
             raise error from None
+        finally:
+            await tasks_repository.close()
 
     return get_task_results
 
@@ -398,7 +398,7 @@ def make_get_task_results(
 async def get_lock_error(
     lock: bool,
     lock_args: bool,
-    tasks_repository: Any,
+    tasks_repository: BaseTasksRepository,
     finished_task_info_cls: Any,
     task_key: Optional[str],
 ) -> Optional[BadRequestError]:
@@ -455,11 +455,15 @@ if aioredis is not None:
 
             raise KeyError(self.build_key(task_id))
 
-        def close(self) -> None:
+        async def close(self) -> None:
             self.data_source.close()
+            await self.data_source.wait_closed()
 
     async def get_redis_tasks_repository(
         server_id: uuid.UUID, signature: str, uri: str
     ) -> RedisTasksRepository:
         data_source = await aioredis.create_redis_pool(uri)
         return RedisTasksRepository(server_id, signature, data_source)
+
+
+TASKS_DB: Dict[str, Any] = {}

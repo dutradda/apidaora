@@ -32,7 +32,7 @@ class _RouteDecorator:
             keys = tuple(kwargs.keys())
             if len(kwargs) > 0 and not any(
                 (
-                    'tasks_repository' in keys,
+                    'tasks_repository_uri' in keys,
                     'lock' in keys,
                     'lock_args' in keys,
                     'middlewares' in keys,
@@ -48,13 +48,13 @@ class _RouteDecorator:
                 options = kwargs.get('options')
 
                 if brackground:
-                    tasks_repository = kwargs.get('tasks_repository')
+                    tasks_repository_uri = kwargs.get('tasks_repository_uri')
                     lock = kwargs.get('lock')
                     lock_args = kwargs.get('lock_args')
                     return make_background_task(
                         controller,
                         path_pattern,
-                        tasks_repository=tasks_repository,
+                        tasks_repository_uri=tasks_repository_uri,
                         lock=lock,  # type: ignore
                         lock_args=lock_args,  # type: ignore
                         middlewares=middlewares,
