@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.24.0 - 2020-04-13
 
  - Improve background task controller
 
