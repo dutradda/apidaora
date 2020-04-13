@@ -207,11 +207,15 @@ def set_middlewares_route(
             or not route.controller.middlewares
         ):
             route.controller.middlewares = Middlewares(
-                **dataclasses.asdict(middlewares)
+                post_routing=middlewares.post_routing,
+                pre_execution=middlewares.pre_execution,
+                post_execution=middlewares.post_execution,
             )
         else:
             route_middlewares = Middlewares(
-                **dataclasses.asdict(route.controller.middlewares)
+                post_routing=route.controller.middlewares.post_routing,
+                pre_execution=route.controller.middlewares.pre_execution,
+                post_execution=route.controller.middlewares.post_execution,
             )
             route_middlewares.post_routing.extend(middlewares.post_routing)
             route_middlewares.pre_execution.extend(middlewares.pre_execution)

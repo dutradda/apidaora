@@ -1,5 +1,19 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Set, Type
+from logging import Logger, getLogger
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Type,
+    Union,
+)
 
 from .exceptions import BadRequestError
 from .header import Header
@@ -138,3 +152,75 @@ class LockRequestMiddleware:
         self, request: MiddlewareRequest, response: Response
     ) -> None:
         self.locks.remove(request.path_pattern)
+
+
+@dataclass(init=False)
+class BackgroundTaskMiddleware:
+    executor: ThreadPoolExecutor
+    logger: Logger
+
+    def __init__(
+        self, max_workers: int = 100, logger: Optional[Logger] = None
+    ):
+        self.executor = ThreadPoolExecutor(max_workers=max_workers)
+
+        if logger is None:
+            logger = getLogger(__name__)
+
+        self.logger = logger
+
+    def __call__(self, request: MiddlewareRequest, response: Response) -> None:
+        response_tasks: Union[
+            Iterable[Callable[[], None]], Callable[[], None]
+        ] = []
+
+        if response.kwargs:
+            response_tasks = response.kwargs.get(
+                'background_tasks', response_tasks
+            )
+
+        if response_tasks and not isinstance(response_tasks, Iterable):
+            response_tasks = (response_tasks,)
+
+        for task in response_tasks:
+            future = self.executor.submit(task)
+            future.add_done_callback(self.done_callback)
+
+    def done_callback(self, future: Any) -> None:
+        try:
+            future.result()
+        except Exception:
+            self.logger.exception('Background Task Error')
+
+
+@dataclass(init=False)
+class AsyncBackgroundTaskMiddleware:
+    logger: Logger = getLogger(__name__)
+
+    def __call__(self, request: MiddlewareRequest, response: Response) -> None:
+        response_tasks: Union[
+            Iterable[Awaitable[None]],
+            Iterable[asyncio.Task[None]],
+            Awaitable[None],
+        ] = []
+
+        if response.kwargs:
+            response_tasks = response.kwargs.get(
+                'background_tasks_async', response_tasks
+            )
+
+        if not isinstance(response_tasks, Iterable):
+            response_tasks = (response_tasks,)
+
+        for task in response_tasks:
+            if asyncio.iscoroutinefunction(task):  # type: ignore
+                task = task()  # type: ignore
+
+            task = asyncio.create_task(task)
+            task.add_done_callback(self.done_callback)
+
+    def done_callback(self, future: Any) -> None:
+        try:
+            future.result()
+        except Exception:
+            self.logger.exception('Background Task Error')

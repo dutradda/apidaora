@@ -20,20 +20,24 @@ nav:
     - Python dataclass intro: python-dataclass.md
     - JSON intro: json.md
     # - Http intro: http.md
-    - Core Module: using-asgi-module.md
+    - Middlewares:
+        - Intro: middlewares/using-middlewares.md
+        - Background Tasks: middlewares/using-middlewares-background-tasks.md
+        - Async Background Tasks: middlewares/using-middlewares-background-tasks-async.md
+        - Extra Arguments: middlewares/using-middlewares-extra-args.md
+        - Lock Request: middlewares/using-middlewares-lock-request.md
+    - Background Task Controller:
+        - Background Task: background-task-controller/using-background-task-controller.md
+        - Async Background Task: background-task-controller/using-background-task-controller-async.md
+        - Background Task with Redis: background-task-controller/using-background-task-controller-redis.md
+        - Async Background Task with Redis: background-task-controller/using-background-task-controller-async-redis.md
+        - Background Task with Lock: background-task-controller/using-background-task-controller-lock.md
+        - Background Task with Lock by Args: background-task-controller/using-background-task-controller-lock-args.md
+        - Background Task with Lock by Args and Redis: background-task-controller/using-background-task-controller-lock-args-redis.md
     - Class Controllers: using-class-controller.md
-    - Middlewares: using-middlewares.md
+    - Core Module: using-asgi-module.md
     - Default Options: using-options.md
-    - Background Tasks: using-background-task-controller.md
-    - Async Background Tasks: using-async-background-task-controller.md
-    - Async Background Task with Redis: using-redis-background-task-async-controller.md
-    - Background Task with Redis: using-redis-background-task-controller.md
-    - Background Task with Lock: using-background-task-lock-controller.md
-    - Background Task with Lock by Args: using-background-task-lock-args-controller.md
-    - Background Task with Lock by Args and Redis: using-redis-background-task-lock-args-controller.md
-    - Upload gzip files: using-gzip-request-body.md
-    - Extra Arguments Middlewares: using-extra-args-middlewares.md
-    - Lock Request Middleware: using-lock-request-middleware.md
+    - Upload gzip files: using-request-body-gzip.md
     # - Complete Request/Response: tutorial/01-complete-request-response.md
     # - Deserializations bad requests: tutorial/02-deserializations-bad-requests.md
     # - Validating fields: tutorial/03-validating-fields.md
