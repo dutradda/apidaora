@@ -215,8 +215,12 @@ def make_create_task(
     executor = ThreadPoolExecutor(max_workers)
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:
+        task_key: Optional[str]
+
+        task_id = str(uuid.uuid4())
+
         if lock_args:
-            task_id = hashlib.md5(
+            task_key = hashlib.md5(
                 '-'.join(
                     [str(arg) for arg in args]
                     + [
@@ -225,10 +229,10 @@ def make_create_task(
                     ]
                 ).encode()
             ).hexdigest()[:12]
-        else:
-            task_id = str(uuid.uuid4())
 
-        task_key = None if lock else task_id
+        else:
+            task_key = None if lock else task_id
+
         tasks_repository = await tasks_repository_builder()
         lock_error = await get_lock_error(
             lock, lock_args, tasks_repository, finished_task_info_cls, task_key

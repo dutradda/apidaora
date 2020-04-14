@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Fix task_id on background tasks controller when lock args is true
+
  - Fix RedisTasksRepository.get method
 
 ### 0.24.0 - 2020-04-13
