@@ -123,8 +123,6 @@ for filepath in ${test_files}; do
         cp ${curl_file4} ${tmp_curl_file4}
         sed ${tmp_curl_file4} -i -r -e \
             "s/${fake_uuid}/${task_id}/g" 2>/dev/null
-        sed ${tmp_curl_file4} -i -r -e \
-            "s/${fake_uuid2}/${task_id2}/g" 2>/dev/null
         bash ${tmp_curl_file4} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
@@ -136,8 +134,6 @@ for filepath in ${test_files}; do
         )
         sed ${output_tmpfile4} -i -r -e \
             "s/${task_id}/${fake_uuid}/g" 2>/dev/null
-        sed ${output_tmpfile4} -i -r -e \
-            "s/${task_id2}/${fake_uuid2}/g" 2>/dev/null
         md5sum ${output_file4} ${output_tmpfile4} > ${checksum_file4}
     fi
 
@@ -145,16 +141,12 @@ for filepath in ${test_files}; do
         cp ${curl_file5} ${tmp_curl_file5}
         sed ${tmp_curl_file5} -i -r -e \
             "s/${fake_uuid}/${task_id}/g" 2>/dev/null
-        sed ${tmp_curl_file5} -i -r -e \
-            "s/${fake_uuid2}/${task_id2}/g" 2>/dev/null
         bash ${tmp_curl_file5} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
                 -e '$ s/(.*)/\1\n/g' > ${output_tmpfile5}
         sed ${output_tmpfile5} -i -r -e \
             "s/${task_id}/${fake_uuid}/g" 2>/dev/null
-        sed ${output_tmpfile5} -i -r -e \
-            "s/${task_id2}/${fake_uuid2}/g" 2>/dev/null
         md5sum ${output_file5} ${output_tmpfile5} > ${checksum_file5}
     fi
 
@@ -162,16 +154,12 @@ for filepath in ${test_files}; do
         cp ${curl_file6} ${tmp_curl_file6}
         sed ${tmp_curl_file6} -i -r -e \
             "s/${fake_uuid}/${task_id}/g" 2>/dev/null
-        sed ${tmp_curl_file6} -i -r -e \
-            "s/${fake_uuid2}/${task_id2}/g" 2>/dev/null
         bash ${tmp_curl_file6} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
                 -e '$ s/(.*)/\1\n/g' > ${output_tmpfile6}
         sed ${output_tmpfile6} -i -r -e \
             "s/${task_id}/${fake_uuid}/g" 2>/dev/null
-        sed ${output_tmpfile6} -i -r -e \
-            "s/${task_id2}/${fake_uuid2}/g" 2>/dev/null
         md5sum ${output_file6} ${output_tmpfile6} > ${checksum_file6}
     fi
 

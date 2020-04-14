@@ -8,7 +8,16 @@ from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from functools import partial
 from http import HTTPStatus
-from typing import Any, Callable, Coroutine, Dict, Optional, Type, TypedDict
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Coroutine,
+    Dict,
+    Optional,
+    Type,
+    TypedDict,
+)
 
 import orjson
 from jsondaora import as_typed_dict, jsondaora, typed_dict_asjson
@@ -42,6 +51,7 @@ class TaskInfo(TypedDict):
     start_time: str
     status: str
     signature: str
+    args_signature: Optional[str]
 
 
 @dataclasses.dataclass
@@ -97,7 +107,7 @@ def make_background_task(
         signature,
     )
     get_task_results = make_get_task_results(
-        tasks_repository_builder, FinishedTaskInfo, lock, lock_args
+        tasks_repository_builder, FinishedTaskInfo
     )
 
     create_task.__annotations__ = {
@@ -130,55 +140,6 @@ def get_iso_time() -> str:
     )
 
 
-@dataclasses.dataclass
-class BaseTasksRepository:
-    server_id: uuid.UUID
-    signature: str
-    data_source: Any
-
-    async def set(
-        self,
-        value: Any,
-        task_cls: Type[Any] = TaskInfo,
-        task_id: Optional[str] = None,
-    ) -> None:
-        raise NotImplementedError()
-
-    async def get(
-        self, finished_task_cls: Type[Any], task_id: Optional[str] = None,
-    ) -> Any:
-        raise NotImplementedError()
-
-    async def close(self) -> None:
-        ...
-
-    def build_key(self, task_id: Optional[str]) -> str:
-        base_key = f'apidaora:{self.server_id}:{self.signature}'
-
-        if task_id:
-            return f'{base_key}:{task_id}'
-
-        return base_key
-
-
-@dataclasses.dataclass
-class SimpleTasksRepository(BaseTasksRepository):
-    data_source: Dict[str, Any]
-
-    async def set(
-        self,
-        value: Any,
-        task_cls: Type[Any] = TaskInfo,
-        task_id: Optional[str] = None,
-    ) -> None:
-        self.data_source[self.build_key(task_id)] = value
-
-    async def get(
-        self, finished_task_cls: Type[Any], task_id: Optional[str] = None,
-    ) -> Any:
-        return self.data_source[self.build_key(task_id)]
-
-
 def get_tasks_repository_builder(
     uri: Optional[str], server_id: uuid.UUID, signature: str
 ) -> Any:
@@ -205,7 +166,7 @@ def get_tasks_repository_builder(
 
 def make_create_task(
     controller: Callable[..., Any],
-    tasks_repository_builder: Any,
+    tasks_repository_builder: Callable[[], Awaitable['BaseTasksRepository']],
     finished_task_info_cls: Any,
     max_workers: int,
     lock: bool,
@@ -215,12 +176,11 @@ def make_create_task(
     executor = ThreadPoolExecutor(max_workers)
 
     async def create_task(*args: Any, **kwargs: Any) -> Response:
-        task_key: Optional[str]
-
         task_id = str(uuid.uuid4())
+        args_signature = None
 
         if lock_args:
-            task_key = hashlib.md5(
+            args_signature = hashlib.md5(
                 '-'.join(
                     [str(arg) for arg in args]
                     + [
@@ -230,22 +190,27 @@ def make_create_task(
                 ).encode()
             ).hexdigest()[:12]
 
-        else:
-            task_key = None if lock else task_id
-
         tasks_repository = await tasks_repository_builder()
         lock_error = await get_lock_error(
-            lock, lock_args, tasks_repository, finished_task_info_cls, task_key
+            tasks_repository, lock, signature, args_signature
         )
 
         if lock_error:
+            await tasks_repository.close()
             raise lock_error
+
+        if lock:
+            await tasks_repository.lock_signature()
+        elif args_signature:
+            await tasks_repository.lock_args_signature(args_signature)
 
         if asyncio.iscoroutinefunction(controller):
             wrapper = make_controller_wrapper(
                 tasks_repository_builder,
+                task_id,
+                lock,
+                args_signature,
                 finished_task_info_cls,
-                task_key,
                 controller,
                 *args,
                 **kwargs,
@@ -255,7 +220,11 @@ def make_create_task(
 
         else:
             done_callback = make_done_callback(
-                tasks_repository_builder, task_key, finished_task_info_cls
+                tasks_repository_builder,
+                task_id,
+                lock,
+                args_signature,
+                finished_task_info_cls,
             )
             future = executor.submit(controller, *args, **kwargs)
             future.add_done_callback(done_callback)
@@ -267,10 +236,9 @@ def make_create_task(
             start_time=start_time,
             status=TaskStatusType.RUNNING.value,
             signature=signature,
+            args_signature=args_signature,
         )
-        await tasks_repository.set(
-            task, task_cls=finished_task_info_cls, task_id=task_key
-        )
+        await tasks_repository.set(task, task_id, finished_task_info_cls)
         await tasks_repository.close()
 
         return json(task, status=HTTPStatus.CREATED)
@@ -279,9 +247,11 @@ def make_create_task(
 
 
 def make_controller_wrapper(
-    tasks_repository_builder: Any,
+    tasks_repository_builder: Callable[[], Awaitable['BaseTasksRepository']],
+    task_id: str,
+    lock: bool,
+    args_signature: Optional[str],
     finished_task_info_cls: Any,
-    task_key: Optional[str],
     controller: Any,
     *args: Any,
     **kwargs: Any,
@@ -296,7 +266,8 @@ def make_controller_wrapper(
             logger.exception(
                 f'server-id={tasks_repository.server_id}; '
                 f'signature={tasks_repository.signature}; '
-                f'task-key={task_key};'
+                f'args-signature={args_signature};'
+                f'task-id={task_id};'
             )
             result = {
                 'error': {
@@ -306,9 +277,7 @@ def make_controller_wrapper(
             }
             status = TaskStatusType.ERROR.value
 
-        task = await tasks_repository.get(
-            finished_task_info_cls, task_id=task_key
-        )
+        task = await tasks_repository.get(task_id, finished_task_info_cls)
         finished_task = finished_task_info_cls(
             end_time=get_iso_time(),
             result=result,
@@ -316,18 +285,27 @@ def make_controller_wrapper(
             task_id=task['task_id'],
             start_time=task['start_time'],
             signature=task['signature'],
+            args_signature=task['args_signature'],
         )
         await tasks_repository.set(
-            finished_task, task_cls=finished_task_info_cls, task_id=task_key
+            finished_task, task_id, finished_task_info_cls
         )
+
+        if lock:
+            await tasks_repository.unlock_signature()
+        elif args_signature:
+            await tasks_repository.unlock_args_signature(args_signature)
+
         await tasks_repository.close()
 
     return wrapper
 
 
 def make_done_callback(
-    tasks_repository_builder: Any,
-    task_key: Optional[str],
+    tasks_repository_builder: Callable[[], Awaitable['BaseTasksRepository']],
+    task_id: str,
+    lock: bool,
+    args_signature: Optional[str],
     finished_task_info_cls: Any,
 ) -> Callable[[Any], None]:
     def done_callback(future: Any) -> None:
@@ -342,13 +320,13 @@ def make_done_callback(
             logger.exception(
                 f'server-id={tasks_repository.server_id}; '
                 f'signature={tasks_repository.signature}; '
-                f'task-key={task_key};'
+                f'task-key={task_id};'
             )
             result = None
             status = TaskStatusType.ERROR.value
 
         task = loop.run_until_complete(
-            tasks_repository.get(finished_task_info_cls, task_id=task_key)
+            tasks_repository.get(task_id, finished_task_info_cls)
         )
 
         finished_task = finished_task_info_cls(
@@ -362,30 +340,31 @@ def make_done_callback(
 
         loop.run_until_complete(
             tasks_repository.set(
-                finished_task,
-                task_cls=finished_task_info_cls,
-                task_id=task_key,
+                finished_task, task_id, finished_task_info_cls,
             )
         )
+
+        if lock:
+            loop.run_until_complete(tasks_repository.unlock_signature())
+        elif args_signature:
+            loop.run_until_complete(
+                tasks_repository.unlock_args_signature(args_signature)
+            )
+
         loop.run_until_complete(tasks_repository.close())
 
     return done_callback
 
 
 def make_get_task_results(
-    tasks_repository_builder: Any,
+    tasks_repository_builder: Callable[[], Awaitable['BaseTasksRepository']],
     finished_task_info_cls: Any,
-    lock: bool,
-    lock_args: bool,
 ) -> Callable[..., Coroutine[Any, Any, TaskInfo]]:
     async def get_task_results(task_id: str) -> finished_task_info_cls:  # type: ignore
-        task_key = None if lock else (task_id if lock_args else task_id)
         tasks_repository = await tasks_repository_builder()
 
         try:
-            task = await tasks_repository.get(
-                finished_task_info_cls, task_id=task_key
-            )
+            task = await tasks_repository.get(task_id, finished_task_info_cls)
             return task  # type: ignore
         except KeyError:
             raise BadRequestError(
@@ -405,31 +384,95 @@ def make_get_task_results(
 
 
 async def get_lock_error(
+    tasks_repository: 'BaseTasksRepository',
     lock: bool,
-    lock_args: bool,
-    tasks_repository: BaseTasksRepository,
-    finished_task_info_cls: Any,
-    task_key: Optional[str],
+    signature: str,
+    args_signature: Optional[str],
 ) -> Optional[BadRequestError]:
-    if lock or lock_args:
-        try:
-            task = await tasks_repository.get(
-                finished_task_info_cls, task_id=task_key
-            )
-            if task['status'] == TaskStatusType.RUNNING.value:
-                if lock_args:
-                    return BadRequestError(
-                        'lock-args', {'task_id': task['task_id']}
-                    )
+    if lock and await tasks_repository.is_signature_locked():
+        return BadRequestError('lock', {'signature': signature})
 
-                return BadRequestError(
-                    'lock', {'signature': task['signature']}
-                )
-
-        except KeyError:
-            ...
+    if args_signature and await tasks_repository.is_args_locked(
+        args_signature
+    ):
+        return BadRequestError('lock-args', {'args_signature': args_signature})
 
     return None
+
+
+@dataclasses.dataclass
+class BaseTasksRepository:
+    server_id: uuid.UUID
+    signature: str
+    data_source: Any
+
+    async def set(
+        self, value: Any, task_id: str, task_cls: Type[Any] = TaskInfo,
+    ) -> None:
+        raise NotImplementedError()
+
+    async def get(self, task_id: str, finished_task_cls: Type[Any]) -> Any:
+        raise NotImplementedError()
+
+    async def lock_signature(self) -> None:
+        raise NotImplementedError()
+
+    async def lock_args_signature(self, args_signature: str) -> None:
+        raise NotImplementedError()
+
+    async def is_signature_locked(self) -> bool:
+        ...
+
+    async def is_args_locked(self, args_signature: str) -> bool:
+        ...
+
+    async def unlock_signature(self) -> Any:
+        raise NotImplementedError()
+
+    async def unlock_args_signature(self, args_signature: str) -> Any:
+        raise NotImplementedError()
+
+    async def close(self) -> None:
+        ...
+
+    def build_signature_key(self) -> str:
+        return f'apidaora:{self.server_id}:{self.signature}'
+
+    def build_key(self, task_id: str) -> str:
+        return f'{self.build_signature_key()}:{task_id}'
+
+
+@dataclasses.dataclass
+class SimpleTasksRepository(BaseTasksRepository):
+    data_source: Dict[str, Any]
+
+    async def set(
+        self, value: Any, task_id: str, task_cls: Type[Any] = TaskInfo,
+    ) -> None:
+        self.data_source[self.build_key(task_id)] = value
+
+    async def get(self, task_id: str, finished_task_cls: Type[Any]) -> Any:
+        return self.data_source[self.build_key(task_id)]
+
+    async def lock_signature(self) -> None:
+        self.data_source[self.build_signature_key()] = True
+
+    async def lock_args_signature(self, args_signature: str) -> None:
+        self.data_source[self.build_key(args_signature)] = True
+
+    async def is_signature_locked(self) -> bool:
+        return bool(self.data_source.get(self.build_signature_key(), False))
+
+    async def is_args_locked(self, args_signature: str) -> bool:
+        return bool(
+            self.data_source.get(self.build_key(args_signature), False)
+        )
+
+    async def unlock_signature(self) -> Any:
+        return self.data_source.pop(self.build_signature_key())
+
+    async def unlock_args_signature(self, args_signature: str) -> Any:
+        return self.data_source.pop(self.build_key(args_signature))
 
 
 if aioredis is not None:
@@ -439,18 +482,13 @@ if aioredis is not None:
         data_source: aioredis.Redis
 
         async def set(
-            self,
-            value: Any,
-            task_cls: Type[Any] = TaskInfo,
-            task_id: Optional[str] = None,
+            self, value: Any, task_id: str, task_cls: Type[Any] = TaskInfo,
         ) -> None:
             await self.data_source.set(
                 self.build_key(task_id), typed_dict_asjson(value, task_cls)
             )
 
-        async def get(
-            self, finished_task_cls: Type[Any], task_id: Optional[str] = None,
-        ) -> Any:
+        async def get(self, task_id: str, finished_task_cls: Type[Any]) -> Any:
             value = await self.data_source.get(self.build_key(task_id))
 
             if value:
@@ -465,6 +503,30 @@ if aioredis is not None:
                     return as_typed_dict(value, finished_task_cls)
 
             raise KeyError(self.build_key(task_id))
+
+        async def lock_signature(self) -> None:
+            await self.data_source.set(self.build_signature_key(), 1)
+
+        async def lock_args_signature(self, args_signature: str) -> None:
+            await self.data_source.set(self.build_key(args_signature), 1)
+
+        async def is_signature_locked(self) -> bool:
+            return bool(
+                await self.data_source.exists(self.build_signature_key())
+            )
+
+        async def is_args_locked(self, args_signature: str) -> bool:
+            return bool(
+                await self.data_source.exists(self.build_key(args_signature))
+            )
+
+        async def unlock_signature(self) -> Any:
+            return await self.data_source.delete(self.build_signature_key())
+
+        async def unlock_args_signature(self, args_signature: str) -> Any:
+            return await self.data_source.delete(
+                self.build_key(args_signature)
+            )
 
         async def close(self) -> None:
             self.data_source.close()

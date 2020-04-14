@@ -2,6 +2,8 @@
 
 ### UNRELEASED
 
+ - Refactor background task controller to build unique tasks ids when locking args
+
  - Fix task_id on background tasks controller when lock args is true
 
  - Fix RedisTasksRepository.get method
