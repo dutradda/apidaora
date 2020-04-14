@@ -1,4 +1,4 @@
-HTTP/1.1 201 Created
+HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
@@ -14,7 +14,7 @@ content-length: 71
 
 {"error":{"name":"lock-args","info":{"args_signature":"de01341028ac"}}}
 
-HTTP/1.1 201 Created
+HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json

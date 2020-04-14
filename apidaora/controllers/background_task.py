@@ -241,7 +241,7 @@ def make_create_task(
         await tasks_repository.set(task, task_id, finished_task_info_cls)
         await tasks_repository.close()
 
-        return json(task, status=HTTPStatus.CREATED)
+        return json(task, status=HTTPStatus.ACCEPTED)
 
     return create_task
 
