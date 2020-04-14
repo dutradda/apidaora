@@ -21,19 +21,19 @@ nav:
     - JSON intro: json.md
     # - Http intro: http.md
     - Middlewares:
-        - Intro: middlewares/using-middlewares.md
-        - Background Tasks: middlewares/using-middlewares-background-tasks.md
-        - Async Background Tasks: middlewares/using-middlewares-background-tasks-async.md
-        - Extra Arguments: middlewares/using-middlewares-extra-args.md
-        - Lock Request: middlewares/using-middlewares-lock-request.md
+        - Middlewares: middlewares/index.md
+        - Background Tasks: middlewares/background-tasks.md
+        - Async Background Tasks: middlewares/background-tasks-async.md
+        - Extra Arguments: middlewares/extra-args.md
+        - Lock Request: middlewares/lock-request.md
     - Background Task Controller:
-        - Background Task: background-task-controller/using-background-task-controller.md
-        - Async Background Task: background-task-controller/using-background-task-controller-async.md
-        - Background Task with Redis: background-task-controller/using-background-task-controller-redis.md
-        - Async Background Task with Redis: background-task-controller/using-background-task-controller-async-redis.md
-        - Background Task with Lock: background-task-controller/using-background-task-controller-lock.md
-        - Background Task with Lock by Args: background-task-controller/using-background-task-controller-lock-args.md
-        - Background Task with Lock by Args and Redis: background-task-controller/using-background-task-controller-lock-args-redis.md
+        - Background Task: background-task-controller/index.md
+        - Async Background Task: background-task-controller/async.md
+        - Background Task with Redis: background-task-controller/redis.md
+        - Async Background Task with Redis: background-task-controller/async-redis.md
+        - Background Task with Lock: background-task-controller/lock.md
+        - Background Task with Lock by Args: background-task-controller/lock-args.md
+        - Background Task with Lock by Args and Redis: background-task-controller/lock-args-redis.md
     - Class Controllers: using-class-controller.md
     - Core Module: using-asgi-module.md
     - Default Options: using-options.md
