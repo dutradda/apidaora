@@ -336,6 +336,7 @@ def make_done_callback(
             task_id=task['task_id'],
             start_time=task['start_time'],
             signature=task['signature'],
+            args_signature=task['args_signature'],
         )
 
         loop.run_until_complete(

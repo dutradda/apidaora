@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix background task controller finished task
+
 ### 0.25.0 - 2020-04-14
 
  - Refactor background task controller to build unique tasks ids when locking args
