@@ -288,13 +288,18 @@ def make_controller_wrapper(
         try:
             result = await controller(*args, **kwargs)
             status = TaskStatusType.FINISHED.value
-        except Exception:
+        except Exception as error:
             logger.exception(
                 f'server-id={tasks_repository.server_id}; '
                 f'signature={tasks_repository.signature}; '
                 f'task-key={task_key};'
             )
-            result = None
+            result = {
+                'error': {
+                    'name': type(error).__name__,
+                    'args': [str(a) for a in error.args],
+                }
+            }
             status = TaskStatusType.ERROR.value
 
         task = await tasks_repository.get(
@@ -450,7 +455,9 @@ if aioredis is not None:
                 if value['status'] == TaskStatusType.RUNNING.value:
                     return as_typed_dict(value, TaskInfo)
 
-                if value['status'] == TaskStatusType.FINISHED.value:
+                if value['status'] == TaskStatusType.FINISHED.value or (
+                    value['status'] == TaskStatusType.ERROR.value
+                ):
                     return as_typed_dict(value, finished_task_cls)
 
             raise KeyError(self.build_key(task_id))
