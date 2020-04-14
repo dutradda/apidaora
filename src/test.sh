@@ -55,6 +55,8 @@ for filepath in ${test_files}; do
     task_id_sub='\1'
     uvicorn_output_file=/tmp/uvicorn-${filename}.output
     test_module=$(echo ${filepath} | tr '/' '.' | sed -r -e 's/\.py//g')
+    fake_uuid='4ee301eb-6487-48a0-b6ed-e5f576accfc2'
+    fake_uuid2='5ee301eb-6487-48a0-b6ed-e5f576accfc2'
 
     echo Testing ${filename}..
     coverage run -p $(which uvicorn) ${test_module}:app >${uvicorn_output_file} 2>&1 &
@@ -64,45 +66,63 @@ for filepath in ${test_files}; do
         sed -r -e "s/${date_regex}/${date_sub}/g" \
             -e "s/${task_time_regex}/${task_time_sub}/g" \
             -e '$ s/(.*)/\1\n/g' > ${output_tmpfile}
-    task_id=$(\
+    task_ids=$(\
         cat ${output_tmpfile} | \
         grep -E "${task_id_regex}" | \
-        sed -r -e "s/.*${task_id_regex}.*/${task_id_sub}/g" \
+        sed -r -e "s/${task_id_regex}/${task_id_sub}/g" \
     )
-    sed ${output_tmpfile} -i -r -e \
-        "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
+    task_id=$(\
+        echo ${task_ids} | \
+        sed -r -e "s/^([0-9a-z-]+) .*/${task_id_sub}/g" \
+    )
+    task_id2=$(\
+        echo ${task_ids} | \
+        sed -r -e "s/.* ([0-9a-z-]+)$/${task_id_sub}/g" \
+    )
+    sed ${output_tmpfile} -i -r \
+        -e "s/${task_id}/${fake_uuid}/g"  2>/dev/null
+    sed ${output_tmpfile} -i -r \
+        -e "s/${task_id2}/${fake_uuid2}/g" 2>/dev/null
     md5sum ${output_file} ${output_tmpfile} > ${checksum_file}
 
     if [ -f ${curl_file2} ]; then
         cp ${curl_file2} ${tmp_curl_file2}
-        sed ${tmp_curl_file2} -i -r -e \
-            "s/4ee301eb-6487-48a0-b6ed-e5f576accfc2/${task_id}/g" 2>/dev/null
+        sed ${tmp_curl_file2} -i -r \
+            -e "s/${fake_uuid}/${task_id}/g" 2>/dev/null
+        sed ${tmp_curl_file2} -i -r \
+            -e "s/${fake_uuid2}/${task_id2}/g" 2>/dev/null
         bash ${tmp_curl_file2} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
                 -e '$ s/(.*)/\1\n/g' > ${output_tmpfile2}
-        sed ${output_tmpfile2} -i -r -e \
-            "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
+        sed ${output_tmpfile2} -i -r \
+            -e "s/${task_id}/${fake_uuid}/g" 2>/dev/null
+        sed ${output_tmpfile2} -i -r \
+            -e "s/${task_id2}/${fake_uuid2}/g" 2>/dev/null
         md5sum ${output_file2} ${output_tmpfile2} > ${checksum_file2}
     fi
 
     if [ -f ${curl_file3} ]; then
         cp ${curl_file3} ${tmp_curl_file3}
         sed ${tmp_curl_file3} -i -r -e \
-            "s/4ee301eb-6487-48a0-b6ed-e5f576accfc2/${task_id}/g" 2>/dev/null
+            "s/${fake_uuid}/${task_id}/g" 2>/dev/null
+        sed ${tmp_curl_file3} -i -r -e \
+            "s/${fake_uuid2}/${task_id2}/g" 2>/dev/null
         bash ${tmp_curl_file3} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
                 -e '$ s/(.*)/\1\n/g' > ${output_tmpfile3}
         sed ${output_tmpfile3} -i -r -e \
-            "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
+            "s/${task_id}/${fake_uuid}/g" 2>/dev/null
+        sed ${output_tmpfile3} -i -r -e \
+            "s/${task_id2}/${fake_uuid2}/g" 2>/dev/null
         md5sum ${output_file3} ${output_tmpfile3} > ${checksum_file3}
     fi
 
     if [ -f ${curl_file4} ]; then
         cp ${curl_file4} ${tmp_curl_file4}
         sed ${tmp_curl_file4} -i -r -e \
-            "s/4ee301eb-6487-48a0-b6ed-e5f576accfc2/${task_id}/g" 2>/dev/null
+            "s/${fake_uuid}/${task_id}/g" 2>/dev/null
         bash ${tmp_curl_file4} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
@@ -113,33 +133,33 @@ for filepath in ${test_files}; do
             sed -r -e "s/.*${task_id_regex}.*/${task_id_sub}/g" \
         )
         sed ${output_tmpfile4} -i -r -e \
-            "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
+            "s/${task_id}/${fake_uuid}/g" 2>/dev/null
         md5sum ${output_file4} ${output_tmpfile4} > ${checksum_file4}
     fi
 
     if [ -f ${curl_file5} ]; then
         cp ${curl_file5} ${tmp_curl_file5}
         sed ${tmp_curl_file5} -i -r -e \
-            "s/4ee301eb-6487-48a0-b6ed-e5f576accfc2/${task_id}/g" 2>/dev/null
+            "s/${fake_uuid}/${task_id}/g" 2>/dev/null
         bash ${tmp_curl_file5} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
                 -e '$ s/(.*)/\1\n/g' > ${output_tmpfile5}
         sed ${output_tmpfile5} -i -r -e \
-            "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
+            "s/${task_id}/${fake_uuid}/g" 2>/dev/null
         md5sum ${output_file5} ${output_tmpfile5} > ${checksum_file5}
     fi
 
     if [ -f ${curl_file6} ]; then
         cp ${curl_file6} ${tmp_curl_file6}
         sed ${tmp_curl_file6} -i -r -e \
-            "s/4ee301eb-6487-48a0-b6ed-e5f576accfc2/${task_id}/g" 2>/dev/null
+            "s/${fake_uuid}/${task_id}/g" 2>/dev/null
         bash ${tmp_curl_file6} 2>/dev/null | \
             sed -r -e "s/${date_regex}/${date_sub}/g" \
                 -e "s/${task_time_regex}/${task_time_sub}/g" \
                 -e '$ s/(.*)/\1\n/g' > ${output_tmpfile6}
         sed ${output_tmpfile6} -i -r -e \
-            "s/${task_id}/4ee301eb-6487-48a0-b6ed-e5f576accfc2/g" 2>/dev/null
+            "s/${task_id}/${fake_uuid}/g" 2>/dev/null
         md5sum ${output_file6} ${output_tmpfile6} > ${checksum_file6}
     fi
 

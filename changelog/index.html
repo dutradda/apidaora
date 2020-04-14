@@ -291,8 +291,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../middlewares/using-middlewares/" title="Intro" class="md-nav__link">
-      Intro
+    <a href="../middlewares/" title="Middlewares" class="md-nav__link">
+      Middlewares
     </a>
   </li>
 
@@ -303,7 +303,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../middlewares/using-middlewares-background-tasks/" title="Background Tasks" class="md-nav__link">
+    <a href="../middlewares/background-tasks/" title="Background Tasks" class="md-nav__link">
       Background Tasks
     </a>
   </li>
@@ -315,7 +315,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../middlewares/using-middlewares-background-tasks-async/" title="Async Background Tasks" class="md-nav__link">
+    <a href="../middlewares/background-tasks-async/" title="Async Background Tasks" class="md-nav__link">
       Async Background Tasks
     </a>
   </li>
@@ -327,7 +327,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../middlewares/using-middlewares-extra-args/" title="Extra Arguments" class="md-nav__link">
+    <a href="../middlewares/extra-args/" title="Extra Arguments" class="md-nav__link">
       Extra Arguments
     </a>
   </li>
@@ -339,7 +339,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../middlewares/using-middlewares-lock-request/" title="Lock Request" class="md-nav__link">
+    <a href="../middlewares/lock-request/" title="Lock Request" class="md-nav__link">
       Lock Request
     </a>
   </li>
@@ -375,7 +375,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller/" title="Background Task" class="md-nav__link">
+    <a href="../background-task-controller/" title="Background Task" class="md-nav__link">
       Background Task
     </a>
   </li>
@@ -387,7 +387,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller-async/" title="Async Background Task" class="md-nav__link">
+    <a href="../background-task-controller/async/" title="Async Background Task" class="md-nav__link">
       Async Background Task
     </a>
   </li>
@@ -399,7 +399,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller-redis/" title="Background Task with Redis" class="md-nav__link">
+    <a href="../background-task-controller/redis/" title="Background Task with Redis" class="md-nav__link">
       Background Task with Redis
     </a>
   </li>
@@ -411,7 +411,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller-async-redis/" title="Async Background Task with Redis" class="md-nav__link">
+    <a href="../background-task-controller/async-redis/" title="Async Background Task with Redis" class="md-nav__link">
       Async Background Task with Redis
     </a>
   </li>
@@ -423,7 +423,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller-lock/" title="Background Task with Lock" class="md-nav__link">
+    <a href="../background-task-controller/lock/" title="Background Task with Lock" class="md-nav__link">
       Background Task with Lock
     </a>
   </li>
@@ -435,7 +435,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller-lock-args/" title="Background Task with Lock by Args" class="md-nav__link">
+    <a href="../background-task-controller/lock-args/" title="Background Task with Lock by Args" class="md-nav__link">
       Background Task with Lock by Args
     </a>
   </li>
@@ -447,7 +447,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../background-task-controller/using-background-task-controller-lock-args-redis/" title="Background Task with Lock by Args and Redis" class="md-nav__link">
+    <a href="../background-task-controller/lock-args-redis/" title="Background Task with Lock by Args and Redis" class="md-nav__link">
       Background Task with Lock by Args and Redis
     </a>
   </li>
@@ -553,6 +553,13 @@
   
     <nav class="md-nav">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#0250-2020-04-14" class="md-nav__link">
+    0.25.0 - 2020-04-14
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#0240-2020-04-13" class="md-nav__link">
@@ -856,6 +863,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#0250-2020-04-14" class="md-nav__link">
+    0.25.0 - 2020-04-14
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#0240-2020-04-13" class="md-nav__link">
     0.24.0 - 2020-04-13
   </a>
@@ -1139,6 +1153,18 @@
                   <h1>Changelog</h1>
                 
                 <h2 id="changelog">CHANGELOG</h2>
+<h3 id="0250-2020-04-14">0.25.0 - 2020-04-14</h3>
+<ul>
+<li>
+<p>Refactor background task controller to build unique tasks ids when locking args</p>
+</li>
+<li>
+<p>Fix task_id on background tasks controller when lock args is true</p>
+</li>
+<li>
+<p>Fix RedisTasksRepository.get method</p>
+</li>
+</ul>
 <h3 id="0240-2020-04-13">0.24.0 - 2020-04-13</h3>
 <ul>
 <li>Improve background task controller</li>

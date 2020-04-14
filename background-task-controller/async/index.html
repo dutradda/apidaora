@@ -38,7 +38,7 @@
     
     
       
-        <title>Async Background Tasks - apidaora</title>
+        <title>Async Background Task - apidaora</title>
       
     
     
@@ -99,7 +99,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#using-background-tasks-middleware" tabindex="0" class="md-skip">
+      <a href="#using-async-background-task-controller" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Async Background Tasks
+                Async Background Task
               
             </span>
           
@@ -270,12 +270,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
     
     <label class="md-nav__link" for="nav-4">
       Middlewares
@@ -293,8 +291,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../using-middlewares/" title="Intro" class="md-nav__link">
-      Intro
+    <a href="../../middlewares/" title="Middlewares" class="md-nav__link">
+      Middlewares
     </a>
   </li>
 
@@ -305,8 +303,82 @@
 
 
   <li class="md-nav__item">
-    <a href="../using-middlewares-background-tasks/" title="Background Tasks" class="md-nav__link">
+    <a href="../../middlewares/background-tasks/" title="Background Tasks" class="md-nav__link">
       Background Tasks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../middlewares/background-tasks-async/" title="Async Background Tasks" class="md-nav__link">
+      Async Background Tasks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../middlewares/extra-args/" title="Extra Arguments" class="md-nav__link">
+      Extra Arguments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../middlewares/lock-request/" title="Lock Request" class="md-nav__link">
+      Lock Request
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+    
+    <label class="md-nav__link" for="nav-5">
+      Background Task Controller
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Background Task Controller
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Background Task" class="md-nav__link">
+      Background Task
     </a>
   </li>
 
@@ -326,11 +398,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Async Background Tasks
+        Async Background Task
       </label>
     
-    <a href="./" title="Async Background Tasks" class="md-nav__link md-nav__link--active">
-      Async Background Tasks
+    <a href="./" title="Async Background Task" class="md-nav__link md-nav__link--active">
+      Async Background Task
     </a>
     
       
@@ -351,15 +423,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running" class="md-nav__link">
-    Running
+  <a href="#creating-task" class="md-nav__link">
+    Creating task
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#quering-the-server" class="md-nav__link">
-    Quering the server
+  <a href="#quering" class="md-nav__link">
+    Quering
   </a>
   
 </li>
@@ -381,79 +453,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../using-middlewares-extra-args/" title="Extra Arguments" class="md-nav__link">
-      Extra Arguments
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../using-middlewares-lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
-    
-    <label class="md-nav__link" for="nav-5">
-      Background Task Controller
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
-        Background Task Controller
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller/" title="Background Task" class="md-nav__link">
-      Background Task
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller-async/" title="Async Background Task" class="md-nav__link">
-      Async Background Task
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller-redis/" title="Background Task with Redis" class="md-nav__link">
+    <a href="../redis/" title="Background Task with Redis" class="md-nav__link">
       Background Task with Redis
     </a>
   </li>
@@ -465,7 +465,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller-async-redis/" title="Async Background Task with Redis" class="md-nav__link">
+    <a href="../async-redis/" title="Async Background Task with Redis" class="md-nav__link">
       Async Background Task with Redis
     </a>
   </li>
@@ -477,7 +477,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller-lock/" title="Background Task with Lock" class="md-nav__link">
+    <a href="../lock/" title="Background Task with Lock" class="md-nav__link">
       Background Task with Lock
     </a>
   </li>
@@ -489,7 +489,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller-lock-args/" title="Background Task with Lock by Args" class="md-nav__link">
+    <a href="../lock-args/" title="Background Task with Lock by Args" class="md-nav__link">
       Background Task with Lock by Args
     </a>
   </li>
@@ -501,7 +501,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../background-task-controller/using-background-task-controller-lock-args-redis/" title="Background Task with Lock by Args and Redis" class="md-nav__link">
+    <a href="../lock-args-redis/" title="Background Task with Lock by Args and Redis" class="md-nav__link">
       Background Task with Lock by Args and Redis
     </a>
   </li>
@@ -612,15 +612,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running" class="md-nav__link">
-    Running
+  <a href="#creating-task" class="md-nav__link">
+    Creating task
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#quering-the-server" class="md-nav__link">
-    Quering the server
+  <a href="#quering" class="md-nav__link">
+    Quering
   </a>
   
 </li>
@@ -642,42 +642,25 @@
               
                 
                 
-                <h1 id="using-background-tasks-middleware">Using Background Tasks Middleware</h1>
+                <h1 id="using-async-background-task-controller">Using Async Background Task Controller</h1>
 <h2 id="example">Example</h2>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AsyncBackgroundTaskMiddleware</span><span class="p">,</span>
-    <span class="n">Middlewares</span><span class="p">,</span>
-    <span class="n">Response</span><span class="p">,</span>
-    <span class="n">appdaora</span><span class="p">,</span>
-    <span class="n">route</span><span class="p">,</span>
-    <span class="n">text</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span>
 
 
-<span class="k">class</span> <span class="nc">HelloCounter</span><span class="p">:</span>
-    <span class="n">counter</span> <span class="o">=</span> <span class="mi">1</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-
-
-<span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/background-tasks&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">background_tasks_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!</span><span class="se">\n</span><span class="si">{name}</span><span class="s1"> are the #</span><span class="si">{HelloCounter.counter}</span><span class="s1">!&#39;</span><span class="p">,</span>
-        <span class="n">background_tasks_async</span><span class="o">=</span><span class="n">HelloCounter</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
-    <span class="p">)</span>
+<span class="c1"># async tasks can potentially block yours application, use with care</span>
+<span class="c1"># it use is recommended just for small tasks or non-blocking operations</span>
+<span class="nd">@route</span><span class="o">.</span><span class="n">background</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!&#39;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span>
-    <span class="n">background_tasks_controller</span><span class="p">,</span>
-    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">post_execution</span><span class="o">=</span><span class="p">[</span><span class="n">AsyncBackgroundTaskMiddleware</span><span class="p">()]),</span>
-<span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span><span class="n">hello_task</span><span class="p">)</span>
 </code></pre></div>
 
 
-<h2 id="running">Running</h2>
 <p>Running the server:</p>
 <div class="codehilite"><pre><span></span><code>uvicorn myapp:app
 </code></pre></div>
@@ -690,30 +673,50 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 </code></pre></div>
 
 
-<h2 id="quering-the-server">Quering the server</h2>
-<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/background-tasks?name<span class="o">=</span>Me
-<span class="nb">echo</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span>
-curl -i localhost:8000/background-tasks?name<span class="o">=</span>You
+<h2 id="creating-task">Creating task</h2>
+<p>Creating the task:</p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -i localhost:8000/hello?name<span class="o">=</span>Me
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+date: Thu, 1st January 1970 00:00:00 GMT
+server: uvicorn
+content-type: application/json
+content-length: 159
+
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:null}
+</code></pre></div>
+
+
+<h2 id="quering">Quering</h2>
+<p>Quering the server for the task (You must replace the task_id with the server output):</p>
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
 </code></pre></div>
 
 
 <div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-content-type: text/plain
-content-length: 24
+content-type: application/json
+content-length: 159
 
-Hello Me!
-Me are the #1!
+{&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:null}
+</code></pre></div>
 
-HTTP/1.1 200 OK
+
+<p>Wait the task to finish and get results:</p>
+<div class="codehilite"><pre><span></span><code>sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> curl -i localhost:8000/hello?task_id<span class="o">=</span>4ee301eb-6487-48a0-b6ed-e5f576accfc2
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-content-type: text/plain
-content-length: 26
+content-type: application/json
+content-length: 220
 
-Hello You!
-You are the #2!
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:null}
 </code></pre></div>
                 
                   
@@ -736,7 +739,7 @@ You are the #2!
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../using-middlewares-background-tasks/" title="Background Tasks" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../" title="Background Task" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -745,19 +748,19 @@ You are the #2!
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Background Tasks
+                Background Task
               </span>
             </div>
           </a>
         
         
-          <a href="../using-middlewares-extra-args/" title="Extra Arguments" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../redis/" title="Background Task with Redis" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Extra Arguments
+                Background Task with Redis
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
