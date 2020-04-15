@@ -30,6 +30,7 @@ from .base import (
     ASGIPathArgs,
     ASGIQueryDict,
 )
+from .request import AsgiRequest
 
 
 class Controller(ABC):
@@ -37,13 +38,7 @@ class Controller(ABC):
     middlewares: Optional[Middlewares] = None
 
     @abstractmethod
-    def __call__(
-        self,
-        path_args: ASGIPathArgs,
-        query_dict: ASGIQueryDict,
-        headers: ASGIHeaders,
-        body: ASGIBody,
-    ) -> ASGICallableResults:
+    def __call__(self, request: AsgiRequest) -> ASGICallableResults:
         ...
 
 
@@ -207,17 +202,14 @@ def set_middlewares_route(
             or not route.controller.middlewares
         ):
             route.controller.middlewares = Middlewares(
-                post_routing=middlewares.post_routing,
                 pre_execution=middlewares.pre_execution,
                 post_execution=middlewares.post_execution,
             )
         else:
             route_middlewares = Middlewares(
-                post_routing=route.controller.middlewares.post_routing,
                 pre_execution=route.controller.middlewares.pre_execution,
                 post_execution=route.controller.middlewares.post_execution,
             )
-            route_middlewares.post_routing.extend(middlewares.post_routing)
             route_middlewares.pre_execution.extend(middlewares.pre_execution)
             route_middlewares.post_execution.extend(middlewares.post_execution)
             route.controller.middlewares = route_middlewares

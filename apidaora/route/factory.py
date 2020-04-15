@@ -12,30 +12,24 @@ from typing import (  # type: ignore
     List,
     Optional,
     Sequence,
-    Tuple,
     Type,
     Union,
     _GenericAlias,
 )
 
 import orjson
-from jsondaora import as_typed_dict, dataclass_asjson, typed_dict_asjson
+from jsondaora import dataclass_asjson, typed_dict_asjson
 from jsondaora.deserializers import deserialize_field
 from jsondaora.exceptions import DeserializationError
 
-from ..asgi.base import (
-    ASGIBody,
-    ASGICallableResults,
-    ASGIHeaders,
-    ASGIPathArgs,
-    ASGIQueryDict,
-    ASGIResponse,
-)
+from ..asgi.base import ASGICallableResults, ASGIHeaders, ASGIResponse
+from ..asgi.request import AsgiRequest
 from ..asgi.responses import (
     make_html_response,
     make_json_response,
     make_no_content_response,
     make_not_found_response,
+    make_see_other_response,
     make_text_response,
 )
 from ..asgi.router import Controller, Route
@@ -44,11 +38,8 @@ from ..content import ContentType
 from ..exceptions import BadRequestError, InvalidReturnError
 from ..header import Header
 from ..method import MethodType
-from ..middlewares import (
-    MiddlewareRequest,
-    Middlewares,
-    make_asgi_input_from_requst,
-)
+from ..middlewares import Middlewares
+from ..request import Request, make_controller_input_from_request
 from ..responses import Response
 from .controller_input import controller_input
 
@@ -61,6 +52,7 @@ RESPONSES_MAP: Dict[
     ContentType.TEXT_HTML: make_html_response,
     HTTPStatus.NOT_FOUND: make_not_found_response,
     HTTPStatus.NO_CONTENT: make_no_content_response,
+    HTTPStatus.SEE_OTHER: make_see_other_response,
 }
 
 
@@ -81,124 +73,76 @@ def make_route(
     return_type = controller.__annotations__.get('return')
 
     def parse_asgi_input(
-        path_args: ASGIPathArgs,
-        query_dict: ASGIQueryDict,
-        headers: ASGIHeaders,
-        body: ASGIBody,
-        middlewares: Optional[Middlewares] = None,
-    ) -> Tuple[Dict[str, Any], Optional[MiddlewareRequest]]:
-        kwargs: Dict[str, Any]
-        middleware_request: MiddlewareRequest
-
-        if middlewares:
-            middleware_request = MiddlewareRequest(path_pattern)
+        asgi_request: AsgiRequest, middlewares: Optional[Middlewares] = None,
+    ) -> Request:
+        request = Request(
+            asgi_request.path_pattern,
+            asgi_request.resolved_path,
+            ControllerInput,
+        )
 
         if annotations_info.has_input:
             if annotations_info.has_path_args:
-                kwargs = {
-                    name: path_args.get(name)
-                    for name in annotations_path_args.keys()
+                request.path_args = {
+                    name: deserialize_field(
+                        name, type_, asgi_request.path_args.get(name)
+                    )
+                    for name, type_ in annotations_path_args.items()
                 }
 
-                if middlewares:
-                    middleware_request.path_args = {
-                        name: deserialize_field(
-                            name, type_, path_args.get(name)
-                        )
-                        for name, type_ in annotations_path_args.items()
-                    }
-
-            else:
-                kwargs = {}
-
             if annotations_info.has_query_dict:
-                kwargs.update(
-                    {
-                        name: parse_query_args(
-                            name, type_, query_dict.get(name)
-                        )
-                        for name, type_ in annotations_query_dict.items()
-                    }
-                )
-
-                if middlewares:
-                    middleware_request.query_dict = {
-                        name: deserialize_field(
-                            name,
-                            type_,
-                            parse_query_args(
-                                name, type_, query_dict.get(name)
-                            ),
-                        )
-                        for name, type_ in annotations_query_dict.items()
-                        if name != 'body'
-                    }
+                request.query_dict = {
+                    name: deserialize_field(
+                        name,
+                        type_,
+                        parse_query_args(
+                            name, type_, asgi_request.query_dict.get(name)
+                        ),
+                    )
+                    for name, type_ in annotations_query_dict.items()
+                    if name != 'body'
+                }
 
             if annotations_info.has_headers:
                 headers_map = ControllerInput.__headers_name_map__
-                headers_dict: Dict[str, Header] = {
+                request.headers = {
                     name: annotations_headers[name](h_value.decode())  # type: ignore
-                    for h_name, h_value in headers
+                    for h_name, h_value in asgi_request.headers
                     if (name := headers_map.get(h_name.decode()))  # noqa
                     in annotations_headers
                 }
-                kwargs.update(headers_dict)
-
-                if middlewares:
-                    middleware_request.headers = headers_dict.copy()
 
             if annotations_info.has_body:
                 if isinstance(body_type, type) and issubclass(
                     body_type, GZipFactory
                 ):
-                    kwargs['body'] = body_type(value=body)
+                    request.body = body_type(value=asgi_request.body)
 
                 elif isinstance(body_type, type) and issubclass(
                     body_type, str
                 ):
-                    kwargs['body'] = body.decode()
+                    request.body = asgi_request.body.decode()
 
                 else:
-                    kwargs['body'] = make_json_request_body(body, body_type)
+                    request.body = make_json_request_body(
+                        asgi_request.body, body_type
+                    )
+                    request.body = (
+                        deserialize_field('body', body_type, request.body)
+                        if request.body
+                        else None
+                    )
 
-            if middlewares:
-                middleware_request.body = (
-                    deserialize_field('body', body_type, kwargs['body'])
-                    if 'body' in kwargs
-                    else None
-                )
-
-                for middleware in middlewares.pre_execution:
-                    middleware(middleware_request)
-
-                return (
-                    make_asgi_input_from_requst(
-                        middleware_request, ControllerInput
-                    ),
-                    middleware_request,
-                )
-
-            return (
-                as_typed_dict(kwargs, ControllerInput),
-                None,
-            )
-
-        if middlewares:
-            for middleware in middlewares.pre_execution:
-                middleware(middleware_request)
-
-            return {}, middleware_request
-
-        return {}, None
+        return request
 
     async def build_asgi_output(
+        request: Request,
         controller_output: Any,
         status: HTTPStatus = HTTPStatus.OK,
         headers: Optional[Sequence[Header]] = None,
         content_type: Optional[ContentType] = ContentType.APPLICATION_JSON,
         return_type_: Any = None,
         middlewares: Optional[Middlewares] = None,
-        middleware_request: Optional[MiddlewareRequest] = None,
     ) -> ASGICallableResults:
         while iscoroutine(controller_output):
             controller_output = await controller_output
@@ -206,20 +150,21 @@ def make_route(
         if return_type_ is None and return_type:
             return_type_ = return_type
 
-        if middlewares and not isinstance(controller_output, Response):
-            controller_output = Response(
-                body=controller_output,
-                status=status,
-                headers=headers,
-                content_type=content_type,
-            )
+        if middlewares:
+            if not isinstance(controller_output, Response):
+                controller_output = Response(
+                    body=controller_output,
+                    status=status,
+                    headers=headers,
+                    content_type=content_type,
+                )
+
+            for middleware in middlewares.post_execution:
+                middleware(request, controller_output)
 
         if isinstance(controller_output, Response):
-            if middlewares and middleware_request:
-                for middleware in middlewares.post_execution:
-                    middleware(middleware_request, controller_output)
-
             return build_asgi_output(
+                request,
                 controller_output['body'],
                 controller_output['status'],
                 controller_output['headers'],
@@ -282,25 +227,20 @@ def make_route(
     class WrappedController(Controller):
         @functools.wraps(controller)
         async def __call__(
-            self,
-            path_args: ASGIPathArgs,
-            query_dict: ASGIQueryDict,
-            headers: ASGIHeaders,
-            body: ASGIBody,
+            self, asgi_request: AsgiRequest,
         ) -> Union[Awaitable[ASGICallableResults], ASGICallableResults]:
             try:
-                kwargs, middleware_request = parse_asgi_input(
-                    path_args,
-                    query_dict,
-                    headers,
-                    body,
-                    middlewares=self.middlewares,
+                request = parse_asgi_input(asgi_request,)
+                if self.middlewares:
+                    for middleware in self.middlewares.pre_execution:
+                        middleware(request)
+
+                controller_output = controller(
+                    **make_controller_input_from_request(request)
                 )
-                controller_output = controller(**kwargs)
+
                 return await build_asgi_output(
-                    controller_output,
-                    middlewares=self.middlewares,
-                    middleware_request=middleware_request,
+                    request, controller_output, middlewares=self.middlewares,
                 )
 
             except BadRequestError as error:

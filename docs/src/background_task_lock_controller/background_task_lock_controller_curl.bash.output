@@ -6,10 +6,11 @@ content-length: 159
 
 {"task_id":"4ee301eb-6487-48a0-b6ed-e5f576accfc2","start_time":"1970-01-01T00:00:00+00:00","status":"running","signature":"aedb1ee4c3c7","args_signature":null}
 
-HTTP/1.1 400 Bad Request
+HTTP/1.1 303 See Other
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-content-type: application/json
-content-length: 61
+location: hello-single?task_id=4ee301eb-6487-48a0-b6ed-e5f576accfc2
+x-apidaora-lock: signature
+transfer-encoding: chunked
 
-{"error":{"name":"lock","info":{"signature":"aedb1ee4c3c7"}}}
+

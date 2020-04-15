@@ -1,12 +1,10 @@
-from typing import Any, Dict
-
 from jsondaora import jsondaora
 
 from apidaora import (
     CorsMiddleware,
     Header,
-    MiddlewareRequest,
     Middlewares,
+    Request,
     Response,
     appdaora,
     route,
@@ -14,20 +12,12 @@ from apidaora import (
 )
 
 
-def post_routing_middleware(
-    path_pattern: str, path_args: Dict[str, Any]
-) -> None:
-    path_args['name'] = path_args['name'].replace('Me', 'You')
-
-
-def pre_execution_middleware(request: MiddlewareRequest) -> None:
+def pre_execution_middleware(request: Request) -> None:
     if request.body:
         request.body.name = request.body.name.replace('Me', 'You')
 
 
-def post_execution_middleware(
-    request: MiddlewareRequest, response: Response
-) -> None:
+def post_execution_middleware(request: Request, response: Response) -> None:
     response.headers = [
         PostExecutionHeader(
             len(response.body.replace('Hello ', '').replace('!', ''))
@@ -36,14 +26,6 @@ def post_execution_middleware(
 
 
 # The route middlewares takes precedence over general middlewares
-
-
-@route.get(
-    '/hello-post-routing/{name}',
-    middlewares=Middlewares(post_routing=[post_routing_middleware]),
-)
-async def post_routing_middleware_controller(name: str) -> str:
-    return hello(name)
 
 
 @jsondaora
@@ -77,7 +59,6 @@ def hello(name: str) -> str:
 
 app = appdaora(
     [
-        post_routing_middleware_controller,
         pre_execution_middleware_controller,
         post_execution_middleware_controller,
     ],

@@ -1,66 +1,52 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from logging import Logger, getLogger
-from typing import (
-    Any,
-    Awaitable,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Type,
-    Union,
-)
+from typing import Any, Callable, Iterable, List, Optional, Union
 
-from .exceptions import BadRequestError
 from .header import Header
+from .request import Request
 from .responses import Response
-from .route.controller_input import ControllerInput
 
 
-@dataclass
-class MiddlewareRequest:
-    path_pattern: str
-    path_args: Optional[Dict[str, Any]] = None
-    query_dict: Optional[Dict[str, Any]] = None
-    headers: Optional[Dict[str, Header]] = None
-    body: Any = None
-    kwargs: Optional[Dict[str, Any]] = None
-
-
-@dataclass
+@dataclass(init=False)
 class Middlewares:
-    post_routing: List[Callable[[str, Dict[str, Any]], None]] = field(
-        default_factory=list
-    )
-    pre_execution: List[Callable[[MiddlewareRequest], None]] = field(
-        default_factory=list
-    )
-    post_execution: List[
-        Callable[[MiddlewareRequest, Response], None]
-    ] = field(default_factory=list)
+    pre_execution: List[Callable[[Request], None]]
+    post_execution: List[Callable[[Request, Response], None]]
 
+    def __init__(
+        self,
+        pre_execution: Optional[
+            Union[List[Callable[[Request], None]], Callable[[Request], None]]
+        ] = None,
+        post_execution: Optional[
+            Union[
+                List[Callable[[Request, Response], None]],
+                Callable[[Request, Response], None],
+            ]
+        ] = None,
+    ):
 
-def make_asgi_input_from_requst(
-    request: MiddlewareRequest, input_cls: Type[ControllerInput]
-) -> ControllerInput:
-    kwargs = {}
+        if pre_execution is None:
+            pre_execution = []
 
-    if request.path_args:
-        kwargs.update(request.path_args)
-    if request.query_dict:
-        kwargs.update(request.query_dict)
-    if request.headers:
-        kwargs.update(request.headers)
-    if request.body:
-        kwargs['body'] = request.body
-    if request.kwargs and (input_cls.__annotations_info__.has_kwargs):
-        kwargs.update(request.kwargs)
+        elif not isinstance(pre_execution, Iterable):
+            pre_execution = [pre_execution]
 
-    return input_cls(**kwargs)
+        elif not isinstance(pre_execution, list):
+            pre_execution = list(pre_execution)
+
+        if post_execution is None:
+            post_execution = []
+
+        elif not isinstance(post_execution, Iterable):
+            post_execution = [post_execution]
+
+        elif not isinstance(post_execution, list):
+            post_execution = list(post_execution)
+
+        self.pre_execution = pre_execution
+        self.post_execution = post_execution
 
 
 class AllowOriginHeader(
@@ -122,7 +108,7 @@ class CorsMiddleware:
 
         self.headers_tuple = tuple(self.headers)
 
-    def __call__(self, request: MiddlewareRequest, response: Response) -> None:
+    def __call__(self, request: Request, response: Response) -> None:
         if isinstance(response.headers, list):
             response.headers.extend(self.headers)
 
@@ -131,27 +117,6 @@ class CorsMiddleware:
 
         elif response.headers is None:
             response.headers = self.headers_tuple
-
-
-@dataclass
-class LockRequestMiddleware:
-    locks: Set[str] = field(default_factory=set)
-
-    def lock(self, path_pattern: str, path_args: Dict[str, Any]) -> None:
-        if path_pattern in self.locks:
-            raise BadRequestError(
-                'lock-request', {'path_pattern': path_pattern}
-            )
-
-        self.locks.add(path_pattern)
-
-    def unlock_pre_execution(self, request: MiddlewareRequest) -> None:
-        self.locks.remove(request.path_pattern)
-
-    def unlock_post_execution(
-        self, request: MiddlewareRequest, response: Response
-    ) -> None:
-        self.locks.remove(request.path_pattern)
 
 
 @dataclass(init=False)
@@ -169,13 +134,14 @@ class BackgroundTaskMiddleware:
 
         self.logger = logger
 
-    def __call__(self, request: MiddlewareRequest, response: Response) -> None:
+    def __call__(self, request: Request, response: Response) -> None:
+        task: Any
         response_tasks: Union[
             Iterable[Callable[[], None]], Callable[[], None]
         ] = []
 
-        if response.kwargs:
-            response_tasks = response.kwargs.get(
+        if response.ctx:
+            response_tasks = response.ctx.get(
                 'background_tasks', response_tasks
             )
 
@@ -183,38 +149,13 @@ class BackgroundTaskMiddleware:
             response_tasks = (response_tasks,)
 
         for task in response_tasks:
-            future = self.executor.submit(task)
-            future.add_done_callback(self.done_callback)
+            if asyncio.iscoroutinefunction(task):
+                task = task()
 
-    def done_callback(self, future: Any) -> None:
-        try:
-            future.result()
-        except Exception:
-            self.logger.exception('Background Task Error')
-
-
-@dataclass(init=False)
-class AsyncBackgroundTaskMiddleware:
-    logger: Logger = getLogger(__name__)
-
-    def __call__(self, request: MiddlewareRequest, response: Response) -> None:
-        response_tasks: Union[
-            Iterable[Awaitable[None]],
-            Iterable[asyncio.Task[None]],
-            Awaitable[None],
-        ] = []
-
-        if response.kwargs:
-            response_tasks = response.kwargs.get(
-                'background_tasks_async', response_tasks
-            )
-
-        if not isinstance(response_tasks, Iterable):
-            response_tasks = (response_tasks,)
-
-        for task in response_tasks:
-            if asyncio.iscoroutinefunction(task):  # type: ignore
-                task = task()  # type: ignore
+            elif not asyncio.iscoroutine(task):
+                future = self.executor.submit(task)
+                future.add_done_callback(self.done_callback)
+                return
 
             task = asyncio.create_task(task)
             task.add_done_callback(self.done_callback)

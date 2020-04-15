@@ -77,7 +77,11 @@ def controller_input(
             if annotations_body:
                 annotations_info.has_body = True
 
-            if 'kwargs' in controller.__annotations__:
+            if (
+                'kwargs' in controller.__annotations__
+                or 'args' in controller.__annotations__
+                or 'request' in controller.__annotations__
+            ):
                 annotations_info.has_kwargs = True
 
             AnnotatedControllerInput = jsondaora(

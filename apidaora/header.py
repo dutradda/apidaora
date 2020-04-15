@@ -20,3 +20,7 @@ class Header(DictDaora):
     ) -> None:
         cls.type = type
         cls.http_name = http_name
+
+
+class LocationHeader(Header, type=str, http_name='location'):
+    ...

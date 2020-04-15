@@ -11,7 +11,7 @@ class Response(DictDaora):
     status: HTTPStatus
     headers: Sequence[Header]
     content_type: Optional[ContentType]
-    kwargs: Optional[Dict[str, Any]]
+    ctx: Optional[Dict[str, Any]]
 
 
 def json(
@@ -25,7 +25,7 @@ def json(
         status=status,
         headers=headers,
         content_type=ContentType.APPLICATION_JSON,
-        kwargs=kwargs,
+        ctx=kwargs,
     )
 
 
@@ -40,7 +40,7 @@ def text(
         status=status,
         headers=headers,
         content_type=ContentType.TEXT_PLAIN,
-        kwargs=kwargs,
+        ctx=kwargs,
     )
 
 
@@ -55,7 +55,7 @@ def html(
         status=status,
         headers=headers,
         content_type=ContentType.TEXT_HTML,
-        kwargs=kwargs,
+        ctx=kwargs,
     )
 
 
@@ -65,7 +65,17 @@ def no_content(headers: Sequence[Header] = (), **kwargs: Any) -> Response:
         headers=headers,
         content_type=None,
         body=None,
-        kwargs=kwargs,
+        ctx=kwargs,
+    )
+
+
+def see_other(headers: Sequence[Header] = (), **kwargs: Any) -> Response:
+    return Response(
+        status=HTTPStatus.SEE_OTHER,
+        headers=headers,
+        content_type=None,
+        body=None,
+        ctx=kwargs,
     )
 
 
@@ -80,5 +90,5 @@ def not_found(
         status=HTTPStatus.NOT_FOUND,
         headers=headers,
         content_type=content_type,
-        kwargs=kwargs,
+        ctx=kwargs,
     )

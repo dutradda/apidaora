@@ -1,5 +1,5 @@
 from apidaora import (
-    AsyncBackgroundTaskMiddleware,
+    BackgroundTaskMiddleware,
     Middlewares,
     Response,
     appdaora,
@@ -20,11 +20,11 @@ class HelloCounter:
 async def background_tasks_controller(name: str) -> Response:
     return text(
         f'Hello {name}!\n{name} are the #{HelloCounter.counter}!',
-        background_tasks_async=HelloCounter.count,
+        background_tasks=HelloCounter.count,
     )
 
 
 app = appdaora(
     background_tasks_controller,
-    middlewares=Middlewares(post_execution=[AsyncBackgroundTaskMiddleware()]),
+    middlewares=Middlewares(post_execution=BackgroundTaskMiddleware()),
 )

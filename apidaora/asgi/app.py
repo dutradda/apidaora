@@ -1,19 +1,12 @@
 import asyncio
-from http import HTTPStatus
 from logging import getLogger
 from typing import Any, Awaitable, Callable, Dict
 from urllib import parse
 
-import orjson
-
-from ..exceptions import (
-    BadRequestError,
-    MethodNotFoundError,
-    PathNotFoundError,
-)
+from ..exceptions import MethodNotFoundError, PathNotFoundError
 from .base import ASGIApp, Receiver, Scope, Sender
+from .request import AsgiRequest
 from .responses import (
-    make_json_response,
     send_method_not_allowed_response,
     send_not_found,
     send_response,
@@ -45,29 +38,6 @@ def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> ASGIApp:
             else:
                 headers = []
 
-            try:
-                if (
-                    hasattr(route.controller, 'middlewares')
-                    and route.controller.middlewares
-                ):
-                    for (
-                        middleware
-                    ) in route.controller.middlewares.post_routing:
-                        middleware(route.path_pattern, resolved.path_args)
-
-            except BadRequestError as error:
-                body = orjson.dumps(error.dict)
-                await send_response(
-                    send,
-                    response=make_json_response(
-                        content_length=len(body),
-                        status=HTTPStatus.BAD_REQUEST,
-                        headers=headers,
-                    ),
-                    body=body,
-                )
-                return
-
             if route.has_query:
                 query_dict = _get_query_dict(scope)
             else:
@@ -79,7 +49,14 @@ def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> ASGIApp:
                 body = b''
 
             response_and_body = route.controller(
-                resolved.path_args, query_dict, headers, body
+                AsgiRequest(
+                    path_pattern=route.path_pattern,
+                    resolved_path=resolved.path,
+                    path_args=resolved.path_args,
+                    query_dict=query_dict,
+                    headers=headers,
+                    body=body,
+                )
             )
 
             while asyncio.iscoroutine(response_and_body):

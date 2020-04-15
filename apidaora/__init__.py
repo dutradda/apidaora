@@ -12,13 +12,11 @@ from apidaora.exceptions import BadRequestError
 from apidaora.header import Header
 from apidaora.method import MethodType
 from apidaora.middlewares import (
-    AsyncBackgroundTaskMiddleware,
     BackgroundTaskMiddleware,
     CorsMiddleware,
-    LockRequestMiddleware,
-    MiddlewareRequest,
     Middlewares,
 )
+from apidaora.request import Request
 from apidaora.responses import (
     Response,
     html,
@@ -46,9 +44,7 @@ __all__ = [
     'Response',
     'Middlewares',
     'CorsMiddleware',
-    'MiddlewareRequest',
+    'Request',
     'ClassController',
-    'LockRequestMiddleware',
     'BackgroundTaskMiddleware',
-    'AsyncBackgroundTaskMiddleware',
 ]

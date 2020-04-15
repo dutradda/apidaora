@@ -40,6 +40,12 @@ NOT_FOUND_RESPONSE: ASGIResponse = {
     'headers': [],
 }
 
+SEE_OTHER_RESPONSE: ASGIResponse = {
+    'type': HTTP_RESPONSE_START,
+    'status': HTTPStatus.NOT_FOUND.value,
+    'headers': [],
+}
+
 METHOD_NOT_ALLOWED_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.METHOD_NOT_ALLOWED.value,
@@ -135,6 +141,14 @@ def make_not_found_response(
 ) -> ASGIResponse:
     return make_response(
         None, HTTPStatus.NOT_FOUND, headers, NOT_FOUND_RESPONSE, None,
+    )
+
+
+def make_see_other_response(
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        None, HTTPStatus.SEE_OTHER, headers, SEE_OTHER_RESPONSE, None,
     )
 
 
