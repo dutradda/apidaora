@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.26.0 - 2020-04-14
 
  - Improve background task controller to return 303 instead 400
 
