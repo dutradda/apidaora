@@ -2,6 +2,10 @@
 
 ### UNRELEASED
 
+ - Improve background task controller to return 303 instead 400
+
+ - Refactor the package to has a common request object
+
  - Change background task controller creation status code from 201 to 202
 
  - Fix background task controller finished task
@@ -58,7 +62,7 @@
 
  - Fix merge of general middlewares and route middlewares
 
- - Improve MiddlewareRequest class
+ - Improve Request class
 
 ### 0.17.2 - 2020-04-10
 
