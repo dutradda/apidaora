@@ -387,18 +387,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -645,7 +633,7 @@
                 <h1 id="using-background-tasks-middleware">Using Background Tasks Middleware</h1>
 <h2 id="example">Example</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AsyncBackgroundTaskMiddleware</span><span class="p">,</span>
+    <span class="n">BackgroundTaskMiddleware</span><span class="p">,</span>
     <span class="n">Middlewares</span><span class="p">,</span>
     <span class="n">Response</span><span class="p">,</span>
     <span class="n">appdaora</span><span class="p">,</span>
@@ -666,13 +654,13 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">background_tasks_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">(</span>
         <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">!</span><span class="se">\n</span><span class="si">{name}</span><span class="s1"> are the #</span><span class="si">{HelloCounter.counter}</span><span class="s1">!&#39;</span><span class="p">,</span>
-        <span class="n">background_tasks_async</span><span class="o">=</span><span class="n">HelloCounter</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+        <span class="n">background_tasks</span><span class="o">=</span><span class="n">HelloCounter</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
     <span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span>
     <span class="n">background_tasks_controller</span><span class="p">,</span>
-    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">post_execution</span><span class="o">=</span><span class="p">[</span><span class="n">AsyncBackgroundTaskMiddleware</span><span class="p">()]),</span>
+    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">post_execution</span><span class="o">=</span><span class="n">BackgroundTaskMiddleware</span><span class="p">()),</span>
 <span class="p">)</span>
 </code></pre></div>
 

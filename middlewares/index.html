@@ -334,13 +334,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quering-the-post-routing-middleware" class="md-nav__link">
-    Quering the Post Routing Middleware
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#quering-the-pre-executition-middleware" class="md-nav__link">
     Quering the Pre Executition Middleware
   </a>
@@ -397,18 +390,6 @@
   <li class="md-nav__item">
     <a href="extra-args/" title="Extra Arguments" class="md-nav__link">
       Extra Arguments
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
     </a>
   </li>
 
@@ -633,13 +614,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quering-the-post-routing-middleware" class="md-nav__link">
-    Quering the Post Routing Middleware
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#quering-the-pre-executition-middleware" class="md-nav__link">
     Quering the Pre Executition Middleware
   </a>
@@ -672,15 +646,13 @@
                 
                 <h1 id="using-middlewares">Using Middlewares</h1>
 <h2 id="example">Example</h2>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
-
-<span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">jsondaora</span> <span class="kn">import</span> <span class="n">jsondaora</span>
 
 <span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">CorsMiddleware</span><span class="p">,</span>
     <span class="n">Header</span><span class="p">,</span>
-    <span class="n">MiddlewareRequest</span><span class="p">,</span>
     <span class="n">Middlewares</span><span class="p">,</span>
+    <span class="n">Request</span><span class="p">,</span>
     <span class="n">Response</span><span class="p">,</span>
     <span class="n">appdaora</span><span class="p">,</span>
     <span class="n">route</span><span class="p">,</span>
@@ -688,20 +660,12 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">post_routing_middleware</span><span class="p">(</span>
-    <span class="n">path_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">pre_execution_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">MiddlewareRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">pre_execution_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
         <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Me&#39;</span><span class="p">,</span> <span class="s1">&#39;You&#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span>
-    <span class="n">request</span><span class="p">:</span> <span class="n">MiddlewareRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">post_execution_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">response</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">PostExecutionHeader</span><span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
@@ -710,14 +674,6 @@
 
 
 <span class="c1"># The route middlewares takes precedence over general middlewares</span>
-
-
-<span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s1">&#39;/hello-post-routing/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span><span class="n">post_routing</span><span class="o">=</span><span class="p">[</span><span class="n">post_routing_middleware</span><span class="p">]),</span>
-<span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">post_routing_middleware_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">hello</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 
 <span class="nd">@jsondaora</span>
@@ -751,7 +707,6 @@
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">appdaora</span><span class="p">(</span>
     <span class="p">[</span>
-        <span class="n">post_routing_middleware_controller</span><span class="p">,</span>
         <span class="n">pre_execution_middleware_controller</span><span class="p">,</span>
         <span class="n">post_execution_middleware_controller</span><span class="p">,</span>
     <span class="p">],</span>
@@ -772,26 +727,6 @@
 INFO: Waiting for application startup.
 INFO: ASGI &#39;lifespan&#39; protocol appears unsupported.
 INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-</code></pre></div>
-
-
-<h2 id="quering-the-post-routing-middleware">Quering the Post Routing Middleware</h2>
-<p>Quering the server:</p>
-<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/hello-post-routing/Me
-</code></pre></div>
-
-
-<div class="codehilite"><pre><span></span><code>HTTP/1.1 200 OK
-date: Thu, 1st January 1970 00:00:00 GMT
-server: uvicorn
-content-type: application/json
-content-length: 12
-access-control-allow-origin: my-server.domain
-access-control-expose-headers: my-server.domain
-access-control-allow-headers: my-server.domain
-access-control-allow-methods: my-server.domain
-
-&quot;Hello You!&quot;
 </code></pre></div>
 
 

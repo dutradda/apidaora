@@ -333,18 +333,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../middlewares/lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -730,7 +718,7 @@ curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>You
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
@@ -738,15 +726,16 @@ content-length: 169
 
 {&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:&quot;de01341028ac&quot;}
 
-HTTP/1.1 400 Bad Request
+HTTP/1.1 303 See Other
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-content-type: application/json
-content-length: 71
+location: hello-single?task_id=b&#39;4ee301eb-6487-48a0-b6ed-e5f576accfc2&#39;
+x-apidaora-lock: args-signature
+transfer-encoding: chunked
 
-{&quot;error&quot;:{&quot;name&quot;:&quot;lock-args&quot;,&quot;info&quot;:{&quot;args_signature&quot;:&quot;de01341028ac&quot;}}}
 
-HTTP/1.1 201 Created
+
+HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
@@ -814,7 +803,7 @@ content-length: 231
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json

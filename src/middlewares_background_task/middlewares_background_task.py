@@ -26,5 +26,5 @@ async def background_tasks_controller(name: str) -> Response:
 
 app = appdaora(
     background_tasks_controller,
-    middlewares=Middlewares(post_execution=[BackgroundTaskMiddleware()]),
+    middlewares=Middlewares(post_execution=BackgroundTaskMiddleware()),
 )

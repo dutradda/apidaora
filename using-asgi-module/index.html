@@ -333,18 +333,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../middlewares/lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -656,8 +644,11 @@
 
 
 <span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/hello/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">path_args</span><span class="p">,</span> <span class="n">query_dict</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-    <span class="n">you</span> <span class="o">=</span> <span class="n">You</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">query_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_controller</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+    <span class="n">you</span> <span class="o">=</span> <span class="n">You</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">path_args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+        <span class="n">location</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">query_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">)</span>
     <span class="n">body</span> <span class="o">=</span> <span class="n">typed_dict_asjson</span><span class="p">(</span><span class="n">you</span><span class="p">,</span> <span class="n">You</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">JSON_RESPONSE</span><span class="p">,</span> <span class="n">body</span>
 

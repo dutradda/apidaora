@@ -387,18 +387,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -646,34 +634,24 @@
 <h2 id="example">Example</h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">MiddlewareRequest</span><span class="p">,</span>
-    <span class="n">Middlewares</span><span class="p">,</span>
-    <span class="n">Response</span><span class="p">,</span>
-    <span class="n">appdaora</span><span class="p">,</span>
-    <span class="n">route</span><span class="p">,</span>
-    <span class="n">text</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">apidaora</span> <span class="kn">import</span> <span class="n">Middlewares</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">appdaora</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">text</span>
 
 
-<span class="k">def</span> <span class="nf">request_extra_args</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">MiddlewareRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extra&#39;</span><span class="p">:</span> <span class="s1">&#39;You&#39;</span><span class="p">}</span>
+<span class="k">def</span> <span class="nf">request_extra_args</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;You&#39;</span>
 
 
-<span class="k">def</span> <span class="nf">response_extra_args</span><span class="p">(</span>
-    <span class="n">request</span><span class="p">:</span> <span class="n">MiddlewareRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">kwargs</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">response_extra_args</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">ctx</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
         <span class="n">response</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s1">&#39;You&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{request.kwargs[&#39;extra&#39;]}</span><span class="s2"> and </span><span class="si">{response.kwargs[&#39;name&#39;]}</span><span class="s2">&quot;</span>
+            <span class="s1">&#39;You&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{request.ctx[&#39;extra&#39;]}</span><span class="s2"> and </span><span class="si">{response.ctx[&#39;name&#39;]}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
 
 <span class="nd">@route</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s1">&#39;/middlewares-kwargs&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;/middlewares-ctx&#39;</span><span class="p">,</span>
     <span class="n">middlewares</span><span class="o">=</span><span class="n">Middlewares</span><span class="p">(</span>
-        <span class="n">pre_execution</span><span class="o">=</span><span class="p">[</span><span class="n">request_extra_args</span><span class="p">],</span>
-        <span class="n">post_execution</span><span class="o">=</span><span class="p">[</span><span class="n">response_extra_args</span><span class="p">],</span>
+        <span class="n">pre_execution</span><span class="o">=</span><span class="n">request_extra_args</span><span class="p">,</span> <span class="n">post_execution</span><span class="o">=</span><span class="n">response_extra_args</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">extra_args_controller</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
@@ -702,7 +680,7 @@ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
 
 <h2 id="quering-the-server">Quering the server</h2>
-<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/middlewares-kwargs?name<span class="o">=</span>Me
+<div class="codehilite"><pre><span></span><code>curl -i localhost:8000/middlewares-ctx?name<span class="o">=</span>Me
 </code></pre></div>
 
 
@@ -750,13 +728,13 @@ Hello You and Me!
           </a>
         
         
-          <a href="../lock-request/" title="Lock Request" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../background-task-controller/" title="Background Task" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Lock Request
+                Background Task
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

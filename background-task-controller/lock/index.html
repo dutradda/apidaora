@@ -333,18 +333,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../middlewares/lock-request/" title="Lock Request" class="md-nav__link">
-      Lock Request
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -722,7 +710,7 @@ curl -X POST -i localhost:8000/hello-single?name<span class="o">=</span>Me
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
@@ -730,13 +718,12 @@ content-length: 159
 
 {&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;status&quot;:&quot;running&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:null}
 
-HTTP/1.1 400 Bad Request
+HTTP/1.1 303 See Other
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
-content-type: application/json
-content-length: 61
-
-{&quot;error&quot;:{&quot;name&quot;:&quot;lock&quot;,&quot;info&quot;:{&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}}}
+location: hello-single?task_id=4ee301eb-6487-48a0-b6ed-e5f576accfc2
+x-apidaora-lock: signature
+transfer-encoding: chunked
 </code></pre></div>
 
 
@@ -765,9 +752,9 @@ content-length: 159
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 198
+content-length: 220
 
-{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:null}
 </code></pre></div>
 
 
@@ -777,7 +764,7 @@ content-length: 198
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code>HTTP/1.1 201 Created
+<div class="codehilite"><pre><span></span><code>HTTP/1.1 202 Accepted
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
@@ -812,9 +799,9 @@ content-length: 159
 date: Thu, 1st January 1970 00:00:00 GMT
 server: uvicorn
 content-type: application/json
-content-length: 198
+content-length: 220
 
-{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;}
+{&quot;end_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;result&quot;:&quot;Hello Me!&quot;,&quot;status&quot;:&quot;finished&quot;,&quot;task_id&quot;:&quot;4ee301eb-6487-48a0-b6ed-e5f576accfc2&quot;,&quot;start_time&quot;:&quot;1970-01-01T00:00:00+00:00&quot;,&quot;signature&quot;:&quot;aedb1ee4c3c7&quot;,&quot;args_signature&quot;:null}
 </code></pre></div>
                 
                   

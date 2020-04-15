@@ -12,8 +12,11 @@ class You(TypedDict):
 
 
 @route.get('/hello/{name}', query=True)
-async def hello_controller(path_args, query_dict, headers, body):  # type: ignore
-    you = You(name=path_args['name'], location=query_dict['location'][0])
+async def hello_controller(request):  # type: ignore
+    you = You(
+        name=request.path_args['name'],
+        location=request.query_dict['location'][0],
+    )
     body = typed_dict_asjson(you, You)
     return JSON_RESPONSE, body
 
