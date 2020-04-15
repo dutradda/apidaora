@@ -18,9 +18,7 @@ uvicorn myapp:app
 {!./src/server.bash.output!}
 ```
 
-## Quering the Post Routing Middleware
-
-Quering the server:
+## Quering the Pre Executition Middleware
 
 ```bash
 {!./src/middlewares/middlewares_curl.bash!}
@@ -30,7 +28,7 @@ Quering the server:
 {!./src/middlewares/middlewares_curl.bash.output!}
 ```
 
-## Quering the Pre Executition Middleware
+## Quering the Post Executition Middleware
 
 ```bash
 {!./src/middlewares/middlewares_curl2.bash!}
@@ -38,14 +36,4 @@ Quering the server:
 
 ```
 {!./src/middlewares/middlewares_curl2.bash.output!}
-```
-
-## Quering the Post Executition Middleware
-
-```bash
-{!./src/middlewares/middlewares_curl3.bash!}
-```
-
-```
-{!./src/middlewares/middlewares_curl3.bash.output!}
 ```

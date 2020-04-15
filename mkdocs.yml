@@ -25,7 +25,6 @@ nav:
         - Background Tasks: middlewares/background-tasks.md
         - Async Background Tasks: middlewares/background-tasks-async.md
         - Extra Arguments: middlewares/extra-args.md
-        - Lock Request: middlewares/lock-request.md
     - Background Task Controller:
         - Background Task: background-task-controller/index.md
         - Async Background Task: background-task-controller/async.md
