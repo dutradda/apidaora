@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.27.0 - 2020-07-08
 
  - Improve responses
 
