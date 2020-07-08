@@ -31,6 +31,7 @@ from ..asgi.responses import (
     make_not_found_response,
     make_see_other_response,
     make_text_response,
+    make_yaml_response,
 )
 from ..asgi.router import Controller, Route
 from ..bodies import GZipFactory
@@ -50,6 +51,7 @@ RESPONSES_MAP: Dict[
     ContentType.APPLICATION_JSON: make_json_response,
     ContentType.TEXT_PLAIN: make_text_response,
     ContentType.TEXT_HTML: make_html_response,
+    ContentType.APPLICATION_YAML: make_yaml_response,
     HTTPStatus.NOT_FOUND: make_not_found_response,
     HTTPStatus.NO_CONTENT: make_no_content_response,
     HTTPStatus.SEE_OTHER: make_see_other_response,
@@ -190,9 +192,13 @@ def make_route(
             or isinstance(controller_output, int)
             or isinstance(controller_output, bool)
             or isinstance(controller_output, float)
+            or isinstance(controller_output, bytes)
         ):
             if content_type == ContentType.APPLICATION_JSON:
-                body = orjson.dumps(controller_output)
+                if isinstance(controller_output, bytes):
+                    body = controller_output
+                else:
+                    body = orjson.dumps(controller_output)
             else:
                 body = str(controller_output).encode()
 

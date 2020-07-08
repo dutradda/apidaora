@@ -25,7 +25,7 @@ from apidaora.responses import (
     not_found,
     text,
 )
-from apidaora.route.decorator import route
+from apidaora.route.decorator import RoutedControllerTypeHint, route
 
 
 __all__ = [
@@ -47,4 +47,5 @@ __all__ = [
     'Request',
     'ClassController',
     'BackgroundTaskMiddleware',
+    'RoutedControllerTypeHint',
 ]

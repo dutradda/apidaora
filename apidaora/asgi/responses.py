@@ -15,6 +15,10 @@ PLAINTEXT_CONTENT_HEADER = (
     b'content-type',
     ContentType.TEXT_PLAIN.value.encode(),
 )
+YAML_CONTENT_HEADER = (
+    b'content-type',
+    ContentType.APPLICATION_YAML.value.encode(),
+)
 
 JSON_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
@@ -32,6 +36,12 @@ PLAINTEXT_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.OK.value,
     'headers': [PLAINTEXT_CONTENT_HEADER],
+}
+
+YAML_RESPONSE: ASGIResponse = {
+    'type': HTTP_RESPONSE_START,
+    'status': HTTPStatus.OK.value,
+    'headers': [YAML_CONTENT_HEADER],
 }
 
 NOT_FOUND_RESPONSE: ASGIResponse = {
@@ -115,6 +125,16 @@ def make_text_response(
         headers,
         PLAINTEXT_RESPONSE,
         PLAINTEXT_CONTENT_HEADER,
+    )
+
+
+def make_yaml_response(
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        content_length, status, headers, YAML_RESPONSE, YAML_CONTENT_HEADER,
     )
 
 

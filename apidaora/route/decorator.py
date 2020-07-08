@@ -7,11 +7,14 @@ from ..method import MethodType
 from .factory import make_route
 
 
+RoutedControllerTypeHint = Union[Controller, BackgroundTask]
+
+
 class _RouteDecorator:
     def __getattr__(
         self, attr_name: str
     ) -> Callable[
-        ..., Callable[[Callable[..., Any]], Union[Controller, BackgroundTask]]
+        ..., Callable[[Callable[..., Any]], RoutedControllerTypeHint]
     ]:
         if attr_name == '__name__':
             return type(self).__name__  # type: ignore

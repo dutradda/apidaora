@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Improve responses
+
 ### 0.26.1 - 2020-05-08
 
  - Fix tests for new jsondaora version
