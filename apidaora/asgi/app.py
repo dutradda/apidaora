@@ -1,5 +1,4 @@
 import asyncio
-from logging import getLogger
 from typing import Any, Awaitable, Callable, Dict
 from urllib import parse
 
@@ -12,9 +11,6 @@ from .responses import (
     send_response,
 )
 from .router import ResolvedRoute
-
-
-logger = getLogger(__name__)
 
 
 def asgi_app(router: Callable[[str, str], ResolvedRoute]) -> ASGIApp:

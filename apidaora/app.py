@@ -1,4 +1,5 @@
 from collections import defaultdict
+from logging import Logger, getLogger
 from typing import Any, DefaultDict, List, Optional, Sequence, Type, Union
 
 from .asgi.app import asgi_app
@@ -30,6 +31,7 @@ def appdaora(
     controllers: Controllers,
     middlewares: Optional[Middlewares] = None,
     options: bool = False,
+    logger: Logger = getLogger(__name__),
 ) -> ASGIApp:
     routes = []
     func_controllers: List[Union[Controller, BackgroundTask]] = []
@@ -91,7 +93,9 @@ def appdaora(
                 )
             )
 
-    return asgi_app(make_router(routes, middlewares=middlewares))
+    return asgi_app(
+        make_router(routes, middlewares=middlewares, logger=logger)
+    )
 
 
 def get_class_routes(controller: Any) -> List[Route]:

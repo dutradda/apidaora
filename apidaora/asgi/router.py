@@ -2,6 +2,7 @@ import dataclasses
 import re
 from abc import ABC, abstractmethod
 from functools import lru_cache
+from logging import Logger
 from typing import (
     Any,
     Callable,
@@ -36,6 +37,7 @@ from .request import AsgiRequest
 class Controller(ABC):
     routes: List['Route']
     middlewares: Optional[Middlewares] = None
+    logger: Optional[Logger] = None
 
     @abstractmethod
     def __call__(self, request: AsgiRequest) -> ASGICallableResults:
@@ -85,6 +87,7 @@ PATH_RE = re.compile(r'\{(?P<name>[^/:]+)(:(?P<pattern>[^/:]+))?\}')
 def make_router(
     routes: Union[List[Route], Tuple[Route]],
     middlewares: Optional[Middlewares] = None,
+    logger: Optional[Logger] = None,
 ) -> Callable[[str, str], ResolvedRoute]:
     has_regex_path = False
 
@@ -95,6 +98,9 @@ def make_router(
 
         elif '{' in route.path_pattern or '}' in route.path_pattern:
             raise InvalidPathError(route.path_pattern)
+
+        if logger:
+            route.controller.logger = logger
 
     if has_regex_path:
         return make_tree_router(routes, middlewares)

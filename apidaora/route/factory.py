@@ -250,6 +250,12 @@ def make_route(
                 )
 
             except BadRequestError as error:
+                if self.logger:
+                    error_attrs = ' '.join(
+                        [f'{k}={v}' for k, v in error.dict.items()]
+                    )
+                    self.logger.warning(f"BAD REQUEST ERROR {error_attrs}")
+
                 return send_bad_request_response(
                     error.dict, has_content_length, error.headers
                 )

@@ -82,6 +82,7 @@ class CorsMiddleware:
         allow_headers: Optional[str] = None,
         allow_methods: Optional[str] = None,
         servers_all: Optional[str] = '*',
+        logger: Logger = getLogger(__name__),
     ):
         if (
             not allow_origin
@@ -107,6 +108,7 @@ class CorsMiddleware:
                 self.headers.append(AllowMethodsHeader(allow_methods))
 
         self.headers_tuple = tuple(self.headers)
+        self.logger = logger
 
     def __call__(self, request: Request, response: Response) -> None:
         if isinstance(response.headers, list):
@@ -125,13 +127,9 @@ class BackgroundTaskMiddleware:
     logger: Logger
 
     def __init__(
-        self, max_workers: int = 100, logger: Optional[Logger] = None
+        self, max_workers: int = 100, logger: Logger = getLogger(__name__),
     ):
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
-
-        if logger is None:
-            logger = getLogger(__name__)
-
         self.logger = logger
 
     def __call__(self, request: Request, response: Response) -> None:
