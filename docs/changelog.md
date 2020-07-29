@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.27.1 - 2020-07-29
 
  - Add logging messages for bad requests
 
