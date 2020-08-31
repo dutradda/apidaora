@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.27.2 - 2020-08-31
 
  - Fix background_task module
 
