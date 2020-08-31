@@ -84,7 +84,7 @@ def make_background_task(
         '-'.join(
             [controller.__name__]
             + [
-                '-'.join((name, type_.__name__))
+                '-'.join((name, getattr(type_, '__name__', str(type_))))
                 for name, type_ in annotations.items()
             ]
         ).encode()

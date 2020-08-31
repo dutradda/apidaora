@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### UNRELEASED
+
+ - Fix background_task module
+
 ### 0.27.1 - 2020-07-29
 
  - Add logging messages for bad requests
