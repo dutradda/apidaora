@@ -25,7 +25,9 @@ from jsondaora.exceptions import DeserializationError
 from ..asgi.base import ASGICallableResults, ASGIHeaders, ASGIResponse
 from ..asgi.request import AsgiRequest
 from ..asgi.responses import (
+    make_css_response,
     make_html_response,
+    make_javascript_response,
     make_json_response,
     make_no_content_response,
     make_not_found_response,
@@ -51,6 +53,8 @@ RESPONSES_MAP: Dict[
     ContentType.APPLICATION_JSON: make_json_response,
     ContentType.TEXT_PLAIN: make_text_response,
     ContentType.TEXT_HTML: make_html_response,
+    ContentType.TEXT_CSS: make_css_response,
+    ContentType.TEXT_JAVASCRIPT: make_javascript_response,
     ContentType.APPLICATION_YAML: make_yaml_response,
     HTTPStatus.NOT_FOUND: make_not_found_response,
     HTTPStatus.NO_CONTENT: make_no_content_response,

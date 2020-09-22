@@ -11,6 +11,11 @@ JSON_CONTENT_HEADER = (
     ContentType.APPLICATION_JSON.value.encode(),
 )
 HTML_CONTENT_HEADER = (b'content-type', ContentType.TEXT_HTML.value.encode())
+CSS_CONTENT_HEADER = (b'content-type', ContentType.TEXT_CSS.value.encode())
+JAVASCRIPT_CONTENT_HEADER = (
+    b'content-type',
+    ContentType.TEXT_JAVASCRIPT.value.encode(),
+)
 PLAINTEXT_CONTENT_HEADER = (
     b'content-type',
     ContentType.TEXT_PLAIN.value.encode(),
@@ -30,6 +35,18 @@ HTML_RESPONSE: ASGIResponse = {
     'type': HTTP_RESPONSE_START,
     'status': HTTPStatus.OK.value,
     'headers': [HTML_CONTENT_HEADER],
+}
+
+CSS_RESPONSE: ASGIResponse = {
+    'type': HTTP_RESPONSE_START,
+    'status': HTTPStatus.OK.value,
+    'headers': [CSS_CONTENT_HEADER],
+}
+
+JAVASCRIPT_RESPONSE: ASGIResponse = {
+    'type': HTTP_RESPONSE_START,
+    'status': HTTPStatus.OK.value,
+    'headers': [JAVASCRIPT_CONTENT_HEADER],
 }
 
 PLAINTEXT_RESPONSE: ASGIResponse = {
@@ -145,6 +162,30 @@ def make_html_response(
 ) -> ASGIResponse:
     return make_response(
         content_length, status, headers, HTML_RESPONSE, HTML_CONTENT_HEADER
+    )
+
+
+def make_css_response(
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        content_length, status, headers, CSS_RESPONSE, CSS_CONTENT_HEADER
+    )
+
+
+def make_javascript_response(
+    content_length: Optional[int] = None,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Optional[ASGIHeaders] = None,
+) -> ASGIResponse:
+    return make_response(
+        content_length,
+        status,
+        headers,
+        JAVASCRIPT_RESPONSE,
+        JAVASCRIPT_CONTENT_HEADER,
     )
 
 

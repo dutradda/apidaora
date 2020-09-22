@@ -19,7 +19,9 @@ from apidaora.middlewares import (
 from apidaora.request import Request
 from apidaora.responses import (
     Response,
+    css,
     html,
+    javascript,
     json,
     no_content,
     not_found,
@@ -48,4 +50,6 @@ __all__ = [
     'ClassController',
     'BackgroundTaskMiddleware',
     'RoutedControllerTypeHint',
+    'css',
+    'javascript',
 ]

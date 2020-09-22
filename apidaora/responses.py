@@ -92,3 +92,33 @@ def not_found(
         content_type=content_type,
         ctx=kwargs,
     )
+
+
+def css(
+    body: Any,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Sequence[Header] = (),
+    **kwargs: Any,
+) -> Response:
+    return Response(
+        body=body,
+        status=status,
+        headers=headers,
+        content_type=ContentType.TEXT_CSS,
+        ctx=kwargs,
+    )
+
+
+def javascript(
+    body: Any,
+    status: HTTPStatus = HTTPStatus.OK,
+    headers: Sequence[Header] = (),
+    **kwargs: Any,
+) -> Response:
+    return Response(
+        body=body,
+        status=status,
+        headers=headers,
+        content_type=ContentType.TEXT_JAVASCRIPT,
+        ctx=kwargs,
+    )
