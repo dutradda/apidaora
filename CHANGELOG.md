@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### UNRELEASED
+### 0.28.0 - 2020-11-27
 
  - Add css and javascript content types
 
